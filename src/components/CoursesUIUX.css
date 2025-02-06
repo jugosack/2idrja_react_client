@@ -1,4 +1,32 @@
 .cover-img {
-  height: 30em !important;
-  object-fit: cover !important;
+  height: 30em;
+  object-fit: cover;
+}
+
+#see-more-front-end-development,
+#see-more-front-end-instructor1,
+#see-more-front-end-instructor2,
+#see-more-front-end-instructor3 {
+  padding-right: 30px;
+  padding-left: 60px;
+}
+
+@media (max-width: 800px) {
+  .cover-img {
+    object-fit: contain !important;
+    height: auto !important;
+  }
+}
+
+/* tablet screen responsiveness  */
+@media (min-width: 500px) and (max-width: 800px) {
+  #see-more-front-end-development {
+    margin-right: 10px;
+  }
+
+  #see-more-front-end-instructor1,
+  #see-more-front-end-instructor2,
+  #see-more-front-end-instructor3 {
+    margin-right: 190px;
+  }
 }

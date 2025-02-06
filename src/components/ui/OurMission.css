@@ -101,9 +101,9 @@
   display: inline;
 }
 
-.toggle-text-inline:hover {
+/* .toggle-text-inline:hover {
   text-decoration: underline;
-}
+} */
 
 .paragraph {
   max-width: 100%;
