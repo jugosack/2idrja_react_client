@@ -54,7 +54,6 @@ const VisitorCounter = () => {
           </div>
           Courses
         </div>
-
         <div className="grid-item">
           <div className="LargeCircle">
             {inView ? <CountUp end={visitCount} duration={5} /> : 0}

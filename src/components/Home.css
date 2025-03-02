@@ -164,6 +164,10 @@
     flex: 0 0 calc(50% - 20px); /* Прикажи 2 картички истовремено */
     max-width: calc(50% - 20px);
   }
+
+  .carousel-wrapper {
+    gap: 80px !important;
+  }
 }
 
 @media (max-width: 480px) {

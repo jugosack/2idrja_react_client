@@ -98,6 +98,7 @@ const CourseReact = () => {
             </div>
           )}
         </div>
+        {/*         text container div end       */}
 
       </div>
 

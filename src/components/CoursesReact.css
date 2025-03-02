@@ -2,3 +2,22 @@
   height: 30em !important;
   object-fit: cover !important;
 }
+
+@media (max-width: 991px) {
+  /* Set image first */
+  .d-flex.flex-column.col-lg-4.col-12 {
+    order: -2; /* Moves image to the top */
+  }
+
+  /* Set name second */
+  .d-flex.flex-column.col-lg-7.col-12 h1 {
+    order: -1;
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  /* Set description third */
+  .d-flex.flex-column.col-lg-7.col-12 p {
+    text-align: left;
+  }
+}
