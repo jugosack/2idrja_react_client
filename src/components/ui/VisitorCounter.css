@@ -204,4 +204,34 @@
     width: 80px;
     height: 80px;
   }
+
+  /* .flex-grid {
+      gap: 0.2rem;
+    } */
+}
+
+.CounterSection .flex-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Dve koloni za tablet */
+  gap: 2rem; /* Manji razmak pomedju itemite */
+  justify-items: center; /* Centrirajte elementite horizontalno */
+  align-items: center; /* Centrirajte elementite vertikalno */
+  padding: 1rem; /* Razmak oko sadržaja */
+}
+
+@media (max-width: 768px) {
+  .CounterSection .flex-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 koloni na tablet */
+    gap: 2rem; /* Razmak pomedju itemite */
+  }
+
+  .grid-item {
+    width: 160px; /* Smanjena širina za tablet */
+    height: 200px; /* Smanjena visina za tablet */
+  }
+
+  .LargeCircle {
+    width: 100px; /* Smanjena širina kruga za tablet */
+    height: 100px; /* Smanjena visina kruga za tablet */
+  }
 }

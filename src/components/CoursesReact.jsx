@@ -175,68 +175,36 @@ const CourseReact = () => {
 
         {/* instructor 2 */}
         <div className="d-flex flex-column flex-lg-row mt-4 mb-3">
-          {/* text */}
-          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
-            <h1 className="mt-3 mx-5">Full Name 2</h1>
-            <div className="text-container">
-              <div
-                className={`paragraph-content ${isExpanded.instructor2 ? '' : 'text-truncated-mobile'
-                }`}
-              >
-                <p className="pt-5 mx-5 paragraph-justified">
-                  Meet our seasoned Front-End Development instructor, a dynamic industry professional
-                  with a passion for cultivating the next generation of web developers. With a wealth of
-                  hands-on experience and a proven track record in the field, our instructor brings a
-                  unique blend of expertise and enthusiasm to the classroom.
-                  <br />
-                  <br />
-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
-                  for learners of all levels.
-                  <br />
-                  <br />
-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
-                  for learners of all levels.
-                  <br />
-                  <br />
-                  Join us, and let our experienced instructor guide you on a transformative journey
-                  toward front-end mastery!
-                  <br />
-                  <br />
-                  🚀 💻 #CodeWithConfidence #FrontEndInstructor
-                </p>
-              </div>
-              {!isExpanded.instructor2 ? (
-                <span
-                  id="see-more-front-end-instructor2"
-                  className="toggle-text-inline"
-                  role="button"
-                  tabIndex="0"
-                  onClick={() => handleToggle('instructor2')}
-                  onKeyDown={(e) => e.key === 'Enter' && handleToggle()}
-                >
-                  ... View More
-                </span>
-              ) : (
-                <div className="toggle-text-container">
-                  <span
-                    className="toggle-text"
-                    role="button"
-                    tabIndex="0"
-                    onClick={() => handleToggle('instructor2')}
-                    onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor2')}
-                  >
-                    View Less
-                  </span>
-                </div>
-              )}
-            </div>
-
-          </div>
           {/* image */}
           <div className="d-flex flex-column col-lg-4 col-12 align-self-start">
             <img className="img-fluid" src={profileImg2} alt="Project" />
+          </div>
+          {/* text */}
+          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
+            <h1 className="mt-3 mx-5">Full Name 2</h1>
+            <p className="pt-5 mx-5 paragraph-justified">
+              Meet our seasoned Front-End Development instructor, a dynamic industry professional
+              with a passion for cultivating the next generation of web developers. With a wealth of
+              hands-on experience and a proven track record in the field, our instructor brings a
+              unique blend of expertise and enthusiasm to the classroom.
+              <br />
+              <br />
+              Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+              CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+              for learners of all levels.
+              <br />
+              <br />
+              Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+              CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+              for learners of all levels.
+              <br />
+              <br />
+              Join us, and let our experienced instructor guide you on a transformative journey
+              toward front-end mastery!
+              <br />
+              <br />
+              🚀 💻 #CodeWithConfidence #FrontEndInstructor
+            </p>
           </div>
         </div>
 
