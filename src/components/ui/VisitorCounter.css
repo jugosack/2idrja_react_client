@@ -83,7 +83,11 @@
   align-items: center; /* Center items vertically */
   flex: 0 0 auto;
   width: 200px; /* Fixed width */
-  height: 250px; /* Fixed height */
+  height: 190px;
+
+  /* height: 250px;  */
+
+  /* Fixed height */
   box-sizing: border-box; /* Ensures padding/border do not affect width */
   padding: 10px; /* Optional: Adds inner spacing */
 
@@ -120,36 +124,71 @@
   }
 }
 
-@media (min-width: 1020px) and (max-width: 1024px) {
+/* @media (min-width: 1020px) and (max-width: 1024px) {
   .flex-grid {
     gap: 3rem;
   }
-}
+} */
 
 @media (max-width: 426px) {
   .flex-grid {
     gap: 0;
   }
-}
 
-@media (min-width: 765px) and (max-width: 770px) {
-  .flex-grid {
-    gap: 0;
+  .LargeCircle {
+    width: 100px; /* Smanjena širina kruga za tablet */
+    height: 100px; /* Smanjena visina kruga za tablet */
   }
 }
 
-/* discover/counter Circles on mobile S screen */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* .flex-grid {
+    gap: 0;
+    display: grid;
+  } */
+  .CounterSection .flex-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20%;
+  }
+}
+
+/* tablet towards mobile screen size */
+@media (min-width: 435px) and (max-width: 768px) {
+  .CounterSection .flex-grid {
+    gap: 20%;
+  }
+}
+
+@media (max-width: 767px) {
+  .grid-item {
+    width: 160px; /* Smanjena širina za tablet */
+    height: 200px; /* Smanjena visina za tablet */
+  }
+}
+
+/*  mobile M screen */
+@media (max-width: 375px) {
+  .grid-item {
+    width: 124px;
+  }
+}
+
+/*  mobile S screen */
 @media (max-width: 325px) {
   .grid-item {
-    width: 130px; /* Fixed width */
-    height: 190px; /* Fixed height */
+    width: 35%;
+
+    /* Fixed width */
+    height: 180px;
+
+    /* Fixed height */
     margin-left: 10px;
     margin-right: 10px;
   }
 
   .LargeCircle {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
   }
 
   /* .flex-grid {

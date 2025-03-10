@@ -119,7 +119,7 @@ const WebsiteCarousel = () => {
         {/*eslint-disable*/}
         <Slider {...settings}>
           {/* eslint-enable */}
-          {/*             first crad */}
+          {/*             first crad                        */}
           <div className="carddd">
             <div
               className="carouselKarticka"
@@ -130,20 +130,32 @@ const WebsiteCarousel = () => {
                 alt=""
                 className="website-screenshot-desktop"
               />
-              <div className="card-body" id="card-body-websites">
-                <h5 className="card-title">Asprovalta M Apartments</h5>
-              </div>
-
+            </div>
+            <div className="d-flex justify-content-center">
+              <h5 className="text-center">Asprovalta M Apartments</h5>
             </div>
 
-            {/* <div className="website-description">
-              <p>
-                Asprovalta booking website
-              </p>
-            </div> */}
           </div>
 
           {/* second card */}
+          <div className="carddd">
+            <div
+              className="carouselKarticka"
+              id="kartickaWebsajt"
+            >
+              <img
+                src="/images/lepenecmonitoringsolutions1440x800px_.png"
+                alt=""
+                className="website-screenshot-desktop"
+              />
+            </div>
+            <div className="d-flex justify-content-center">
+              <h5 className="text-center">Flood detection and waste monitoring</h5>
+            </div>
+
+          </div>
+
+          {/* third card */}
           <div className="carddd">
             <div
               className="carouselKarticka"
@@ -154,13 +166,13 @@ const WebsiteCarousel = () => {
                 alt=""
                 className="website-screenshot-desktop"
               />
-              <div className="card-body" id="card-body-websites">
-                <h5 className="card-title">Fake clothes shop</h5>
-              </div>
+            </div>
+            <div className="d-flex justify-content-center">
+              <h5 className="text-center">Fake clothes shop</h5>
             </div>
           </div>
 
-          {/* third card */}
+          {/* fourth card */}
           <div className="carddd">
             <div
               className="carouselKarticka"
@@ -171,9 +183,9 @@ const WebsiteCarousel = () => {
                 alt=""
                 className="website-screenshot-desktop"
               />
-              <div className="card-body" id="card-body-websites">
-                <h5 className="card-title">Programming courses</h5>
-              </div>
+            </div>
+            <div className="d-flex justify-content-center">
+              <h5 className="text-center">Programming courses</h5>
             </div>
           </div>
 

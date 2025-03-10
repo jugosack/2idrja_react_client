@@ -217,6 +217,35 @@ h3 {
   border: none !important;
 }
 
+@media (max-width: 768px) {
+  .text-trunc-projects {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+
+    /* Limit to 4 lines */
+    line-clamp: 3;
+
+    /* Standard property for compatibility */
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    word-wrap: break-word;
+  }
+
+  #see-more-project-Asprovalta,
+  #see-more-project-Lepenec,
+  #see-more-project-Programming,
+  #see-more-project-FakeClothes {
+    /* padding-right: 35%;
+padding-left: 35%; */
+
+    left: 0%;
+    padding-left: 10%;
+    background-color: rgb(250, 250, 250);
+  }
+}
+
 .scroll-container {
   overflow: hidden;
 
@@ -245,7 +274,17 @@ h3 {
   flex-direction: column;
   position: absolute;
   top: 0;
-  animation: scrollUp 37s linear infinite;
+  animation: scrollUp 18s linear infinite;
+
+  /* Adjust the duration to control speed */
+}
+
+.scroll-image-lepenec {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  animation: scrollUp 70s linear infinite;
 
   /* Adjust the duration to control speed */
 }
@@ -265,7 +304,7 @@ h3 {
   flex-direction: column;
   position: absolute;
   top: 0;
-  animation: scrollUp 18s linear infinite;
+  animation: scrollUp 25s linear infinite;
 
   /* Adjust the duration to control speed */
 }
