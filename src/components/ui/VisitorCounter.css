@@ -159,20 +159,6 @@
   }
 }
 
-.CounterSection .flex-grid {
-  /* display: grid;
-  grid-template-columns: repeat(2, 1fr);  */
-
-  /* Dve koloni za tablet */
-
-  /* gap: 2rem;  */
-
-  /* Manji razmak pomedju itemite */
-  justify-items: center; /* Centrirajte elementite horizontalno */
-  align-items: center; /* Centrirajte elementite vertikalno */
-  padding: 1rem; /* Razmak oko sadržaja */
-}
-
 @media (max-width: 767px) {
   .grid-item {
     width: 160px; /* Smanjena širina za tablet */
