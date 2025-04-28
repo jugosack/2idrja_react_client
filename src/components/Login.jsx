@@ -1,6 +1,6 @@
 import './Login.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Footer from './ui/Footer';
 import Navbar from './ui/Navbar';
 
@@ -8,11 +8,39 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // За индикација за вчитување
   const navigate = useNavigate();
+
+  const fetchCurrentUser = async (token) => {
+    try {
+      const response = await fetch('http://localhost:3001/current_user', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        // Логирање на грешка ако е неуспешно
+        console.log('Response not ok', response);
+        const userData = await response.json();
+        setError(userData.message || 'Failed to fetch current user');
+        return;
+      }
+
+      const userData = await response.json();
+      console.log('User data fetched:', userData); // Логирај ја добиената дата
+      localStorage.setItem('user_data', JSON.stringify(userData)); // Чување на податоците во localStorage
+    } catch (err) {
+      console.error('Error fetching current user:', err);
+      setError('Unable to fetch current user');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Reset error message
+    setError(''); // Ресетирај го претходниот error
+    setIsLoading(true); // Вклучи индикатор за вчитување
 
     try {
       const response = await fetch('http://localhost:3000/login', {
@@ -31,19 +59,30 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // On success, save the token (you can save it in localStorage or state)
+        // Чување на токенот во localStorage
         localStorage.setItem('auth_token', data.token);
-        navigate('/'); // Redirect to another page (e.g., dashboard)
+        navigate('/dashboard'); // Пренасочување по успешен login
+
+        // Повик за актуелниот корисник
+        fetchCurrentUser(data.token);
       } else {
-        // Handle errors
-        setError(data.status.message || 'Login failed');
+        setError(data.message || 'Login failed'); // Обработка на грешки
       }
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Error:', err);
-      setError('Something went wrong. Please try again.');
+      setError('Something went wrong. Please try again.'); // Генерална грешка
+    } finally {
+      setIsLoading(false); // Исклучи индикатор за вчитување
     }
   };
+
+  useEffect(() => {
+    // Проверка дали веќе имате токен за да не пренасочите повторно на login
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
 
   return (
     <>
@@ -55,35 +94,33 @@ const Login = () => {
               <h2>Login</h2>
               <div className="form-group">
                 {/* email */}
-                <div className="form-group">
-                  <input
-                    type="email"
-                    className="form-control"
-                    name="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
-                    required="required"
-                  />
-                </div>
-                {/* password */}
-                <div className="form-group">
-                  <input
-                    type="password"
-                    className="form-control"
-                    name="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    required="required"
-                  />
-                </div>
+                <input
+                  type="email"
+                  className="form-control"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  required="required"
+                />
+              </div>
+              {/* password */}
+              <div className="form-group">
+                <input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required="required"
+                />
               </div>
 
               {/* Display error */}
               {error && <div className="text-danger">{error}</div>}
 
-              {/* footer of form */}
+              {/* Footer of form */}
               <div className="form-group d-flex justify-content-between">
                 <label htmlFor="rememberMeCheckbox">
                   <input type="checkbox" id="rememberMeCheckbox" />
@@ -93,15 +130,16 @@ const Login = () => {
                 <Link to="/forgot-password">Forgot password?</Link>
               </div>
 
+              {/* Submit button */}
               <div className="form-group col-12">
                 <button type="submit" className="btn btn-info btn-lg col-12">
-                  Sign in
+                  {isLoading ? 'Loading...' : 'Sign in'}
                 </button>
               </div>
             </form>
 
             <div className="text-center text-white mb-5">
-              Don&apos;t have an account?
+              Don&apos t have an account?
               {' '}
               <Link to="/register" className="text-blue">
                 Sign up
@@ -117,70 +155,3 @@ const Login = () => {
 };
 
 export default Login;
-
-// import './Login.css';
-// import { Link } from 'react-router-dom';
-// import Footer from './ui/Footer';
-// import Navbar from './ui/Navbar';
-
-// const Login = () => (
-//   <>
-//     <Navbar className="active text-white" />
-//     <div className="background-wallpaper-Login d-flex">
-//       <div className="position-relative container-fluid container">
-//         <div className="signup-form position-absolute top-50 start-50 translate-middle">
-//           <form className="mt-5">
-//             <h2>Login</h2>
-//             <div className="form-group">
-//               {/* email */}
-//               <div className="form-group">
-//                 <input
-//                   type="email"
-//                   className="form-control"
-//                   name="email"
-//                   placeholder="Email"
-//                   required="required"
-//                 />
-//               </div>
-//               {/* password */}
-//               <div className="form-group">
-//                 <input
-//                   type="password"
-//                   className="form-control"
-//                   name="password"
-//                   placeholder="Password"
-//                   required="required"
-//                 />
-//               </div>
-//             </div>
-//             {/* footer of form */}
-//             <div className="form-group d-flex justify-content-between">
-//               <label htmlFor="rememberMeCheckbox">
-//                 <input type="checkbox" id="rememberMeCheckbox" />
-//                 {' '}
-//                 Remember me
-//               </label>
-//               <Link to="/forgot-password">Forgot password?</Link>
-//             </div>
-//             <div className="form-group  col-12">
-//               <button type="submit" className="btn btn-info btn-lg col-12">
-//                 Sign in
-//               </button>
-//             </div>
-//           </form>
-//           <div className="text-center text-white mb-5">
-//             Dont have an account?
-//             {' '}
-//             <Link to="/register" className="text-blue">
-//               Sign up
-//             </Link>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-
-//     <Footer />
-//   </>
-// );
-
-// export default Login;
