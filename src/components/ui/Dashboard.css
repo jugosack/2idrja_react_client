@@ -1,0 +1,365 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 5%;
+  font-family: Arial, sans-serif;
+  background-image: linear-gradient(to left, #685ed8, #b698aa);
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+}
+
+.orange-navbar {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.orange-navbar a {
+  background-color: #685ed8;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 18px;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 18px;
+  transition: background 0.3s;
+}
+
+.orange-navbar a:hover {
+  background-color: #685ed8;
+}
+
+.navbar-icons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.profile-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* GRID LAYOUT */
+.main-content {
+  background-image: linear-gradient(to left, #685ed8, #b698aa);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
+}
+
+.profile-section {
+  grid-column: 1 / 2;
+  grid-row: 1;
+  background-color: rgba(219, 208, 221, 0.5);
+  padding: 20px;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 250px; /* Иста висина со ongoing-courses */
+}
+
+.profile-pic {
+  margin-bottom: 40px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.profile-info h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.profile-info .job-title {
+  margin: 0;
+  font-size: 13px;
+  color: gray;
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.icon-group {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  background-color: #eee;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Profile Bottom (Meetings button) */
+.profile-bottom {
+  position: absolute;
+  bottom: 20px; /* Push to the bottom */
+  right: 20px; /* Align to the right */
+}
+
+.time-slots h3 {
+  margin: 0;
+  font-size: 12px;
+  color: gray;
+}
+
+.month-btn {
+  background-color: #685ed8;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.meeting-btn {
+  background-color: white;
+  border: 1px solid gray;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: black;
+  cursor: pointer;
+}
+
+/* Ongoing Courses */
+
+/* Ongoing Courses */
+.ongoing-courses {
+  grid-column: 2 / 4;
+  grid-row: 1;
+  background-color: rgba(219, 208, 221, 0.5);
+  padding: 20px;
+  border-radius: 28px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 250px;
+}
+
+.ongoing-courses-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.courses-container {
+  height: 20px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 15px;
+  flex-wrap: wrap; /* Allow cards to wrap */
+  align-items: flex-start;
+}
+
+.course {
+  background-color: #f9f9f9;
+  padding: 20px;
+  width: 140px; /* Increased card width */
+  text-align: center; /* Center align content */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  position: relative; /* To position the month in the top-left corner */
+}
+
+/* Info Button for Course */
+.course-info-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #eee;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: black;
+  transition: background-color 0.3s;
+}
+
+.course-info-btn:hover {
+  background-color: #ddd;
+}
+
+.course-month {
+  background-color: rgba(219, 208, 221, 0.5);
+  color: white;
+  font-weight: bold;
+  padding: 3px;
+  border-radius: 8px;
+  font-size: 10px; /* Smaller size for the month */
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.course-name {
+  padding-top: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px; /* Space between the name and other content */
+}
+
+.progress-text,
+.days-left {
+  font-size: 12px;
+  color: gray;
+  text-align: center; /* Center these elements */
+  margin-top: 5px; /* Space between elements */
+}
+
+.days-left {
+  color: #888;
+}
+
+/* Detailed Info */
+.detailed-info {
+  grid-column: 1 / 2;
+  grid-row: 2;
+  background-color: rgba(219, 208, 221, 0.5);
+  padding: 20px;
+  border-radius: 28px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 15px;
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-item span {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Calendar */
+.calendar {
+  grid-column: 2 / 3;
+  grid-row: 2;
+  background-color: rgba(219, 208, 221, 0.5);
+  padding: 20px;
+  border-radius: 28px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.current-day {
+  background-color: #333;
+  color: rgb(229, 185, 185);
+  font-weight: bold;
+}
+
+.calendar-month {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.calendar-day {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* Inbox */
+.inbox {
+  grid-column: 3 / 4;
+  grid-row: 2;
+  background-color: rgba(219, 208, 221, 0.5);
+  padding: 20px;
+  border-radius: 28px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.message img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.sender {
+  font-weight: bold;
+}
