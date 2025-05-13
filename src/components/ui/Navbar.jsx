@@ -202,7 +202,7 @@ const Navbar = ({ className = '' }) => {
                         </Link>
                       </li>
                       <li className="">
-                        <Link className="dropdown-item" to="/">
+                        <Link className="dropdown-item" to="/account-settings">
                           Settings
                         </Link>
                       </li>
