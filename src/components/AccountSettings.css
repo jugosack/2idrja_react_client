@@ -1,9 +1,8 @@
  
   .account-settings-main-div{
     /* font-family: inherit; */
-    /* background: linear-gradient(to bottom right, #e6d6f5, #cfc0e6); */
-    background: linear-gradient(to bottom right, #B698AA 5%, #685ED8 100%);
-
+    /* background: linear-gradient(to bottom right, #B698AA 5%, #685ED8 115%); */
+    background: linear-gradient(to bottom right, #D5C3CE 5%, #7b74d8 110%);
 
   }
 
@@ -41,6 +40,8 @@
     padding: 0.5rem;
     border-radius: 0.5rem;
     border: 1px solid #ccc;
+   background-color: rgba(255, 255, 255, 0.5);
+    color: #767676;
   }
   
   .submit-btn,
@@ -54,12 +55,14 @@
     padding: 0.4rem 0.8rem;
     cursor: pointer;
   }
-  
+  .upload-btn{
+    align-self: center;
+  }
   .image-preview {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 4rem;
   }
   
   .image-preview img {
@@ -73,10 +76,10 @@
   align-items: flex-start;
 }
 
-.form-group-account-settings {
+/* .form-group-account-settings {
   display: flex;
   flex: 1;
-}
+} */
 
 .form-inputs {
   flex: 3;
@@ -143,4 +146,35 @@
   align-items: center;
   padding-left: 20px;
   margin-top: 20%;
+}
+
+.form-and-button-container{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.form-fields-container{
+  min-width: 560px;
+}
+
+.joining-image-field{
+  display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.upload-btn{
+  /* align-self: center; */
+}
+
+.image-placeholder{
+  /* align-self:center;   */
+   text-align: left;
+}
+.image-upload-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }

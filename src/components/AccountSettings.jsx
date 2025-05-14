@@ -90,8 +90,8 @@ const AccountSettings = () => {
           <h3 className="d-flex justify-content-center">Profile Settings</h3>
           <p>Add information about yourself</p>
 
-          <div className="edit-button-on-right d-flex justify-content-center">
-            <div className="form-container col-lg-8">
+          <div className="form-and-button-container">
+            <div className="form-fields-container">
               <form
                 className="form-group-account-settings"
                 onSubmit={(e) => {
@@ -146,22 +146,28 @@ const AccountSettings = () => {
                     disabled={!editable}
                   />
 
-                  <input
-                    type="file"
-                    onChange={handleImageChange}
-                    disabled={!editable}
-                  />
-                  <div className="image-preview">
-                    {preview && <img src={preview} alt="Preview" />}
-                    <button type="button" className="upload-btn" disabled={!editable}>
-                      Upload
-                    </button>
+                  <div className="joining-image-field">
+
+                    <div className="image-placeholder">Image Preview</div>
+
+                    <input
+                      type="file"
+                      id="file-upload-image"
+                      onChange={handleImageChange}
+                      disabled={!editable}
+                    />
+                    <div className="image-preview">
+                      {preview && <img src={preview} alt="Preview" />}
+                      <button type="button" className="upload-btn" disabled={!editable}>
+                        Upload
+                      </button>
+                    </div>
                   </div>
                 </div>
 
               </form>
             </div>
-            <div className="form-actions col-lg-4 justify-content-center">
+            <div className="form-button-switch">
               <button
                 type="button"
                 className={editable ? 'submit-btn' : 'edit-btn'}
@@ -186,12 +192,19 @@ const AccountSettings = () => {
         <div className="section">
           <h3 className="d-flex justify-content-center">Profile Security</h3>
           <p>Edit your account settings and change your password here.</p>
-          <form className="form-group-account-settings">
-            <input type="password" placeholder="Old password" />
-            <input type="password" placeholder="New password" />
-            <input type="password" placeholder="Confirm password" />
-            <button type="submit" className="submit-btn">Submit</button>
-          </form>
+          <div className="form-and-button-container">
+            <div className="form-fields-container">
+              <form className="form-group-account-settings">
+                <input type="password" placeholder="Old password" />
+                <input type="password" placeholder="New password" />
+                <input type="password" placeholder="Confirm password" />
+
+              </form>
+            </div>
+            <div className="form-button-switch">
+              <button type="submit" className="submit-btn">Submit</button>
+            </div>
+          </div>
         </div>
       </div>
       <Footer />
