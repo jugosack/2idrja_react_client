@@ -1,24 +1,36 @@
 import './RegistrationForm.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CountryDropdown } from 'react-country-region-selector';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from './ui/Footer';
 import Navbar from './ui/Navbar';
 
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    country: '',
-    mobileNumber: '',
-    termsAccepted: false,
-  });
+  const navigate = useNavigate();
 
+  // Load from sessionStorage if exists
+  const savedForm = sessionStorage.getItem('registrationForm');
+  const initialFormData = savedForm
+    ? JSON.parse(savedForm)
+    : {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      country: '',
+      mobileNumber: '',
+      termsAccepted: false,
+    };
+
+  const [formData, setFormData] = useState(initialFormData);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Save to sessionStorage whenever formData changes
+  useEffect(() => {
+    sessionStorage.setItem('registrationForm', JSON.stringify(formData));
+  }, [formData]);
 
   // Handle input change
   const handleChange = (e) => {
@@ -74,6 +86,8 @@ const RegistrationForm = () => {
 
       if (response.ok) {
         setMessage('Registration successful!');
+        sessionStorage.removeItem('registrationForm'); // Clear saved form on success
+        navigate('/login');
       } else {
         setMessage(data.error || 'Something went wrong!');
       }
@@ -122,7 +136,11 @@ const RegistrationForm = () => {
 
               {/* Country */}
               <div className="form-group">
-                <CountryDropdown className="form-control" value={formData.country} onChange={handleCountryChange} />
+                <CountryDropdown
+                  className="form-control"
+                  value={formData.country}
+                  onChange={handleCountryChange}
+                />
               </div>
 
               {/* Mobile Number */}

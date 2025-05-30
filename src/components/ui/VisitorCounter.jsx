@@ -13,14 +13,14 @@ const VisitorCounter = () => {
   });
 
   useEffect(() => {
-    const currentCount = localStorage.getItem('visitCount');
+    const currentCount = sessionStorage.getItem('visitCount');
     if (currentCount) {
       const newCount = parseInt(currentCount, 10) + 1;
       setVisitCount(newCount);
-      localStorage.setItem('visitCount', newCount);
+      sessionStorage.setItem('visitCount', newCount);
     } else {
       setVisitCount(1);
-      localStorage.setItem('visitCount', 1);
+      sessionStorage.setItem('visitCount', 1);
     }
   }, []);
 
