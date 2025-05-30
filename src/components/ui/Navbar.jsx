@@ -15,7 +15,6 @@ const Navbar = ({ className = '' }) => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('auth_token');
-    const token = localStorage.getItem('auth_token');
     // eslint-disable-next-line
     console.log('Token:', token);
     setIsAuthenticated(!!token);
