@@ -9,8 +9,23 @@
   box-sizing: border-box;
 }
 
+.select-ongoing {
+  background-color: #b698aa !important;
+  color: white;
+}
+
+.select-past {
+  background-color: #b698aa !important;
+  color: white;
+}
+
+.select-upcoming {
+  background-color: #b698aa !important;
+  color: white;
+}
+
 /* NAVBAR */
-.navbar {
+.navbar-dashboard {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -39,14 +54,13 @@
   color: white;
   padding: 10px 20px;
   border-radius: 18px;
-  font-weight: bold;
   text-decoration: none;
   font-size: 18px;
   transition: background 0.3s;
 }
 
 .orange-navbar a:hover {
-  background-color: #685ed8;
+  background-color: #5845b0;
 }
 
 .navbar-icons {
@@ -80,7 +94,8 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  height: 250px; /* Иста висина со ongoing-courses */
+  height: 250px;
+  position: relative;
 }
 
 .profile-pic {
@@ -137,8 +152,8 @@
 /* Profile Bottom (Meetings button) */
 .profile-bottom {
   position: absolute;
-  bottom: 20px; /* Push to the bottom */
-  right: 20px; /* Align to the right */
+  bottom: 20px;
+  right: 20px;
 }
 
 .time-slots h3 {
@@ -171,8 +186,6 @@
 }
 
 /* Ongoing Courses */
-
-/* Ongoing Courses */
 .ongoing-courses {
   grid-column: 2 / 4;
   grid-row: 1;
@@ -193,26 +206,90 @@
 }
 
 .courses-container {
-  height: 20px;
   display: flex;
-  justify-content: flex-start;
-  gap: 15px;
-  flex-wrap: wrap; /* Allow cards to wrap */
-  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 .course {
+  flex: 0 0 calc(33.33% - 13.33px);
   background-color: #f9f9f9;
   padding: 20px;
-  width: 140px; /* Increased card width */
-  text-align: center; /* Center align content */
-  border-radius: 8px;
+  text-align: center;
+  border-radius: 30px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center vertically */
-  align-items: center; /* Center horizontally */
-  position: relative; /* To position the month in the top-left corner */
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* NEW Dropdown Style: only arrow visible */
+.dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.category-label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.arrow-only-select-wrapper {
+  position: relative;
+  width: 25px;
+}
+
+.arrow-only-select {
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  appearance: none;
+  background: none;
+  border: none;
+}
+
+.custom-arrow-icon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #333;
+}
+
+.option:hover {
+  background-color: #685ed8;
+}
+
+/* Ongoing course navigation buttons */
+.course-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.nav-arrow {
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 /* Info Button for Course */
@@ -244,7 +321,7 @@
   font-weight: bold;
   padding: 3px;
   border-radius: 8px;
-  font-size: 10px; /* Smaller size for the month */
+  font-size: 10px;
   position: absolute;
   top: 10px;
   left: 10px;
@@ -257,15 +334,15 @@
   font-size: 16px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 10px; /* Space between the name and other content */
+  margin-bottom: 10px;
 }
 
 .progress-text,
 .days-left {
   font-size: 12px;
   color: gray;
-  text-align: center; /* Center these elements */
-  margin-top: 5px; /* Space between elements */
+  text-align: center;
+  margin-top: 5px;
 }
 
 .days-left {

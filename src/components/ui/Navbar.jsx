@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import logo from '../icons/2drijaLogo.png';
 import userLogo from '../icons/userLogo.svg';
+// COMMENT
+
 import profilePictureTemp from '../images/Profile_img_2.png';
 
 const Navbar = ({ className = '' }) => {
@@ -12,7 +14,7 @@ const Navbar = ({ className = '' }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     // eslint-disable-next-line
     console.log('Token:', token);
     setIsAuthenticated(!!token);
@@ -35,7 +37,7 @@ const Navbar = ({ className = '' }) => {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = sessionStorage.getItem('auth_token');
       if (!token) {
         // eslint-disable-next-line
         console.log('No token found, redirecting to login');
@@ -58,7 +60,7 @@ const Navbar = ({ className = '' }) => {
         throw new Error('Logout failed');
       }
 
-      localStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_token');
       setIsAuthenticated(false);
       navigate('/login');
     } catch (error) {
