@@ -10,14 +10,14 @@ const Navbar = ({ className = '' }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     console.log('Token:', token);
     setIsAuthenticated(!!token);
   }, []);
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = sessionStorage.getItem('auth_token');
       if (!token) {
         console.log('No token found, redirecting to login');
         navigate('/login');
@@ -38,7 +38,7 @@ const Navbar = ({ className = '' }) => {
         throw new Error('Logout failed');
       }
 
-      localStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_token');
       setIsAuthenticated(false);
       navigate('/login');
     } catch (error) {

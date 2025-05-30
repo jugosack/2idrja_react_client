@@ -30,7 +30,7 @@ const Login = () => {
 
       const userData = await response.json();
       console.log('User data fetched:', userData); // Логирај ја добиената дата
-      localStorage.setItem('user_data', JSON.stringify(userData)); // Чување на податоците во localStorage
+      sessionStorage.setItem('user_data', JSON.stringify(userData));
     } catch (err) {
       console.error('Error fetching current user:', err);
       setError('Unable to fetch current user');
@@ -59,9 +59,9 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Чување на токенот во localStorage
-        localStorage.setItem('auth_token', data.token);
-        navigate('/dashboard'); // Пренасочување по успешен login
+        // Чување на токенот во sessionStorage
+        sessionStorage.setItem('auth_token', data.token);
+        navigate('/'); // Пренасочување по успешен login
 
         // Повик за актуелниот корисник
         fetchCurrentUser(data.token);
@@ -78,9 +78,9 @@ const Login = () => {
 
   useEffect(() => {
     // Проверка дали веќе имате токен за да не пренасочите повторно на login
-    const token = localStorage.getItem('auth_token');
+    const token = sessionStorage.getItem('auth_token');
     if (token) {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [navigate]);
 

@@ -59,7 +59,7 @@ function Home() {
           />
           <CourseCard
             image="./images/ReactNode.jpg"
-            title="React & Javascript"
+            title="React&Javascript"
             duration="01 March - 15 April"
             discount="150$"
             price="99$"
