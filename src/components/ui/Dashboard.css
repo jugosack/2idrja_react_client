@@ -266,6 +266,7 @@
   pointer-events: none;
   color: #333;
 }
+
 .option:hover {
   background-color: #685ed8;
 }
