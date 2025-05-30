@@ -15,7 +15,7 @@
 }
 
 .select-past {
-  background-color:#b698aa !important;
+  background-color: #b698aa !important;
   color: white;
 }
 
@@ -265,10 +265,9 @@
   transform: translateY(-50%);
   pointer-events: none;
   color: #333;
-
 }
-  .option:hover {
-    background-color: #685ed8;
+.option:hover {
+  background-color: #685ed8;
 }
 
 /* Ongoing course navigation buttons */
