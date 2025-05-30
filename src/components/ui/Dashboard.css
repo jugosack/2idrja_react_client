@@ -8,19 +8,19 @@
   height: 100vh;
   box-sizing: border-box;
 }
-.select-ongoing{
-  background-color: #B698AA !important; 
-  color: white;
 
+.select-ongoing {
+  background-color: #b698aa !important;
+  color: white;
 }
 
 .select-past {
-  background-color:#B698AA !important; 
+  background-color: #b698aa !important;
   color: white;
 }
 
 .select-upcoming {
-  background-color: #B698AA !important; 
+  background-color: #b698aa !important;
   color: white;
 }
 
@@ -265,16 +265,11 @@
   transform: translateY(-50%);
   pointer-events: none;
   color: #333;
-
-  option {
-    background-color: #b698aa;
-    color: white;
-  }
-  option:hover {
-    background-color: #685ed8;
-  }
 }
 
+.option:hover {
+  background-color: #685ed8;
+}
 
 /* Ongoing course navigation buttons */
 .course-navigation {
