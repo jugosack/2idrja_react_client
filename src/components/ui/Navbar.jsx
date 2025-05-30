@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import logo from '../icons/2drijaLogo.png';
 import userLogo from '../icons/userLogo.svg';
-
+// COMMENT
 const Navbar = ({ className = '' }) => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
