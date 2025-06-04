@@ -22,6 +22,7 @@ const Login = () => {
 
       if (!response.ok) {
         // Логирање на грешка ако е неуспешно
+        // eslint-disable-next-line
         console.log('Response not ok', response);
         const userData = await response.json();
         setError(userData.message || 'Failed to fetch current user');
@@ -29,9 +30,11 @@ const Login = () => {
       }
 
       const userData = await response.json();
+      // eslint-disable-next-line
       console.log('User data fetched:', userData); // Логирај ја добиената дата
       sessionStorage.setItem('user_data', JSON.stringify(userData));
     } catch (err) {
+      // eslint-disable-next-line
       console.error('Error fetching current user:', err);
       setError('Unable to fetch current user');
     }
@@ -69,6 +72,7 @@ const Login = () => {
         setError(data.message || 'Login failed'); // Обработка на грешки
       }
     } catch (err) {
+      // eslint-disable-next-line
       console.error('Error:', err);
       setError('Something went wrong. Please try again.'); // Генерална грешка
     } finally {

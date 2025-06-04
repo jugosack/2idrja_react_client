@@ -1,0 +1,152 @@
+.make-this-menu-gap {
+  gap: 50px;
+}
+
+.main-hamburger-button {
+  background: #8d83d8 !important;
+}
+
+.pillshape-bg {
+  background: #8d83d8;
+
+  /* box-shadow: 2px 4px 7px rgba(0, 0, 0, 0.4); */
+  border-radius: 30px;
+  min-width: 100px;
+  min-height: 50px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+}
+
+.navbar-user-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navbar-user-initials {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background-color: transparent;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* #user-infoID:hover{
+  background-color: transparent !important;
+} */
+
+/*         for dekstop and bigger          */
+@media (min-width: 992px) {
+  .navbar-user-btn-positioning {
+    position: absolute !important;
+    right: 30px;
+    top: 20px;
+  }
+}
+
+/*          for tablet and smaller            */
+@media (max-width: 991px) {
+  .navbar-user-btn-positioning {
+    position: relative !important;
+  }
+
+  #navbarSupportedContent {
+    padding-right: 15px;
+  }
+
+  .make-this-menu-gap > li {
+    flex: 0 0 auto;
+    width: auto !important;
+
+    /* max-width: fit-content; */
+  }
+
+  .pillshape-bg {
+    background: #8d83d8;
+    box-shadow: 2px 4px 7px rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    padding: 10px 16px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    align-self: flex-end;
+  }
+
+  #login-icon-btn {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #8d83d8;
+    box-shadow: 2px 4px 7px rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    align-self: flex-end;
+  }
+
+  #hamburger-icon {
+    justify-content: flex-end !important;
+  }
+
+  #user-info {
+    background-color: #8d83d8;
+    box-shadow: 2px 4px 7px rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    padding: 10px 16px !important;
+  }
+
+  .dropdown-separator {
+    display: none;
+  }
+
+  #logging-out-button-id {
+    margin-top: 10px;
+    background: #8d83d8;
+    box-shadow: 2px 4px 7px rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    padding: 10px 16px !important;
+    align-self: flex-end !important;
+  }
+
+  .make-this-menu-gap {
+    gap: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .absoluteBoxALT {
+    position: absolute;
+    right: 3%;
+    top: 80px;
+    z-index: 3;
+
+    /* backdrop-filter: blur(5px); */
+
+    display: flex;
+    border-radius: 15px;
+  }
+
+  .make-this-menu-gap > ul {
+    align-items: end;
+  }
+
+  .button-for-logging-out-drop-downALT {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
