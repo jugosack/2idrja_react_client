@@ -1,20 +1,19 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Navbar.css';
-import logo from '../icons/2drijaLogo.png';
+import './NavbarALT.css';
 import userLogo from '../icons/userLogo.svg';
 // import profilePictureTemp from '../images/Profile_img_2.png';
+import { ReactComponent as HomeIcon } from '../icons/home-svgrepo-com.svg';
 
-const Navbar = ({ className = '' }) => {
+const NavbarALT = ({ className = '' }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem('auth_token');
-    // eslint-disable-next-line
-    console.log('Token:', token);
+
     setIsAuthenticated(!!token);
     if (token) {
       fetch('http://localhost:3000/current_user', {
@@ -68,13 +67,10 @@ const Navbar = ({ className = '' }) => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-lg${className ? ` ${className}` : ''}`}>
-      <div className="container-fluid">
-        <Link className="navbar-brand" to="/">
-          <img className="logo" src={logo} alt="2DRIJA Logo" style={{ width: '80px' }} />
-        </Link>
+    <nav className={`navbar pt-3 navbar-expand-lg${className ? ` ${className}` : ''}`}>
+      <div className="container-fluid d-flex justify-content-center" id="hamburger-icon">
         <button
-          className="navbar-toggler"
+          className="navbar-toggler main-hamburger-button"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarSupportedContent"
@@ -84,76 +80,41 @@ const Navbar = ({ className = '' }) => {
         >
           <span className="navbar-toggler-icon" />
         </button>
-
-        <div className="absoluteBox">
-          <div className="collapse navbar-collapse justify-content-end align-items-center" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-lg-0 text-center">
-              <li className="nav-item">
+        <div className="absoluteBoxALT">
+          <div
+            className="collapse navbar-collapse justify-content-end align-items-center"
+            id="navbarSupportedContent"
+          >
+            <ul className="navbar-nav me-auto mb-lg-0 text-center make-this-menu-gap">
+              <li className="nav-item pillshape-bg">
                 <Link className="nav-link text-white" aria-current="page" to="/">
                   Home
+                  <HomeIcon className="home-icon" />
                 </Link>
               </li>
-              <li className="dropdownAlignmentFixing nav-item dropdown">
-                <button
-                  type="button"
-                  className="nav-link dropdown-toggle text-white btn"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Projects
-                </button>
-                <ul className="dropdown-menu colorisation">
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/projectscoding">
-                      Coding projects
-                    </Link>
-                  </li>
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/projectsresearch">
-                      Research projects
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-              <li className="nav-item dropdown dropdownAlignmentFixing">
-                <button
-                  type="button"
-                  className="nav-link dropdown-toggle text-white btn"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
+              <li className="nav-item pillshape-bg">
+                <Link className="nav-link text-white" to="/coursesfrontend">
                   Courses
-                </button>
-                <ul className="dropdown-menu colorisation">
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/coursesfrontend">
-                      Front-end
-                    </Link>
-                  </li>
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/coursesreact">
-                      React
-                    </Link>
-                  </li>
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/coursesuiux">
-                      UI/UX
-                    </Link>
-                  </li>
-                </ul>
+                </Link>
               </li>
-              <li className="nav-item">
-                <Link className="nav-link text-white" to="/about">
-                  About
+              <li className="nav-item pillshape-bg">
+                <Link className="nav-link text-white" to="/account-settings">
+                  Settings
+                </Link>
+              </li>
+              <li className="nav-item pillshape-bg">
+                <Link className="nav-link text-white" to="/dashboard">
+                  Dasboard
                 </Link>
               </li>
             </ul>
 
             <ul className="navbar-nav mb-lg-0 user-icon text-end">
-              <li id="login-icon" className="listDropdown nav-item dropdown">
+              <li id="login-icon" className="listDropdown nav-item dropdown navbar-user-btn-positioning">
                 <button
                   type="button"
                   className="nav-link dropdown-toggle text-white btn"
+                  id="login-icon-btn"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
@@ -165,7 +126,10 @@ const Navbar = ({ className = '' }) => {
                       <li className="">
                         {user && (
                           <>
-                            <li className="dropdown-item d-flex align-items-center gap-2" id="">
+                            <li
+                              className="dropdown-item d-flex align-items-center gap-2"
+
+                            >
                               {user.avatar_url ? (
                                 <img
                                   src={user.avatar_url}
@@ -185,36 +149,20 @@ const Navbar = ({ className = '' }) => {
                                   {' '}
                                   {user.last_name}
                                 </span>
-                                <span>
-                                  {user.email}
-                                </span>
+                                <span>{user.email}</span>
                               </div>
                             </li>
                             <hr className="dropdown-separator" />
                           </>
                         )}
                       </li>
+
                       <li className="">
-                        <Link className="dropdown-item" to="/dashboard">
-                          Dashboard
-                        </Link>
-                      </li>
-                      <li className="">
-                        <Link className="dropdown-item" to="/">
-                          Courses
-                        </Link>
-                      </li>
-                      <li className="">
-                        <Link className="dropdown-item" to="/account-settings">
-                          Settings
-                        </Link>
-                      </li>
-                      <li className="">
-                        <hr className="dropdown-separator" />
-                        <div className="button-for-logging-out-drop-down">
+                        <div className="button-for-logging-out-drop-downALT">
                           <button
                             type="button"
                             className="dropdown-item logging-out-button"
+                            id="logging-out-button-id"
                             onClick={handleLogout}
                           >
                             Log out
@@ -246,4 +194,4 @@ const Navbar = ({ className = '' }) => {
   );
 };
 
-export default Navbar;
+export default NavbarALT;

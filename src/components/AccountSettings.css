@@ -1,111 +1,126 @@
- 
-  .account-settings-main-div{
-    /* font-family: inherit; */
-    /* background: linear-gradient(to bottom right, #B698AA 5%, #685ED8 115%); */
-    background: linear-gradient(to bottom right, #D5C3CE 5%, #7b74d8 110%);
 
-  }
+.account-settings-main-div {
+  /* font-family: inherit; */
 
-  .settings-container {
-    max-width: 800px;
-    margin: 0 auto;
-    color: #000;
-  }
-  
-  .accountSettingsHeader {
-    /* font-weight: bold; */
-    margin-bottom: 1rem;
-  }
-  
-  .section {
-    background: rgba(255, 255, 255, 0.5);
-    padding: 2rem;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    text-align: center;
-
-  }
-  
-  .form-group-account-settings {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 1rem;
-  }
-  
-  input[type="text"],
-  input[type="password"],
-  input[type="file"] {
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ccc;
-   background-color: rgba(255, 255, 255, 0.5);
-    color: #767676;
-  }
-  
-  .submit-btn,
-  .upload-btn,
-  .edit-btn {
-    align-self: flex-end;
-    background-color: #a788f2;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
-  }
-  .upload-btn{
-    align-self: center;
-  }
-  .image-preview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4rem;
-  }
-  
-  .image-preview img {
-    height: 100px;
-    border-radius: 0.5rem;
-  }
-  
-  .form-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  /* background: linear-gradient(to bottom right, #B698AA 5%, #685ED8 115%); */
+  background: linear-gradient(to bottom right, #d5c3ce 5%, #7b74d8 110%);
 }
 
-/* .form-group-account-settings {
-  display: flex;
-  flex: 1;
-} */
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  color: #000;
+}
 
-.form-inputs {
-  flex: 3;
+.accountSettingsHeader {
+  /* font-weight: bold; */
+  margin-bottom: 1rem;
+}
+
+.password-toggle-button {
+  opacity: 0.6;
+  position: absolute;
+  left: 530px;
+  bottom: 10px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle-button img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.6;
+}
+
+.password-toggle-button:hover img {
+  opacity: 1;
+}
+
+.password-input-account-settings{
+  width: 100%;
+}
+.password-input-wrapper{
+position: relative;
+}
+
+.section-account-settings {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 2rem;
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+#section-account-settings-password-section{
+  margin-bottom: 90px;
+}
+
+.form-group-account-settings {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
-.form-actions {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  padding-left: 20px;
+input[type="text"],
+input[type="password"],
+input[type="file"] {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #767676;
 }
 
-.edit-btn,
+.submit-btn,
+.upload-btn,
+.edit-btn {
+  align-self: flex-end;
+  background-color: #a788f2;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.edit-btn {
+  padding: 8px 28px;
+}
+
 .submit-btn {
   padding: 8px 16px;
 }
 
+.upload-btn {
+  align-self: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.image-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+}
+
+.image-preview img {
+  height: 100px;
+  border-radius: 0.5rem;
+}
+
 .form-container {
   display: flex;
+  justify-content: space-between;
   gap: 20px;
-  align-items: flex-start;
   margin-bottom: 20px;
+  align-items: stretch; /* makes children equal height */
+  min-height: 400px;
 }
 
 .form-inputs {
@@ -119,60 +134,50 @@
   flex: 1;
   display: flex;
   justify-content: center;   /* horizontally center */
-  align-items: center;       /* vertically center */
+  align-items: center;
   padding-left: 20px;
-  height: 100%; 
-  
+  height: 100%;
+  margin-top: 20%;
 }
+
 .edit-button-on-right {
   display: flex;
   align-items: stretch; /* ensures .form-actions can take full height */
 }
-.form-container {
-  min-height: 100%;
-}
-.form-container {
-  display: flex;
-  gap: 20px;
-  align-items: stretch; /* makes children equal height */
-  margin-bottom: 20px;
-  min-height: 400px; /* or adjust to what looks good */
-}
 
-.form-actions {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 20px;
-  margin-top: 20%;
-}
-
-.form-and-button-container{
+.form-and-button-container {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  /* gap: 20px; */
+  width: 100%;
+  padding-bottom: 60px;
+}
+.form-button-and-api-response-maindiv{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
-.form-fields-container{
+.form-fields-container {
   min-width: 560px;
 }
 
-.joining-image-field{
+.joining-image-field {
   display: flex;
-    flex-direction: column;
-    background-color: rgba(255, 255, 255, 0.5);
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
-.upload-btn{
-  /* align-self: center; */
-}
-
-.image-placeholder{
+.image-placeholder {
   /* align-self:center;   */
-   text-align: left;
+  text-align: left;
+  padding-left: 10px;
 }
-.image-upload-container{
+
+.image-upload-container {
   display: flex;
   justify-content: center;
   align-items: center;

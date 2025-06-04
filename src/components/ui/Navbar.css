@@ -72,9 +72,17 @@
   margin: 0.5rem 0;
 }
 
+/* #user-infoID:hover{
+  background-color: transparent !important;
+} */
+
 @media screen and (max-width: 768px) {
   .hamburger {
     display: block;
+  }
+
+  .navbar-toggler-icon {
+    filter: invert(100%); /* makes it white */
   }
 
   .navigation-menu ul {
@@ -123,7 +131,7 @@
   .absoluteBox {
     position: absolute;
     right: 3%;
-    top: 100px;
+    top: 80px;
     z-index: 3;
 
     /* background-color: #14142bd6; */
@@ -180,12 +188,23 @@
     background-color: #261c2b48 !important;
   }
 
-  #navbarSupportedContent li {
-    border-bottom: 1px solid #ccc; /* Change the color as needed */
-  }
+  /* #navbarSupportedContent li {
+    border-bottom: 1px solid #ccc;
+  } */
 
+  /*
   #login-icon {
     border-top: 1px solid #ccc;
+  } */
+
+  .button-for-logging-out-drop-down {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logging-out-button {
+    width: auto !important;
   }
 
   #navbarSupportedContent li:last-child {
@@ -205,11 +224,12 @@
 }
 
 @media (min-width: 769px) {
-  .listDropdown:not(:last-child) {
-    border-bottom: 1px solid #ccc; /* or any color/style you like */
-  }
+  /* .listDropdown:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+  } */
 
   .colorisation {
+    margin-top: 15px !important;
     background: linear-gradient(to bottom right, #b698aa 5%, #685ed8 109%);
     box-shadow: 3px 4px 14px rgba(0, 0, 0, 0.4);
 
