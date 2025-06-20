@@ -93,7 +93,7 @@ const NavbarALT = ({ className = '' }) => {
                 </Link>
               </li>
               <li className="nav-item pillshape-bg">
-                <Link className="nav-link text-white" to="/coursesfrontend">
+                <Link className="nav-link text-white" to="/courses-panel">
                   Courses
                 </Link>
               </li>
@@ -127,7 +127,8 @@ const NavbarALT = ({ className = '' }) => {
                         {user && (
                           <>
                             <li
-                              className="dropdown-item d-flex align-items-center gap-2"
+                              className="dropdown-item pillshape-bg-ForNameBGOnMobileScreens
+                              d-flex align-items-center gap-2"
 
                             >
                               {user.avatar_url ? (

@@ -1,8 +1,6 @@
 
 .account-settings-main-div {
-  /* font-family: inherit; */
-
-  /* background: linear-gradient(to bottom right, #B698AA 5%, #685ED8 115%); */
+  padding-bottom: 1px;
   background: linear-gradient(to bottom right, #d5c3ce 5%, #7b74d8 110%);
 }
 

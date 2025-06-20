@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Footer from './ui/Footer';
+// import Footer from './ui/Footer';
 import Navbar from './ui/NavbarALT';
 import './AccountSettings.css';
 import UserDataLoader from './LoadUserDataFromAPI';
@@ -391,7 +391,7 @@ const AccountSettings = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

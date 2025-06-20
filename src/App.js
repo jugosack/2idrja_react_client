@@ -15,6 +15,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ErrorPage from './components/ErrorPage';
 import Dashboard from './components/ui/Dashboard'; // Додаден импорт
 import AccountSettings from './components/AccountSettings';
+import CoursesPanelPage from './components/CoursesPanelPage';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/errorpage" element={<ErrorPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/account-settings" element={<AccountSettings />} />
+        <Route path="/courses-panel" element={<CoursesPanelPage />} />
         {' '}
         {/* Додадена рута */}
 

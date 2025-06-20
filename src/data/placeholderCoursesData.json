@@ -1,0 +1,5 @@
+{
+  "tableA": [{ "name": "Entry A1" }, { "name": "Entry A2" }],
+  "tableB": [{ "name": "Entry B1" }, { "name": "Entry B2" }],
+  "tableC": [{ "name": "Entry C1" }, { "name": "Entry C2" }]
+}
