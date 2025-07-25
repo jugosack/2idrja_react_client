@@ -1,70 +1,450 @@
-.courses-panel-container {
-  padding: 2rem;
-  font-family: sans-serif;
-  background: linear-gradient(to bottom right, #6a76d3, #9ab1e3);
+/* 1) Import Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Admin-only gradient */
+body.admin-dashboard-bg {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  color: #fff;
   min-height: 100vh;
+  margin: 0;
 }
 
-.button-row {
+/* Light-theme override */
+body.light-theme.admin-dashboard-bg {
+  background: linear-gradient(to left, #685ed8, #b698aa);
+  color: #333;
+}
+
+/* reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* wrapper */
+.cpbp-dashboard-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* adjusted transparency for light theme container */
+body.light-theme .cpbp-dashboard-container {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* panel “window” style */
+.cpbp-panel {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 1rem;
   display: flex;
-  gap: 2rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.blue-button {
-  background-color: #53b6db;
-  color: white;
-  font-size: 1.2rem;
+/* light-theme panel base */
+body.light-theme .cpbp-panel {
+  background: #fff;
+  border-color: #ccc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* make nav & content panels 30% opaque */
+.cpbp-panel.nav-panel,
+.cpbp-panel.content-panel {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* and in dark mode, same transparency over dark bg */
+body.admin-dashboard-bg .cpbp-panel.nav-panel,
+body.admin-dashboard-bg .cpbp-panel.content-panel {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* header */
+.cpbp-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.cpbp-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cpbp-header-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: inherit;
+}
+
+.cpbp-add-button {
   border: none;
-  padding: 0.8rem 2rem;
-  border-radius: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  background: #28a745;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cpbp-add-button:hover {
+  background: #218838;
+}
+
+body.light-theme .cpbp-add-button {
+  background: #ffeaa7;
+  color: #2d3436;
+}
+
+body.light-theme .cpbp-add-button:hover {
+  background: #fdcb6e;
+}
+
+.cpbp-theme-button {
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(to left, #685ed8, #b698aa);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.cpbp-theme-button:hover {
+  opacity: 0.8;
+}
+
+.cpbp-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.cpbp-user-name {
+  margin-right: 0.75rem;
+  color: inherit;
+}
+
+.cpbp-profile-pic-container {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cpbp-profile-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* make the body a two-column grid */
+.cpbp-dashboard-body {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+}
+
+/* sidebar/nav */
+.cpbp-dashboard-nav {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.cpbp-nav-top {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cpbp-nav-bottom {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-left: 0;
+}
+
+.cpbp-nav-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: #ccc;
+  text-align: left;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.cpbp-nav-top .cpbp-nav-button,
+.cpbp-nav-bottom .cpbp-nav-button {
+  padding: 0.85rem 1.25rem;
+  font-size: 1rem;
+}
+
+.cpbp-nav-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.cpbp-nav-button.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-left: 4px solid #fff;
+  padding-left: calc(1.25rem - 4px);
+}
+
+body.light-theme .cpbp-nav-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+body.light-theme .cpbp-nav-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .cpbp-nav-button.active {
+  background: #b698aa;
+  color: #fff;
+  border-left-color: #b698aa;
+}
+
+/* main content */
+.cpbp-dashboard-content {
+  flex: 1;
+  padding-left: 0;
+}
+
+/* cards */
+.cpbp-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.cpbp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem 0 0.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cpbp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.cpbp-card-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.cpbp-card-title {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  color: #fff;
+  text-align: center;
+}
+
+.cpbp-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.cpbp-btn-edit,
+.cpbp-btn-delete {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.cpbp-btn-edit {
+  background: #ccc;
+  color: #000;
+}
+
+.cpbp-btn-edit:hover {
+  background: #bbb;
+}
+
+.cpbp-btn-delete {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.cpbp-btn-delete:hover {
+  background: #c0392b;
+}
+
+body.light-theme .cpbp-card {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .cpbp-card-title {
+  color: #333;
+}
+
+/* placeholder */
+.cpbp-placeholder {
+  color: #ccc;
+  font-style: italic;
+  padding: 2rem;
+}
+
+body.light-theme .cpbp-placeholder {
+  color: #666;
+}
+
+/* modal overlay */
+.cpbp-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* modal content */
+.cpbp-modal-content {
+  position: relative;
+  width: 80vw;
+  max-width: 700px;
+  min-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  color: #000;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* close */
+.cpbp-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 
-.blue-button:hover {
-  background-color: #3aa9d6;
+/* form */
+.cpbp-form-group {
+  margin-bottom: 1.25rem;
 }
 
-.courses-table {
+.cpbp-form-group label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.cpbp-form-group input,
+.cpbp-form-group textarea,
+.cpbp-form-group select {
   width: 100%;
-  border-collapse: collapse;
-  background-color: #e6f9ff;
-
-  /* border-radius: 16px; */
-  overflow: hidden;
-}
-
-.course-img {
-  width: 40px;
-  height: auto;
-}
-
-.alt-row {
-  background-color: #bde9fa;
-}
-
-input {
-  width: 100%;
-  padding: 0.3rem;
-  border: 1px solid #aaa;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  font-family: inherit;
 }
 
-.actions-cell {
+/* form buttons */
+.cpbp-form-buttons {
   display: flex;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
-.actions-cell button {
-  font-size: 0.8rem;
-  padding: 4px 8px;
+.cpbp-btn-submit,
+.cpbp-btn-cancel {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
 }
 
-.courses-table th,
-.courses-table td {
-  border: 1px solid #222;
-  padding: 6px 8px;
-  font-size: 0.85rem;
-  text-align: center;
+.cpbp-btn-submit {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.cpbp-btn-submit:hover {
+  background-color: #218838;
+}
+
+.cpbp-btn-cancel {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.cpbp-btn-cancel:hover {
+  background-color: #5a6268;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .cpbp-dashboard-body {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* ── Image‑Upload Styles ── */
+
+/* file input */
+.cpbp-modal-content input[type="file"] {
+  margin-top: 0.5rem;
+}
+
+/* preview thumbnail */
+.cpbp-modal-content img[src^="blob:"] {
+  display: block;
+  max-width: 100%;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* override only the “Upload Image” button */
+.cpbp-modal-content .cpbp-btn-submit {
+  /* make upload button blue */
+  background-color: #4a90e2;
+}
+
+.cpbp-modal-content .cpbp-btn-submit:hover {
+  background-color: #357ab8;
 }
