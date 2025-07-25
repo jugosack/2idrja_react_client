@@ -1,5 +1,5 @@
-/* eslint-disable react/no-unescaped-entities */
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import axios from 'axios';
 import './Home.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './ui/Navbar';
@@ -13,17 +13,56 @@ import WhatWeDo from './ui/WhatWeDo';
 import OurCoreBeliefs from './ui/OurCoreBeliefs';
 import WebsiteCarousel from './ui/WebsitesCarousel';
 import { ReactComponent as ArrowSVGL } from './icons/small-arrow-prev-small-svgrepo-com.svg';
+import Details from './ui/HTMLdetails';
 
 function Home() {
   const carouselRef = useRef(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const scrollNext = () => {
-    carouselRef.current.scrollBy({ left: 280, behavior: 'smooth' }); // Adjust scroll distance if needed
+    carouselRef.current?.scrollBy({ left: 280, behavior: 'smooth' });
   };
 
   const scrollPrev = () => {
-    carouselRef.current.scrollBy({ left: -280, behavior: 'smooth' }); // Adjust scroll distance if needed
+    carouselRef.current?.scrollBy({ left: -280, behavior: 'smooth' });
   };
+
+  const openDetails = (course) => setSelectedCourse(course);
+  const closeDetails = () => setSelectedCourse(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = sessionStorage.getItem('token');
+      let isAdminFlag = false;
+
+      if (token) {
+        try {
+          const res = await axios.get('http://localhost:3000/current_user', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          console.log('User role:', res.data.role);
+          isAdminFlag = res.data.role === 'admin';
+          setIsAdmin(isAdminFlag);
+        } catch (error) {
+          console.error('Error fetching current_user:', error);
+          setIsAdmin(false);
+        }
+      }
+
+      try {
+        const courseRes = await axios.get('http://localhost:3000/courses');
+        setCourses(courseRes.data);
+      } catch (err) {
+        console.error('Error fetching courses:', err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log('Final isAdmin in Home:', isAdmin);
 
   return (
     <>
@@ -31,83 +70,36 @@ function Home() {
         <Navbar />
         <Hero />
       </div>
+
       <div className="d-flex flex-column">
-
         <OurCoreBeliefs />
-
       </div>
-      <div className="carousel-container">
-        {/* Previous button comes first */}
-        <button
-          className="carousel-control-prev"
-          type="button"
-          onClick={scrollPrev}
-          aria-label="Previous slide"
-        >
-          <ArrowSVGL className="svgCarouselArrowCourse" />
 
+      <div className="carousel-container">
+        <button className="carousel-control-prev" type="button" onClick={scrollPrev}>
+          <ArrowSVGL className="svgCarouselArrowCourse" />
         </button>
 
         <div className="carousel-wrapper" ref={carouselRef}>
-          <CourseCard
-            image="/images/html-wallpaper.jpg"
-            title="HTML Course"
-            duration="01 January - 01 February"
-            discount="120$"
-            price="75$"
-            places="2 places left"
-          />
-          <CourseCard
-            image="./images/ReactNode.jpg"
-            title="React&Javascript"
-            duration="01 March - 15 April"
-            discount="150$"
-            price="99$"
-            places="4 places left"
-          />
-          <CourseCard
-            image="./images/java.jpg"
-            title="Java"
-            duration="01 November - 15 November"
-            discount="150$"
-            price="99$"
-            places="13 places left"
-          />
-          <CourseCard
-            image="./images/c-wallpaper.webp"
-            title="C#"
-            duration="01 September - 31 October"
-            discount="200$"
-            price="150$"
-            places="7 places left"
-          />
-          <CourseCard
-            image="./images/cssfix.png"
-            title="CSS Course"
-            duration="01 November - 15 November"
-            discount="150$"
-            price="99$"
-            places="13 places left"
-          />
-          <CourseCard
-            image="./images/rrails.png"
-            title="Ruby On Rails"
-            duration="01 November - 15 November"
-            discount="150$"
-            price="99$"
-            places="13 places left"
-          />
+          {courses.map((course) => (
+            <CourseCard
+              key={course.id}
+              image={course.image_url || '/default-course.jpg'}
+              title={course.course_name}
+              description={course.description}
+              duration={`${course.start_date} - ${course.end_date}`}
+              price={`€${course.fee}`}
+              discount=""
+              places={`${course.places_left} places left`}
+              onDetailsClick={() => openDetails(course)}
+              isAdmin={isAdmin}
+              courseId={course.id}
+            />
+          ))}
         </div>
 
-        {/* Next button, now rotated to point right */}
-        <button
-          className="carousel-control-next"
-          type="button"
-          onClick={scrollNext}
-          aria-label="Next slide"
-        >
+        <button className="carousel-control-next" type="button" onClick={scrollNext}>
           <ArrowSVGL className="svgCarouselArrowCourse" />
-
         </button>
       </div>
 
@@ -115,9 +107,10 @@ function Home() {
       <WebsiteCarousel />
       <OurMisiion />
       <WhatWeDo />
-
       <TestimoniesCarousel />
       <Footer />
+
+      {selectedCourse && <Details course={selectedCourse} onClose={closeDetails} />}
     </>
   );
 }

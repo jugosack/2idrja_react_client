@@ -1,0 +1,156 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.popup-content {
+  background: white;
+  padding: 25px 25px 40px 25px;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;        /* Ограничува висина за scrollbar */
+  overflow-y: auto;        /* Скрол ако е висината поголема */
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.details-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.close-btnn {
+  position: absolute;
+  top: 7px;             /* малку подалеку од горниот раб */
+  right: -40%;          /* малку подалеку од десниот раб */
+  background: transparent; /* без background */
+  border: none;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: black;          /* црна боја */
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  user-select: none;
+  transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+  color: #555;           /* полесна нијанса на црна при hover */
+}
+
+.button {
+  margin-top: 15px;
+  background-color: #ff6f00;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+/* Аккордеон секции */
+.accordion-section {
+  margin-bottom: 1em;
+  text-align: left;      /* За подобар изглед на листите */
+}
+
+/* Копче за отворање/затворање аккордеон */
+.accordion-toggle {
+  background-color: #ee6a13;
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  cursor: pointer;
+  font-size: 1em;
+  width: 100%;
+  text-align: left;
+  border-radius: 4px;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-toggle:hover {
+  background-color: #cc580d;
+}
+
+/* Содржина на аккордеоните - листи */
+.accordion-content {
+  margin-top: 0.5em;
+  padding-left: 1em;
+  list-style-type: disc;
+  color: #333;
+}
+
+/* Вложени листи за повеќе информации */
+.more-info-content ul {
+  padding-left: 1em;
+}
+
+.more-info-content ul ul {
+  list-style-type: circle;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+/* Остава копчето "Close" од component посебно */
+.popup-content > button:last-of-type {
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+/* Контенер за копчето Enroll - центриран и со простор одозгора */
+.enroll-container {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+/* Копчето Enroll Now */
+.enroll-btn {
+  background-color: #918277; /* иста боја како аккордеон копчето */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+  width: 100%; /* цела ширина за popup */
+}
+
+.enroll-btn:hover {
+  background-color: #5b514a; /* потемна нијанса при hover */
+}
+
+.show-more-btn {
+  background: none;
+  border: none;
+  color: #c6660b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 5px;
+  padding: 0;
+}
+
+.show-more-btn:hover {
+  text-decoration: underline;
+}

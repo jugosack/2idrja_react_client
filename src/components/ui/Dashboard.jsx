@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './Dashboard.css';
+import Details from './HTMLdetails';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [courseIndex, setCourseIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('ongoing');
+  const [showPopup, setShowPopup] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
   const coursesPerPage = 3;
 
-  // Dynamically add Font Awesome
   useEffect(() => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -142,9 +145,7 @@ const Dashboard = () => {
         {/* Courses Section */}
         <div className="ongoing-courses">
           <div className="dropdown-wrapper">
-            <span className="category-label">
-              {categoryLabels[selectedCategory]}
-            </span>
+            <span className="category-label">{categoryLabels[selectedCategory]}</span>
             <div className="arrow-only-select-wrapper">
               <select
                 className={`arrow-only-select select-${selectedCategory}`}
@@ -155,9 +156,7 @@ const Dashboard = () => {
                 }}
               >
                 <option value="ongoing">Ongoing Courses</option>
-
                 <option value="past">Past Courses</option>
-
                 <option value="upcoming">Upcoming Courses</option>
               </select>
               <i className="fas fa-chevron-down custom-arrow-icon" />
@@ -183,7 +182,16 @@ const Dashboard = () => {
                     {selectedCategory === 'past' ? 'Completed' : 'Progress 33%'}
                   </div>
                   <div className="days-left">{course.daysLeft}</div>
-                  <button type="button" className="course-info-btn">ⓘ</button>
+                  <button
+                    type="button"
+                    className="course-info-btn"
+                    onClick={() => {
+                      setSelectedCourse(course);
+                      setShowPopup(true);
+                    }}
+                  >
+                    ⓘ
+                  </button>
                 </div>
               ))}
             </div>
@@ -214,7 +222,7 @@ const Dashboard = () => {
         <div className="calendar">
           <div className="calendar-month">
             <button type="button" className="month-btn">Prev</button>
-            <h3>May 2025</h3>
+            <h3>June 2025</h3>
             <button type="button" className="month-btn">Next</button>
           </div>
           <div className="calendar-grid">
@@ -224,8 +232,8 @@ const Dashboard = () => {
             {[...Array(30)].map((_, i) => {
               const today = new Date();
               const isToday = today.getDate() === i + 1
-                    && today.getMonth() === 4
-                    && today.getFullYear() === 2025;
+                && today.getMonth() === 5 - 1 // May = 4, JavaScript month is zero-based
+                && today.getFullYear() === 2025;
               return (
                 <div
                   key={`day-${i + 1}`}
@@ -256,6 +264,14 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
+
+      {/* Details Popup */}
+      {showPopup && selectedCourse && (
+        <Details
+          course={selectedCourse}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
     </div>
   );
 };
