@@ -1,14 +1,18 @@
 /* eslint-disable jsx-a11y/label-has-associated-control, no-unused-vars, no-nested-ternary */
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import './CoursesPanelPage.css';
+/* eslint-disable */
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import { loadUsers } from "./Users/UsersServices";
+import UsersTable from "./Users/UsersTable";
+import AddUserForm from "./Users/AddUserForm";
+import "./CoursesPanelPage.css";
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = "http://localhost:3000";
 
 function parseJwt(token) {
   try {
-    const base64 = token.split('.')[1];
-    const json = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+    const base64 = token.split(".")[1];
+    const json = atob(base64.replace(/-/g, "+").replace(/_/g, "/"));
     return JSON.parse(json);
   } catch {
     return null;
@@ -16,24 +20,28 @@ function parseJwt(token) {
 }
 
 const emptyForm = {
-  course_name: '',
-  start_date: '',
-  end_date: '',
-  description: '',
-  benefits: '',
-  target_audience: '',
-  additional_info: '',
-  fee: '',
-  max_students: '',
+  course_name: "",
+  start_date: "",
+  end_date: "",
+  description: "",
+  benefits: "",
+  target_audience: "",
+  additional_info: "",
+  fee: "",
+  max_students: "",
   enrolled_students: 0,
-  course_status: 'planned',
-  rating: '',
-  general_description: '',
+  course_status: "planned",
+  rating: "",
+  general_description: "",
 };
 
 export default function CoursesPanelPage() {
-  const [activeSection, setActiveSection] = useState('Courses');
-  const [user, setUser] = useState({ first_name: '', last_name: '', avatar_url: '' });
+  const [activeSection, setActiveSection] = useState("Courses");
+  const [user, setUser] = useState({
+    first_name: "",
+    last_name: "",
+    avatar_url: "",
+  });
   const [courses, setCourses] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -41,15 +49,17 @@ export default function CoursesPanelPage() {
   const [readOnly, setReadOnly] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [isLightTheme, setIsLightTheme] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState('');
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [users, setUsers] = useState([]);
+  const [showAddUserModal, setShowAddUserModal] = useState(false);
 
-  const sections = ['Courses', 'Users', 'Instructors'];
+  const sections = ["Courses", "Users", "Instructors"];
 
   const getAuthHeaders = () => {
-    const token = sessionStorage.getItem('auth_token');
+    const token = sessionStorage.getItem("auth_token");
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
@@ -61,35 +71,42 @@ export default function CoursesPanelPage() {
   }, []);
 
   useEffect(() => {
-    document.body.classList.add('admin-dashboard-bg');
-    return () => document.body.classList.remove('admin-dashboard-bg');
+    document.body.classList.add("admin-dashboard-bg");
+    return () => document.body.classList.remove("admin-dashboard-bg");
   }, []);
 
   useEffect(() => {
-    document.body.classList.toggle('light-theme', isLightTheme);
+    document.body.classList.toggle("light-theme", isLightTheme);
   }, [isLightTheme]);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('auth_token');
+    const token = sessionStorage.getItem("auth_token");
     if (!token) return;
     const payload = parseJwt(token);
     if (payload?.first_name) {
       setUser({
         first_name: payload.first_name,
         last_name: payload.last_name,
-        avatar_url: payload.avatar_url || '',
+        avatar_url: payload.avatar_url || "",
       });
     }
   }, []);
 
   useEffect(() => {
-    if (activeSection === 'Courses') loadCourses();
+    if (activeSection === "Courses") loadCourses();
+    if (activeSection === "Users") {
+      loadUsers()
+        .then(setUsers)
+        .catch(() => setUsers([]));
+    }
   }, [activeSection, loadCourses]);
 
-  const goHome = () => { window.location.href = '/'; };
+  const goHome = () => {
+    window.location.href = "/";
+  };
   const handleLogout = () => {
-    sessionStorage.removeItem('auth_token');
-    window.location.href = '/login';
+    sessionStorage.removeItem("auth_token");
+    window.location.href = "/login";
   };
 
   const handleChange = (e) => {
@@ -98,14 +115,18 @@ export default function CoursesPanelPage() {
   };
 
   const openAddModal = () => {
-    setIsEditing(false);
-    setEditingId(null);
-    setForm(emptyForm);
-    setReadOnly(false);
-    setSelectedFile(null);
-    setPreviewUrl('');
-    setErrorMessage('');
-    setShowModal(true);
+    if (activeSection === "Users") {
+      setShowAddUserModal(true);
+    } else {
+      setIsEditing(false);
+      setEditingId(null);
+      setForm(emptyForm);
+      setReadOnly(false);
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setErrorMessage("");
+      setShowModal(true);
+    }
   };
 
   const openEditModal = (course) => {
@@ -128,21 +149,21 @@ export default function CoursesPanelPage() {
     });
     setReadOnly(true);
     setSelectedFile(null);
-    setPreviewUrl('');
-    setErrorMessage('');
+    setPreviewUrl("");
+    setErrorMessage("");
     setShowModal(true);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage('');
-    // coerce numeric fields
+    setErrorMessage("");
+   
     const payloadForm = {
       ...form,
       fee: parseFloat(form.fee) || 0,
       max_students: parseInt(form.max_students, 10) || 0,
       enrolled_students: form.enrolled_students,
-      rating: form.rating !== '' ? parseFloat(form.rating) : null,
+      rating: form.rating !== "" ? parseFloat(form.rating) : null,
     };
     try {
       if (isEditing) {
@@ -162,7 +183,9 @@ export default function CoursesPanelPage() {
       loadCourses();
     } catch (err) {
       console.error(err);
-      setErrorMessage('Failed to save course. Please check the console for details.');
+      setErrorMessage(
+        "Failed to save course. Please check the console for details.",
+      );
     }
   };
 
@@ -175,48 +198,73 @@ export default function CoursesPanelPage() {
 
   const handleImageUpload = async () => {
     if (!selectedFile || !editingId) return;
-    setErrorMessage('');
+    setErrorMessage("");
     const data = new FormData();
-    data.append('image', selectedFile);
+    data.append("image", selectedFile);
     try {
-      await axios.post(
-        `${API_BASE}/courses/${editingId}/upload_image`,
-        data,
-        { headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() } },
-      );
+      await axios.post(`${API_BASE}/courses/${editingId}/upload_image`, data, {
+        headers: { "Content-Type": "multipart/form-data", ...getAuthHeaders() },
+      });
       setSelectedFile(null);
-      setPreviewUrl('');
+      setPreviewUrl("");
       loadCourses();
     } catch (err) {
       console.error(err);
-      setErrorMessage('Image upload failed. Please check the console for details.');
+      setErrorMessage(
+        "Image upload failed. Please check the console for details.",
+      );
     }
   };
 
-  const modalTitle = isEditing ? (readOnly ? 'Course Details' : 'Edit Course') : 'Add Course';
+  const handleUserAdded = async () => {
+    try {
+      const updatedUsers = await loadUsers();
+      setUsers(updatedUsers);
+    } catch (error) {
+      console.error('Error refreshing users:', error);
+    }
+  };
+
+  const modalTitle = isEditing
+    ? readOnly
+      ? "Course Details"
+      : "Edit Course"
+    : "Add Course";
 
   return (
     <div className="cpbp-dashboard-container">
       <header className="cpbp-dashboard-header">
         <div className="cpbp-header-left">
           <span className="cpbp-header-title">Admin Dashboard</span>
-          <button type="button" className="cpbp-add-button" onClick={openAddModal}>
-            {activeSection === 'Instructors' ? 'Add Instructor' : 'Add Course'}
+          <button
+            type="button"
+            className="cpbp-add-button"
+            onClick={openAddModal}
+          >
+            {activeSection === "Instructors" ? "Add Instructor" : activeSection === "Users" ? "Add User" : "Add Course"}
           </button>
-          <button type="button" className="cpbp-theme-button" onClick={() => setIsLightTheme((t) => !t)}>
-            {isLightTheme ? 'Dark Theme' : 'Light Theme'}
+          <button
+            type="button"
+            className="cpbp-theme-button"
+            onClick={() => setIsLightTheme((t) => !t)}
+          >
+            {isLightTheme ? "Dark Theme" : "Light Theme"}
           </button>
         </div>
         <div className="cpbp-header-right">
           <span className="cpbp-user-name">
-            {user.first_name}
-            {' '}
-            {user.last_name}
+            {user.first_name} {user.last_name}
           </span>
           <div className="cpbp-profile-pic-container">
-            {user.avatar_url
-              ? <img src={user.avatar_url} alt="avatar" className="cpbp-profile-pic" />
-              : <span className="cpbp-user-icon">👤</span>}
+            {user.avatar_url ? (
+              <img
+                src={user.avatar_url}
+                alt="avatar"
+                className="cpbp-profile-pic"
+              />
+            ) : (
+              <span className="cpbp-user-icon">👤</span>
+            )}
           </div>
         </div>
       </header>
@@ -229,7 +277,7 @@ export default function CoursesPanelPage() {
                 <button
                   type="button"
                   key={sec}
-                  className={`cpbp-nav-button${activeSection === sec ? ' active' : ''}`}
+                  className={`cpbp-nav-button${activeSection === sec ? " active" : ""}`}
                   onClick={() => setActiveSection(sec)}
                 >
                   {sec}
@@ -237,38 +285,56 @@ export default function CoursesPanelPage() {
               ))}
             </div>
             <div className="cpbp-nav-bottom">
-              <button type="button" className="cpbp-nav-button" onClick={goHome}>Home</button>
-              <button type="button" className="cpbp-nav-button" onClick={handleLogout}>Logout</button>
+              <button
+                type="button"
+                className="cpbp-nav-button"
+                onClick={goHome}
+              >
+                Home
+              </button>
+              <button
+                type="button"
+                className="cpbp-nav-button"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
             </div>
           </nav>
         </div>
 
         <div className="cpbp-panel content-panel">
           <main className="cpbp-dashboard-content">
-            {activeSection === 'Courses' ? (
+            {activeSection === "Courses" ? (
               <div className="cpbp-cards-container">
                 {courses.map((course) => (
                   <div key={course.id} className="cpbp-card">
                     <img
-                      src={course.image_url || '/default-course.jpg'}
+                      src={course.image_url || "/default-course.jpg"}
                       alt={course.course_name}
                       className="cpbp-card-image"
                     />
                     <h3 className="cpbp-card-title">{course.course_name}</h3>
                     <div className="cpbp-card-actions">
-                      <button type="button" className="cpbp-btn-edit" onClick={() => openEditModal(course)}>
+                      <button
+                        type="button"
+                        className="cpbp-btn-edit"
+                        onClick={() => openEditModal(course)}
+                      >
                         Details
                       </button>
-                      <button type="button" className="cpbp-btn-delete">Delete</button>
+                      <button type="button" className="cpbp-btn-delete">
+                        Delete
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
+            ) : activeSection === "Users" ? (
+              <UsersTable users={users} onUserUpdate={setUsers} />
             ) : (
               <p className="cpbp-placeholder">
-                {activeSection}
-                {' '}
-                view not implemented yet.
+                {activeSection} view not implemented yet.
               </p>
             )}
           </main>
@@ -278,9 +344,17 @@ export default function CoursesPanelPage() {
       {showModal && (
         <div className="cpbp-modal-overlay">
           <div className="cpbp-modal-content">
-            <button type="button" className="cpbp-modal-close" onClick={() => setShowModal(false)}>×</button>
-            <h2 style={{ marginBottom: '1rem' }}>{modalTitle}</h2>
-            {errorMessage && <div className="cpbp-error-message">{errorMessage}</div>}
+            <button
+              type="button"
+              className="cpbp-modal-close"
+              onClick={() => setShowModal(false)}
+            >
+              ×
+            </button>
+            <h2 style={{ marginBottom: "1rem" }}>{modalTitle}</h2>
+            {errorMessage && (
+              <div className="cpbp-error-message">{errorMessage}</div>
+            )}
             <form className="cpbp-form" onSubmit={handleSubmit}>
               <div className="cpbp-form-group">
                 <label htmlFor="course_name">Course Name</label>
@@ -426,36 +500,69 @@ export default function CoursesPanelPage() {
                     disabled={readOnly}
                   />
                   {previewUrl && (
-                  <img
-                    src={previewUrl}
-                    alt="Preview"
-                    style={{
-                      display: 'block', maxWidth: '100%', marginTop: '0.5rem', borderRadius: '4px',
-                    }}
-                  />
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      style={{
+                        display: "block",
+                        maxWidth: "100%",
+                        marginTop: "0.5rem",
+                        borderRadius: "4px",
+                      }}
+                    />
                   )}
                   <button
                     type="button"
                     className="cpbp-btn-submit"
                     onClick={handleImageUpload}
                     disabled={!selectedFile || readOnly}
-                    style={{ marginTop: '0.5rem' }}
+                    style={{ marginTop: "0.5rem" }}
                   >
                     Upload Image
                   </button>
                 </div>
               )}
-              <div className="cpbp-form-buttons" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div
+                className="cpbp-form-buttons"
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
                 {isEditing && readOnly && (
-                  <button type="button" className="cpbp-btn-edit" onClick={() => setReadOnly(false)}>Edit</button>
+                  <button
+                    type="button"
+                    className="cpbp-btn-edit"
+                    onClick={() => setReadOnly(false)}
+                  >
+                    Edit
+                  </button>
                 )}
-                <button type="button" className="cpbp-btn-cancel" onClick={() => setShowModal(false)}>Cancel</button>
-                {!isEditing && <button type="submit" className="cpbp-btn-submit">Create</button>}
-                {isEditing && !readOnly && <button type="submit" className="cpbp-btn-submit">Save Changes</button>}
+                <button
+                  type="button"
+                  className="cpbp-btn-cancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+                {!isEditing && (
+                  <button type="submit" className="cpbp-btn-submit">
+                    Create
+                  </button>
+                )}
+                {isEditing && !readOnly && (
+                  <button type="submit" className="cpbp-btn-submit">
+                    Save Changes
+                  </button>
+                )}
               </div>
             </form>
           </div>
         </div>
+      )}
+
+      {showAddUserModal && (
+        <AddUserForm
+          onClose={() => setShowAddUserModal(false)}
+          onUserAdded={handleUserAdded}
+        />
       )}
     </div>
   );
