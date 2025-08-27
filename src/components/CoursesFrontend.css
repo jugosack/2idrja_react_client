@@ -3,7 +3,86 @@
   object-fit: cover !important;
 }
 
+.instructor-section {
+  display: flex;
+  align-items: stretch;
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+}
+
+.instructor-image-container {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  flex: 1;
+}
+
+.instructor-image {
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+.instructor-text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.instructor-section .col-lg-4 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.instructor-section .col-lg-7 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.instructor-section .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.instructor-section .col-lg-4,
+.instructor-section .col-lg-7 {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.instructor-section:nth-child(even) .col-lg-7 {
+  padding-right: 2rem;
+}
+
+.instructor-section:nth-child(odd) .col-lg-7 {
+  padding-left: 2rem;
+}
+
+/* Alternating instructor layout */
+.instructor-left .instructor-text-content {
+  padding-left: 2rem;
+}
+
+.instructor-right .instructor-text-content {
+  padding-right: 2rem;
+}
+
 @media (max-width: 991px) {
+  .instructor-section {
+    margin-left: 0.5rem;
+    margin-right: 0.25rem;
+  }
+
+  /* Remove the alternating spacing on mobile */
+  .instructor-section:nth-child(even) .col-lg-7,
+  .instructor-section:nth-child(odd) .col-lg-7 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
   /* Set image first */
   .d-flex.flex-column.col-lg-4.col-12 {
     order: -2; /* Moves image to the top */
@@ -19,5 +98,29 @@
   /* Set description third */
   .d-flex.flex-column.col-lg-7.col-12 p {
     text-align: left;
+  }
+
+  /* Mobile image sizing */
+  .instructor-image-container {
+    height: 300px;
+    width: 100%;
+  }
+
+  .instructor-image {
+    height: 300px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Smaller mobile image sizing */
+  .instructor-image-container {
+    height: 250px;
+    width: 100%;
+  }
+
+  .instructor-image {
+    height: 250px;
+    width: 100%;
   }
 }
