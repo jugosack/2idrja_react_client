@@ -2,10 +2,19 @@
 /* eslint-disable */
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { loadUsers } from "./Users/UsersServices";
 import UsersTable from "./Users/UsersTable";
 import AddUserForm from "./Users/AddUserForm";
+import InstructorAddEditModal from "../modals/InstructorAddEditModal";
+import {
+  getInstructors,
+  createInstructor,
+  updateInstructor,
+  deleteInstructor,
+} from "../services/InstructorService";
 import "./CoursesPanelPage.css";
+import "../modals/modals.css";
 
 const API_BASE = "http://localhost:3000";
 
@@ -36,6 +45,7 @@ const emptyForm = {
 };
 
 export default function CoursesPanelPage() {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("Courses");
   const [user, setUser] = useState({
     first_name: "",
@@ -55,6 +65,22 @@ export default function CoursesPanelPage() {
   const [previewUrl, setPreviewUrl] = useState("");
   const [users, setUsers] = useState([]);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
+  const [instructors, setInstructors] = useState([]);
+  const [showInstructorModal, setShowInstructorModal] = useState(false);
+  const [editingInstructorId, setEditingInstructorId] = useState(null);
+  const [isInstructorReadOnly, setIsInstructorReadOnly] = useState(false);
+  const [instructorForm, setInstructorForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    course_ids: [],
+    course_name: "",
+    expertise: "",
+    description: "",
+  });
+  const [showDeleteInstructorModal, setShowDeleteInstructorModal] =
+    useState(false);
+  const [instructorToDelete, setInstructorToDelete] = useState(null);
 
   const sections = ["Courses", "Users", "Instructors"];
 
@@ -99,14 +125,19 @@ export default function CoursesPanelPage() {
         .then(setUsers)
         .catch(() => setUsers([]));
     }
+    if (activeSection === "Instructors") {
+      getInstructors()
+        .then(setInstructors)
+        .catch(() => setInstructors([]));
+    }
   }, [activeSection, loadCourses]);
 
   const goHome = () => {
-    window.location.href = "/";
+    navigate("/");
   };
   const handleLogout = () => {
     sessionStorage.removeItem("auth_token");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   const handleChange = (e) => {
@@ -114,9 +145,16 @@ export default function CoursesPanelPage() {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  const handleInstructorChange = (e) => {
+    const { name, value } = e.target;
+    setInstructorForm((f) => ({ ...f, [name]: value }));
+  };
+
   const openAddModal = () => {
     if (activeSection === "Users") {
       setShowAddUserModal(true);
+    } else if (activeSection === "Instructors") {
+      openInstructorAddModal();
     } else {
       setIsEditing(false);
       setEditingId(null);
@@ -157,7 +195,7 @@ export default function CoursesPanelPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
-   
+
     const payloadForm = {
       ...form,
       fee: parseFloat(form.fee) || 0,
@@ -170,13 +208,13 @@ export default function CoursesPanelPage() {
         await axios.patch(
           `${API_BASE}/courses/${editingId}`,
           { course: payloadForm },
-          { headers: getAuthHeaders() },
+          { headers: getAuthHeaders() }
         );
       } else {
         await axios.post(
           `${API_BASE}/courses`,
           { course: payloadForm },
-          { headers: getAuthHeaders() },
+          { headers: getAuthHeaders() }
         );
       }
       setShowModal(false);
@@ -184,7 +222,7 @@ export default function CoursesPanelPage() {
     } catch (err) {
       console.error(err);
       setErrorMessage(
-        "Failed to save course. Please check the console for details.",
+        "Failed to save course. Please check the console for details."
       );
     }
   };
@@ -211,7 +249,7 @@ export default function CoursesPanelPage() {
     } catch (err) {
       console.error(err);
       setErrorMessage(
-        "Image upload failed. Please check the console for details.",
+        "Image upload failed. Please check the console for details."
       );
     }
   };
@@ -221,7 +259,145 @@ export default function CoursesPanelPage() {
       const updatedUsers = await loadUsers();
       setUsers(updatedUsers);
     } catch (error) {
-      console.error('Error refreshing users:', error);
+      console.error("Error refreshing users:", error);
+    }
+  };
+
+  const handleInstructorSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    try {
+      if (editingInstructorId) {
+        await updateInstructor(
+          editingInstructorId,
+          instructorForm,
+          selectedFile
+        );
+      } else {
+        await createInstructor(instructorForm, selectedFile);
+      }
+      setShowInstructorModal(false);
+      setEditingInstructorId(null);
+      setInstructorForm({
+        first_name: "",
+        last_name: "",
+        email: "",
+        course_ids: [],
+        course_name: "",
+        expertise: "",
+        description: "",
+      });
+      setSelectedFile(null);
+      setPreviewUrl("");
+      getInstructors().then(setInstructors);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage(
+        "Failed to save instructor. Please check the console for details."
+      );
+    }
+  };
+
+  const openInstructorAddModal = () => {
+    // Ensure courses are loaded before opening modal
+    if (courses.length === 0) {
+      loadCourses().then(() => {
+        setIsInstructorReadOnly(false);
+        setEditingInstructorId(null);
+        setInstructorForm({
+          first_name: "",
+          last_name: "",
+          email: "",
+          course_ids: [],
+          course_name: "",
+          expertise: "",
+          description: "",
+        });
+        setSelectedFile(null);
+        setPreviewUrl("");
+        setErrorMessage("");
+        setShowInstructorModal(true);
+      });
+    } else {
+      setIsInstructorReadOnly(false);
+      setEditingInstructorId(null);
+      setInstructorForm({
+        first_name: "",
+        last_name: "",
+        email: "",
+        course_ids: [],
+        course_name: "",
+        expertise: "",
+        description: "",
+      });
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setErrorMessage("");
+      setShowInstructorModal(true);
+    }
+  };
+
+  const openInstructorEditModal = (instructor) => {
+    // Ensure courses are loaded before opening modal
+    if (courses.length === 0) {
+      loadCourses().then(() => {
+        setIsInstructorReadOnly(true);
+        setEditingInstructorId(instructor.id);
+        setInstructorForm({
+          first_name: instructor.first_name || "",
+          last_name: instructor.last_name || "",
+          email: instructor.email || "",
+          course_ids: instructor.course_ids || [],
+          course_name: instructor.course_name || "",
+          expertise: instructor.expertise || "",
+          description: instructor.description || "",
+        });
+        setSelectedFile(null);
+        setPreviewUrl("");
+        setErrorMessage("");
+        setShowInstructorModal(true);
+      });
+    } else {
+      setIsInstructorReadOnly(true);
+      setEditingInstructorId(instructor.id);
+      setInstructorForm({
+        first_name: instructor.first_name || "",
+        last_name: instructor.last_name || "",
+        email: instructor.email || "",
+        course_ids: instructor.course_ids || [],
+        course_name: instructor.course_name || "",
+        expertise: instructor.expertise || "",
+        description: instructor.description || "",
+      });
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setErrorMessage("");
+      setShowInstructorModal(true);
+    }
+  };
+
+  const handleInstructorEdit = () => {
+    setIsInstructorReadOnly(false);
+  };
+
+  const handleInstructorDelete = async (instructor) => {
+    setInstructorToDelete(instructor);
+    setShowDeleteInstructorModal(true);
+  };
+
+  const confirmDeleteInstructor = async () => {
+    if (!instructorToDelete) return;
+
+    try {
+      await deleteInstructor(instructorToDelete.id);
+      getInstructors().then(setInstructors);
+      setShowDeleteInstructorModal(false);
+      setInstructorToDelete(null);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage(
+        "Failed to delete instructor. Please check the console for details."
+      );
     }
   };
 
@@ -241,7 +417,11 @@ export default function CoursesPanelPage() {
             className="cpbp-add-button"
             onClick={openAddModal}
           >
-            {activeSection === "Instructors" ? "Add Instructor" : activeSection === "Users" ? "Add User" : "Add Course"}
+            {activeSection === "Instructors"
+              ? "Add Instructor"
+              : activeSection === "Users"
+              ? "Add User"
+              : "Add Course"}
           </button>
           <button
             type="button"
@@ -277,7 +457,9 @@ export default function CoursesPanelPage() {
                 <button
                   type="button"
                   key={sec}
-                  className={`cpbp-nav-button${activeSection === sec ? " active" : ""}`}
+                  className={`cpbp-nav-button${
+                    activeSection === sec ? " active" : ""
+                  }`}
                   onClick={() => setActiveSection(sec)}
                 >
                   {sec}
@@ -332,6 +514,41 @@ export default function CoursesPanelPage() {
               </div>
             ) : activeSection === "Users" ? (
               <UsersTable users={users} onUserUpdate={setUsers} />
+            ) : activeSection === "Instructors" ? (
+              <div className="cpbp-cards-container">
+                {instructors.map((instructor) => (
+                  <div
+                    key={instructor.id}
+                    className="cpbp-card instructor-card"
+                  >
+                    <img
+                      src={instructor.profile_pic_url || "/default-avatar.jpg"}
+                      alt={`${instructor.first_name} ${instructor.last_name}`}
+                      className="cpbp-card-image"
+                    />
+                    <h3 className="cpbp-card-title">{`${instructor.first_name} ${instructor.last_name}`}</h3>
+                    <p className="cpbp-card-description">
+                      {instructor.course_name || "No course assigned"}
+                    </p>
+                    <div className="cpbp-card-actions">
+                      <button
+                        type="button"
+                        className="cpbp-btn-edit"
+                        onClick={() => openInstructorEditModal(instructor)}
+                      >
+                        Details
+                      </button>
+                      <button
+                        type="button"
+                        className="cpbp-btn-delete"
+                        onClick={() => handleInstructorDelete(instructor)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : (
               <p className="cpbp-placeholder">
                 {activeSection} view not implemented yet.
@@ -563,6 +780,80 @@ export default function CoursesPanelPage() {
           onClose={() => setShowAddUserModal(false)}
           onUserAdded={handleUserAdded}
         />
+      )}
+
+      {showInstructorModal && (
+        <InstructorAddEditModal
+          open={showInstructorModal}
+          onClose={() => setShowInstructorModal(false)}
+          instructorForm={instructorForm}
+          isEditing={!!editingInstructorId}
+          readOnly={isInstructorReadOnly}
+          errorMessage={errorMessage}
+          instructorPhotoPreview={previewUrl}
+          handleInstructorChange={handleInstructorChange}
+          handlePhotoChange={handleFileChange}
+          handleSubmit={handleInstructorSubmit}
+          handleEdit={handleInstructorEdit}
+          courses={courses}
+        />
+      )}
+
+      {showDeleteInstructorModal && instructorToDelete && (
+        <div className="cpbp-modal-overlay">
+          <div className="cpbp-delete-modal-container">
+            <div className="cpbp-delete-modal-content">
+              <div className="cpbp-delete-modal-header">
+                <div className="cpbp-delete-icon-container">
+                  <svg
+                    className="cpbp-delete-icon"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2L1 21h22L12 2zm0 3.17L19.83 19H4.17L12 5.17zM11 16h2v2h-2zm0-6h2v4h-2z" />
+                  </svg>
+                </div>
+                <div className="cpbp-delete-modal-body">
+                  <h3 className="cpbp-delete-title">Delete Instructor</h3>
+                  <div className="cpbp-delete-message-container">
+                    <p className="cpbp-delete-message">
+                      Are you sure you want to delete instructor{" "}
+                      <span className="cpbp-delete-item-name">
+                        {instructorToDelete.first_name}{" "}
+                        {instructorToDelete.last_name}
+                      </span>
+                      ? This action cannot be undone.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="cpbp-delete-modal-actions">
+              <button
+                type="button"
+                className="cpbp-btn-delete-confirm"
+                onClick={confirmDeleteInstructor}
+                style={{
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  border: "1px solid #dc3545",
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                type="button"
+                className="cpbp-btn-cancel"
+                onClick={() => {
+                  setShowDeleteInstructorModal(false);
+                  setInstructorToDelete(null);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
