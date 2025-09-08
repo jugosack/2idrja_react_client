@@ -1,6 +1,5 @@
-/* eslint-disable jsx-a11y/label-has-associated-control, no-unused-vars, no-nested-ternary */
 /* eslint-disable */
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { loadUsers } from "./Users/UsersServices";
@@ -44,6 +43,11 @@ const emptyForm = {
   general_description: "",
 };
 
+// Helper function to generate unique IDs
+const generateId = () => {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
+
 export default function CoursesPanelPage() {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("Courses");
@@ -84,11 +88,18 @@ export default function CoursesPanelPage() {
 
   const sections = ["Courses", "Users", "Instructors"];
 
+  // --- Carousel state ---
+  const [page, setPage] = useState(0);
+  const [cols, setCols] = useState(1); // will be 2/3/4 per breakpoint
+  const rows = 2;
+
+  // AUTH HEADER GENERATOR
   const getAuthHeaders = () => {
     const token = sessionStorage.getItem("auth_token");
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
+  // LOAD COURSES FROM API
   const loadCourses = useCallback(() => {
     axios
       .get(`${API_BASE}/courses`, { headers: getAuthHeaders() })
@@ -96,15 +107,42 @@ export default function CoursesPanelPage() {
       .catch(() => {});
   }, []);
 
+  // DELETE CONFIRMATION STATE & HANDLERS
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
+
+  const handleDeleteClick = (course) => {
+    setCourseToDelete(course);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteCourse = async () => {
+    try {
+      await axios.delete(
+        `${API_BASE}/courses/${courseToDelete.id}`,
+        { headers: getAuthHeaders() },
+      );
+      setShowDeleteConfirm(false);
+      setCourseToDelete(null);
+      loadCourses();
+      setPage((p) => 0);
+    } catch {
+      alert('Failed to delete course.');
+    }
+  };
+
+  // mount/unmount body class
   useEffect(() => {
     document.body.classList.add("admin-dashboard-bg");
     return () => document.body.classList.remove("admin-dashboard-bg");
   }, []);
 
+  // theme toggle
   useEffect(() => {
     document.body.classList.toggle("light-theme", isLightTheme);
   }, [isLightTheme]);
 
+  // read user from JWT
   useEffect(() => {
     const token = sessionStorage.getItem("auth_token");
     if (!token) return;
@@ -118,6 +156,7 @@ export default function CoursesPanelPage() {
     }
   }, []);
 
+  // load courses when section swaps
   useEffect(() => {
     if (activeSection === "Courses") loadCourses();
     if (activeSection === "Users") {
@@ -132,9 +171,45 @@ export default function CoursesPanelPage() {
     }
   }, [activeSection, loadCourses]);
 
+  // responsive columns logic for carousel
+  useEffect(() => {
+    const computeCols = () => {
+      const w = window.innerWidth;
+      if (w >= 1200) return 4;
+      if (w >= 1024) return 3;
+      if (w >= 768) return 2;
+      return 1;
+    };
+    const apply = () => {
+      const newCols = computeCols();
+      setCols((prev) => {
+        if (prev !== newCols) {
+          setPage(0);
+        }
+        return newCols;
+      });
+    };
+    apply();
+    window.addEventListener('resize', apply);
+    return () => window.removeEventListener('resize', apply);
+  }, []);
+
+  const pageSize = useMemo(() => cols * rows, [cols]);
+
+  const totalPages = useMemo(() => {
+    const total = Math.ceil((courses?.length || 0) / Math.max(1, pageSize)) || 1;
+    return total;
+  }, [courses, pageSize]);
+
+  const currentItems = useMemo(() => {
+    const start = page * pageSize;
+    return courses.slice(start, start + pageSize);
+  }, [courses, page, pageSize]);
+
   const goHome = () => {
-    navigate("/");
+    window.location.href = '/';
   };
+
   const handleLogout = () => {
     sessionStorage.removeItem("auth_token");
     navigate("/login");
@@ -203,6 +278,7 @@ export default function CoursesPanelPage() {
       enrolled_students: form.enrolled_students,
       rating: form.rating !== "" ? parseFloat(form.rating) : null,
     };
+
     try {
       if (isEditing) {
         await axios.patch(
@@ -211,14 +287,29 @@ export default function CoursesPanelPage() {
           { headers: getAuthHeaders() }
         );
       } else {
-        await axios.post(
+        const res = await axios.post(
           `${API_BASE}/courses`,
           { course: payloadForm },
           { headers: getAuthHeaders() }
         );
+        setEditingId(res.data.course.id);
       }
+
+      if (isEditing && selectedFile) {
+        const data = new FormData();
+        data.append('image', selectedFile);
+        await axios.post(
+          `${API_BASE}/courses/${editingId}/upload_image`,
+          data,
+          { headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() } },
+        );
+      }
+
       setShowModal(false);
+      setSelectedFile(null);
+      setPreviewUrl('');
       loadCourses();
+      setPage(0);
     } catch (err) {
       console.error(err);
       setErrorMessage(
@@ -299,7 +390,6 @@ export default function CoursesPanelPage() {
   };
 
   const openInstructorAddModal = () => {
-    // Ensure courses are loaded before opening modal
     if (courses.length === 0) {
       loadCourses().then(() => {
         setIsInstructorReadOnly(false);
@@ -338,7 +428,6 @@ export default function CoursesPanelPage() {
   };
 
   const openInstructorEditModal = (instructor) => {
-    // Ensure courses are loaded before opening modal
     if (courses.length === 0) {
       loadCourses().then(() => {
         setIsInstructorReadOnly(true);
@@ -407,6 +496,9 @@ export default function CoursesPanelPage() {
       : "Edit Course"
     : "Add Course";
 
+  // Carousel page jump handler
+  const jumpTo = (idx) => setPage(idx);
+
   return (
     <div className="cpbp-dashboard-container">
       <header className="cpbp-dashboard-header">
@@ -431,6 +523,7 @@ export default function CoursesPanelPage() {
             {isLightTheme ? "Dark Theme" : "Light Theme"}
           </button>
         </div>
+
         <div className="cpbp-header-right">
           <span className="cpbp-user-name">
             {user.first_name} {user.last_name}
@@ -455,8 +548,8 @@ export default function CoursesPanelPage() {
             <div className="cpbp-nav-top">
               {sections.map((sec) => (
                 <button
-                  type="button"
                   key={sec}
+                  type="button"
                   className={`cpbp-nav-button${
                     activeSection === sec ? " active" : ""
                   }`}
@@ -489,7 +582,7 @@ export default function CoursesPanelPage() {
           <main className="cpbp-dashboard-content">
             {activeSection === "Courses" ? (
               <div className="cpbp-cards-container">
-                {courses.map((course) => (
+                {currentItems.map((course) => (
                   <div key={course.id} className="cpbp-card">
                     <img
                       src={course.image_url || "/default-course.jpg"}
@@ -505,12 +598,54 @@ export default function CoursesPanelPage() {
                       >
                         Details
                       </button>
-                      <button type="button" className="cpbp-btn-delete">
+                      <button
+                        type="button"
+                        className="cpbp-btn-delete"
+                        onClick={() => handleDeleteClick(course)}
+                      >
                         Delete
                       </button>
                     </div>
                   </div>
                 ))}
+                {/* Carousel navigation buttons */}
+<button
+  type="button"
+  className="cpbp-carousel-btn cpbp-carousel-prev"
+  onClick={() => setPage((p) => (p > 0 ? p - 1 : totalPages - 1))}
+  aria-label="Previous"
+>
+  &#10094;
+</button>
+
+<button
+  type="button"
+  className="cpbp-carousel-btn cpbp-carousel-next"
+  onClick={() => setPage((p) => (p < totalPages - 1 ? p + 1 : 0))}
+  aria-label="Next"
+>
+  &#10095;
+</button>
+
+                {/* Carousel pagination for courses section */}
+                {courses.length > pageSize && (
+                  <div className="cpbp-page-indicator">
+                    <span className="cpbp-page-label">
+                      Page {Math.min(page + 1, totalPages)} of {totalPages}
+                    </span>
+                    <div className="cpbp-dots">
+                      {Array.from({ length: totalPages }).map((_, idx) => (
+                        <button
+                          key={`dot-${idx}`}
+                          type="button"
+                          className={`cpbp-dot${idx === page ? ' active' : ''}`}
+                          onClick={() => jumpTo(idx)}
+                          aria-label={`Go to page ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : activeSection === "Users" ? (
               <UsersTable users={users} onUserUpdate={setUsers} />
@@ -558,6 +693,7 @@ export default function CoursesPanelPage() {
         </div>
       </div>
 
+      {/* Add/Edit Modal */}
       {showModal && (
         <div className="cpbp-modal-overlay">
           <div className="cpbp-modal-content">
@@ -850,6 +986,32 @@ export default function CoursesPanelPage() {
                 }}
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirm */}
+      {showDeleteConfirm && (
+        <div className="cpbp-modal-overlay">
+          <div className="cpbp-modal-content">
+            <h2>Are you sure you want to delete this course?</h2>
+            <p><strong>{courseToDelete?.course_name}</strong></p>
+            <div className="cpbp-form-buttons" style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <button
+                type="button"
+                className="cpbp-btn-cancel"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                No
+              </button>
+              <button
+                type="button"
+                className="cpbp-btn-delete"
+                onClick={confirmDeleteCourse}
+              >
+                Yes, Delete
               </button>
             </div>
           </div>
