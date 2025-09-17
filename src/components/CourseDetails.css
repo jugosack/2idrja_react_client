@@ -20,12 +20,25 @@
 }
 
 /* HERO - split media/text */
-/* Combined hero card grid */
 .hero-card-grid {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
   gap: 1.5rem;
   align-items: center;
+}
+
+.course-hero-image-wrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 460px;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 @media (max-width: 992px) {
@@ -41,21 +54,9 @@
 }
 
 .hero-card-media .course-hero-image-wrapper {
-  height: clamp(220px, 34vw, 380px);
-}
-
-.course-hero-image-wrapper {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 460px;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  height: 280px;
+  min-height: 220px;
+  max-height: 380px;
 }
 
 .course-hero-image {
@@ -70,7 +71,8 @@
 .course-hero-top .course-hero-image-wrapper {
   aspect-ratio: 16 / 9;
   max-height: 420px;
-  height: clamp(220px, 42vw, 420px);
+  height: 300px;
+  min-height: 220px;
   border-radius: 12px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
 }
@@ -90,6 +92,7 @@
   .hero-card-grid {
     grid-template-columns: 1fr;
   }
+
   .course-hero-card {
     padding: 18px;
     margin-top: 16px;
@@ -97,8 +100,9 @@
 }
 
 /* Make hero text block visually match cards */
+
 .course-hero-card {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 16px;
   padding: 24px;
@@ -133,7 +137,7 @@
 
 /* KEY FACTS (legacy support) */
 .course-details-page .key-facts .fact-card {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 16px;
@@ -158,7 +162,7 @@
 
 /* SECTIONS */
 .course-details-page .course-section {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 24px;

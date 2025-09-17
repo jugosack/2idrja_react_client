@@ -51,11 +51,12 @@ body.admin-dashboard-bg {
 
 /* Light-theme override */
 body.light-theme.admin-dashboard-bg {
-  background: linear-gradient(
-    to left,
-    var(--cpbp-brand-1),
-    var(--cpbp-brand-2)
-  );
+  background:
+    linear-gradient(
+      to left,
+      var(--cpbp-brand-1),
+      var(--cpbp-brand-2)
+    );
   color: #333;
 }
 
@@ -157,11 +158,12 @@ body.light-theme .cpbp-add-button:hover {
   border: none;
   border-radius: var(--cpbp-radius-sm);
   padding: 0.5rem 1rem;
-  background: linear-gradient(
-    to left,
-    var(--cpbp-brand-1),
-    var(--cpbp-brand-2)
-  );
+  background:
+    linear-gradient(
+      to left,
+      var(--cpbp-brand-1),
+      var(--cpbp-brand-2)
+    );
   color: #fff;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -494,37 +496,27 @@ body.light-theme .cpbp-placeholder {
   color: #f5f5f7;
 }
 
-/* Dark theme override */
-body.admin-dashboard-bg .cpbp-form-group select {
-  background-color: #161a22; /* match other inputs */
-  color: #f5f5f7;
-}
-
 /* Force dark dropdown inside modals as well */
 .cpbp-modal-content .cpbp-form-group select {
-  background: rgba(
-    255,
-    255,
-    255,
-    0.1
-  ) !important; /* match inputs inside modal */
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.1
+    ) !important; /* match inputs inside modal */
+
   color: #fff !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  color-scheme: dark;
 }
 
-.cpbp-modal-content .cpbp-form-group select:focus {
-  outline: none;
-  border-color: #6366f1 !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-}
-
-.cpbp-modal-content .cpbp-form-group select option {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: #000 !important;
+/* Dark theme override */
+body.admin-dashboard-bg .cpbp-form-group select {
+  background-color: #161a22; /* match other inputs */
+  color: #f5f5f7;
 }
 
 .cpbp-modal-content .cpbp-form-group select option[selected] {
@@ -532,9 +524,20 @@ body.admin-dashboard-bg .cpbp-form-group select {
   color: #fff !important;
 }
 
+.cpbp-modal-content .cpbp-form-group select option {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #000 !important;
+}
+
 body.light-theme .cpbp-form-group select {
   background: rgba(255, 255, 255, 0.8) !important;
   color: #666 !important;
+}
+
+.cpbp-modal-content .cpbp-form-group select:focus {
+  outline: none;
+  border-color: #6366f1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
 }
 
 body.light-theme .cpbp-modal-content .cpbp-form-group select option {
@@ -726,7 +729,8 @@ body.light-theme .cpbp-modal-content .cpbp-form-group select option {
 }
 
 .cpbp-carousel-btn:focus-visible {
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25),
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.25),
     0 4px 10px rgba(0, 0, 0, 0.25);
 }
 
@@ -1011,11 +1015,12 @@ body.light-theme .cpbp-dot:focus-visible {
   height: 44px;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.35);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.18) 0%,
-    rgba(255, 255, 255, 0.08) 100%
-  );
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.18) 0%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -1024,11 +1029,15 @@ body.light-theme .cpbp-dot:focus-visible {
   line-height: 1;
   position: relative;
   cursor: pointer;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
     0 6px 18px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease,
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.2s ease,
     border-color 0.2s ease;
   margin-inline: 6px;
 }
@@ -1042,9 +1051,11 @@ body.light-theme .cpbp-dot:focus-visible {
   height: 12px;
   transform: translate(-50%, -50%);
   background-color: currentColor;
-  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="%23000" d="M4 2l6 4-6 4z"/></svg>')
+  -webkit-mask:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="%23000" d="M4 2l6 4-6 4z"/></svg>')
     no-repeat center / contain;
-  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="%23000" d="M4 2l6 4-6 4z"/></svg>')
+  mask:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12"><path fill="%23000" d="M4 2l6 4-6 4z"/></svg>')
     no-repeat center / contain;
 }
 
@@ -1055,11 +1066,12 @@ body.light-theme .cpbp-dot:focus-visible {
 .instructors-slider .slider-arrow:hover {
   transform: translateY(-1px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.26) 0%,
-    rgba(255, 255, 255, 0.12) 100%
-  );
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.26) 0%,
+      rgba(255, 255, 255, 0.12) 100%
+    );
   border-color: rgba(255, 255, 255, 0.55);
 }
 
@@ -1076,32 +1088,39 @@ body.light-theme .cpbp-dot:focus-visible {
 /* Light theme variants */
 body.light-theme .instructors-slider .slider-arrow {
   border-color: #ccc;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.7) 0%,
-    rgba(255, 255, 255, 0.55) 100%
-  );
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(255, 255, 255, 0.55) 100%
+    );
   color: #333;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
     0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 body.light-theme .instructors-slider .slider-arrow:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.85) 0%,
-    rgba(255, 255, 255, 0.7) 100%
-  );
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.7) 100%
+    );
   border-color: rgba(0, 0, 0, 0.25);
 }
 
 .instructors-slider .slider-arrow-left {
-  box-shadow: inset 0 0 0 rgba(0, 0, 0, 0), 0 6px 18px rgba(0, 0, 0, 0.35),
+  box-shadow:
+    inset 0 0 0 rgba(0, 0, 0, 0),
+    0 6px 18px rgba(0, 0, 0, 0.35),
     -2px 0 10px rgba(255, 255, 255, 0.06);
 }
 
 .instructors-slider .slider-arrow-right {
-  box-shadow: inset 0 0 0 rgba(0, 0, 0, 0), 0 6px 18px rgba(0, 0, 0, 0.35),
+  box-shadow:
+    inset 0 0 0 rgba(0, 0, 0, 0),
+    0 6px 18px rgba(0, 0, 0, 0.35),
     2px 0 10px rgba(255, 255, 255, 0.06);
 }
 
@@ -1331,11 +1350,12 @@ body.light-theme .instructors-slider .slider-arrow:hover {
     overflow: hidden !important;
     padding: 1rem !important;
     margin: 0 !important;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.15) 0%,
-      rgba(255, 255, 255, 0.1) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.1) 100%
+      ) !important;
     border-radius: 12px !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
@@ -1374,11 +1394,12 @@ body.light-theme .instructors-slider .slider-arrow:hover {
     width: 100% !important;
     overflow: visible !important;
     text-overflow: unset !important;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.25) 0%,
-      rgba(255, 255, 255, 0.15) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0.15) 100%
+      ) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #fff !important;
     text-align: center !important;
@@ -1395,62 +1416,68 @@ body.light-theme .instructors-slider .slider-arrow:hover {
   }
 
   .cpbp-nav-button:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.35) 0%,
-      rgba(255, 255, 255, 0.25) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.35) 0%,
+        rgba(255, 255, 255, 0.25) 100%
+      ) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
     border-color: rgba(255, 255, 255, 0.6) !important;
   }
 
   .cpbp-nav-button.active {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.4) 0%,
-      rgba(255, 255, 255, 0.3) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.3) 100%
+      ) !important;
     color: #fff !important;
     border-color: rgba(255, 255, 255, 0.7) !important;
     box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3) !important;
   }
 
   body.light-theme .cpbp-dashboard-nav {
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.4) 0%,
-      rgba(255, 255, 255, 0.25) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.25) 100%
+      ) !important;
     border-color: rgba(255, 255, 255, 0.5) !important;
   }
 
   body.light-theme .cpbp-nav-button {
-    background: linear-gradient(
-      135deg,
-      rgba(104, 94, 216, 0.8) 0%,
-      rgba(182, 152, 170, 0.7) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(104, 94, 216, 0.8) 0%,
+        rgba(182, 152, 170, 0.7) 100%
+      ) !important;
     border-color: rgba(104, 94, 216, 0.6) !important;
     color: #fff !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
   }
 
   body.light-theme .cpbp-nav-button:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(104, 94, 216, 0.9) 0%,
-      rgba(182, 152, 170, 0.8) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(104, 94, 216, 0.9) 0%,
+        rgba(182, 152, 170, 0.8) 100%
+      ) !important;
     border-color: rgba(104, 94, 216, 0.7) !important;
   }
 
   body.light-theme .cpbp-nav-button.active {
-    background: linear-gradient(
-      135deg,
-      rgba(104, 94, 216, 1) 0%,
-      rgba(182, 152, 170, 0.9) 100%
-    ) !important;
+    background:
+      linear-gradient(
+        135deg,
+        rgba(104, 94, 216, 1) 0%,
+        rgba(182, 152, 170, 0.9) 100%
+      ) !important;
     color: #fff !important;
     border-color: rgba(104, 94, 216, 0.8) !important;
   }
