@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import EnrollNow from './EnrollNow';
 import './Details.css';
 
 function Details({ course, onClose }) {
@@ -7,130 +8,172 @@ function Details({ course, onClose }) {
   const [isBenefitsOpen, setBenefitsOpen] = useState(false);
   const [isTargetAudienceOpen, setTargetAudienceOpen] = useState(false);
   const [isMoreInfoOpen, setMoreInfoOpen] = useState(false);
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
 
   if (!course) return null;
 
   const {
+    id,
     course_name: courseName,
     image_url: imageUrl,
-    general_description: generalDescription, // <-- тука го менуваме
+    general_description: generalDescription,
     benefits,
     target_audience: targetAudience,
     additional_info: additionalInfo,
+    start_date: startDate,
+    end_date: endDate,
+    fee,
+    places_left: placesLeft,
   } = course;
 
+  // Create course data object for EnrollNow modal
+  const courseDataForEnroll = {
+    id,
+    course_name: courseName,
+    start_date: startDate,
+    end_date: endDate,
+    fee,
+    places_left: placesLeft,
+  };
+
+  const handleEnrollClick = () => {
+    const token = sessionStorage.getItem('auth_token');
+
+    if (!token) {
+      alert('Please login first to enroll in a course');
+      window.location.href = '/login';
+    } else {
+      setShowEnrollModal(true);
+    }
+  };
+
+  const handleCloseEnrollModal = () => {
+    setShowEnrollModal(false);
+  };
+
   return (
-    <div className="popup-overlay">
-      <div className="popup-content scrollable-popup">
-        <button
-          type="button"
-          className="close-btnn"
-          onClick={onClose}
-          aria-label="Close details popup"
-        >
-          ×
-        </button>
+    <>
+      <div className="popup-overlay">
+        <div className="popup-content scrollable-popup">
+          <button
+            type="button"
+            className="close-btnn"
+            onClick={onClose}
+            aria-label="Close details popup"
+          >
+            ×
+          </button>
 
-        <img src={imageUrl} alt={courseName} className="details-image" />
-        <h2>{courseName}</h2>
+          <img src={imageUrl} alt={courseName} className="details-image" />
+          <h2>{courseName}</h2>
 
-        {/* Description со Show more / less */}
-        <div className="description-section">
-          <p>
-            {generalDescription}
-            {isDescriptionExpanded && (
-              <>
-                {' '}
-                This course will provide you with valuable knowledge and practical skills.
-              </>
+          {/* Description со Show more / less */}
+          <div className="description-section">
+            <p>
+              {generalDescription}
+              {isDescriptionExpanded && (
+                <>
+                  {' '}
+                  This course will provide you with valuable knowledge and practical skills.
+                </>
+              )}
+            </p>
+            <button
+              type="button"
+              className="show-more-btn"
+              onClick={() => setDescriptionExpanded(!isDescriptionExpanded)}
+            >
+              {isDescriptionExpanded ? 'Show less' : 'Show more...'}
+            </button>
+          </div>
+
+          {/* Benefits Accordion */}
+          <div className="accordion-section">
+            <button
+              className="accordion-toggle"
+              type="button"
+              onClick={() => setBenefitsOpen(!isBenefitsOpen)}
+            >
+              Benefits
+              {' '}
+              {isBenefitsOpen ? '▲' : '▼'}
+            </button>
+            {isBenefitsOpen && (
+              <ul className="accordion-content">
+                <li>{benefits}</li>
+              </ul>
             )}
-          </p>
-          <button
-            type="button"
-            className="show-more-btn"
-            onClick={() => setDescriptionExpanded(!isDescriptionExpanded)}
-          >
-            {isDescriptionExpanded ? 'Show less' : 'Show more...'}
-          </button>
-        </div>
+          </div>
 
-        {/* Benefits Accordion */}
-        <div className="accordion-section">
-          <button
-            className="accordion-toggle"
-            type="button"
-            onClick={() => setBenefitsOpen(!isBenefitsOpen)}
-          >
-            Benefits
-            {' '}
-            {isBenefitsOpen ? '▲' : '▼'}
-          </button>
-          {isBenefitsOpen && (
-            <ul className="accordion-content">
-              <li>{benefits}</li>
-            </ul>
-          )}
-        </div>
+          {/* Target Audience Accordion */}
+          <div className="accordion-section">
+            <button
+              className="accordion-toggle"
+              type="button"
+              onClick={() => setTargetAudienceOpen(!isTargetAudienceOpen)}
+            >
+              Target Audience
+              {' '}
+              {isTargetAudienceOpen ? '▲' : '▼'}
+            </button>
+            {isTargetAudienceOpen && (
+              <ul className="accordion-content">
+                <li>{targetAudience}</li>
+              </ul>
+            )}
+          </div>
 
-        {/* Target Audience Accordion */}
-        <div className="accordion-section">
-          <button
-            className="accordion-toggle"
-            type="button"
-            onClick={() => setTargetAudienceOpen(!isTargetAudienceOpen)}
-          >
-            Target Audience
-            {' '}
-            {isTargetAudienceOpen ? '▲' : '▼'}
-          </button>
-          {isTargetAudienceOpen && (
-            <ul className="accordion-content">
-              <li>{targetAudience}</li>
-            </ul>
-          )}
-        </div>
+          {/* Additional Info Accordion */}
+          <div className="accordion-section">
+            <button
+              className="accordion-toggle"
+              type="button"
+              onClick={() => setMoreInfoOpen(!isMoreInfoOpen)}
+            >
+              Additional Info
+              {' '}
+              {isMoreInfoOpen ? '▲' : '▼'}
+            </button>
+            {isMoreInfoOpen && (
+              <ul className="accordion-content">
+                {additionalInfo}
+              </ul>
+            )}
+          </div>
 
-        {/* Additional Info Accordion */}
-        <div className="accordion-section">
-          <button
-            className="accordion-toggle"
-            type="button"
-            onClick={() => setMoreInfoOpen(!isMoreInfoOpen)}
-          >
-            Additional Info
-            {' '}
-            {isMoreInfoOpen ? '▲' : '▼'}
-          </button>
-          {isMoreInfoOpen && (
-            <ul className="accordion-content">
-              {additionalInfo}
-            </ul>
-          )}
-        </div>
-
-        <div className="enroll-container">
-          <button
-            type="button"
-            className="enroll-btn"
-            onClick={() => alert(`You have enrolled in ${courseName}!`)}
-          >
-            Enroll Now
-          </button>
+          <div className="enroll-container">
+            <button
+              type="button"
+              className="enroll-btn"
+              onClick={handleEnrollClick}
+            >
+              Enroll Now
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Render EnrollNow modal when showEnrollModal is true */}
+      {showEnrollModal && (
+        <EnrollNow
+          course={courseDataForEnroll}
+          onClose={handleCloseEnrollModal}
+        />
+      )}
+    </>
   );
 }
 
 Details.propTypes = {
   course: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     course_name: PropTypes.string.isRequired,
     image_url: PropTypes.string.isRequired,
-    general_description: PropTypes.string.isRequired, // <-- тука треба да додадеш
+    general_description: PropTypes.string.isRequired,
     benefits: PropTypes.string,
     target_audience: PropTypes.string,
     additional_info: PropTypes.string,
-    fee: PropTypes.string,
+    fee: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     start_date: PropTypes.string,
     end_date: PropTypes.string,
     enrolled_students: PropTypes.number,
