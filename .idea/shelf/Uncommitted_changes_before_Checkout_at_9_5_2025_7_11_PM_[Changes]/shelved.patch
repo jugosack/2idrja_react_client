@@ -1,0 +1,1248 @@
+Index: src/components/CoursesPanelPage.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* eslint-disable jsx-a11y/label-has-associated-control, no-unused-vars, no-nested-ternary */\r\n/* eslint-disable */\r\nimport React, { useState, useEffect, useCallback } from \"react\";\r\nimport axios from \"axios\";\r\nimport { loadUsers } from \"./Users/UsersServices\";\r\nimport UsersTable from \"./Users/UsersTable\";\r\nimport AddUserForm from \"./Users/AddUserForm\";\r\nimport \"./CoursesPanelPage.css\";\r\n\r\nconst API_BASE = \"http://localhost:3000\";\r\n\r\nfunction parseJwt(token) {\r\n  try {\r\n    const base64 = token.split(\".\")[1];\r\n    const json = atob(base64.replace(/-/g, \"+\").replace(/_/g, \"/\"));\r\n    return JSON.parse(json);\r\n  } catch {\r\n    return null;\r\n  }\r\n}\r\n\r\nconst emptyForm = {\r\n  course_name: \"\",\r\n  start_date: \"\",\r\n  end_date: \"\",\r\n  description: \"\",\r\n  benefits: \"\",\r\n  target_audience: \"\",\r\n  additional_info: \"\",\r\n  fee: \"\",\r\n  max_students: \"\",\r\n  enrolled_students: 0,\r\n  course_status: \"planned\",\r\n  rating: \"\",\r\n  general_description: \"\",\r\n};\r\n\r\nexport default function CoursesPanelPage() {\r\n  const [activeSection, setActiveSection] = useState(\"Courses\");\r\n  const [user, setUser] = useState({\r\n    first_name: \"\",\r\n    last_name: \"\",\r\n    avatar_url: \"\",\r\n  });\r\n  const [courses, setCourses] = useState([]);\r\n  const [showModal, setShowModal] = useState(false);\r\n  const [isEditing, setIsEditing] = useState(false);\r\n  const [editingId, setEditingId] = useState(null);\r\n  const [readOnly, setReadOnly] = useState(false);\r\n  const [form, setForm] = useState(emptyForm);\r\n  const [isLightTheme, setIsLightTheme] = useState(false);\r\n  const [errorMessage, setErrorMessage] = useState(\"\");\r\n\r\n  const [selectedFile, setSelectedFile] = useState(null);\r\n  const [previewUrl, setPreviewUrl] = useState(\"\");\r\n  const [users, setUsers] = useState([]);\r\n  const [showAddUserModal, setShowAddUserModal] = useState(false);\r\n\r\n  const sections = [\"Courses\", \"Users\", \"Instructors\"];\r\n\r\n  const getAuthHeaders = () => {\r\n    const token = sessionStorage.getItem(\"auth_token\");\r\n    return token ? { Authorization: `Bearer ${token}` } : {};\r\n  };\r\n\r\n  const loadCourses = useCallback(() => {\r\n    axios\r\n      .get(`${API_BASE}/courses`, { headers: getAuthHeaders() })\r\n      .then((res) => setCourses(res.data))\r\n      .catch(() => {});\r\n  }, []);\r\n\r\n  useEffect(() => {\r\n    document.body.classList.add(\"admin-dashboard-bg\");\r\n    return () => document.body.classList.remove(\"admin-dashboard-bg\");\r\n  }, []);\r\n\r\n  useEffect(() => {\r\n    document.body.classList.toggle(\"light-theme\", isLightTheme);\r\n  }, [isLightTheme]);\r\n\r\n  useEffect(() => {\r\n    const token = sessionStorage.getItem(\"auth_token\");\r\n    if (!token) return;\r\n    const payload = parseJwt(token);\r\n    if (payload?.first_name) {\r\n      setUser({\r\n        first_name: payload.first_name,\r\n        last_name: payload.last_name,\r\n        avatar_url: payload.avatar_url || \"\",\r\n      });\r\n    }\r\n  }, []);\r\n\r\n  useEffect(() => {\r\n    if (activeSection === \"Courses\") loadCourses();\r\n    if (activeSection === \"Users\") {\r\n      loadUsers()\r\n        .then(setUsers)\r\n        .catch(() => setUsers([]));\r\n    }\r\n  }, [activeSection, loadCourses]);\r\n\r\n  const goHome = () => {\r\n    window.location.href = \"/\";\r\n  };\r\n  const handleLogout = () => {\r\n    sessionStorage.removeItem(\"auth_token\");\r\n    window.location.href = \"/login\";\r\n  };\r\n\r\n  const handleChange = (e) => {\r\n    const { name, value } = e.target;\r\n    setForm((f) => ({ ...f, [name]: value }));\r\n  };\r\n\r\n  const openAddModal = () => {\r\n    if (activeSection === \"Users\") {\r\n      setShowAddUserModal(true);\r\n    } else {\r\n      setIsEditing(false);\r\n      setEditingId(null);\r\n      setForm(emptyForm);\r\n      setReadOnly(false);\r\n      setSelectedFile(null);\r\n      setPreviewUrl(\"\");\r\n      setErrorMessage(\"\");\r\n      setShowModal(true);\r\n    }\r\n  };\r\n\r\n  const openEditModal = (course) => {\r\n    setIsEditing(true);\r\n    setEditingId(course.id);\r\n    setForm({\r\n      course_name: course.course_name,\r\n      start_date: course.start_date,\r\n      end_date: course.end_date,\r\n      description: course.description,\r\n      benefits: course.benefits,\r\n      target_audience: course.target_audience,\r\n      additional_info: course.additional_info,\r\n      fee: course.fee,\r\n      max_students: course.max_students,\r\n      enrolled_students: course.enrolled_students,\r\n      course_status: course.course_status,\r\n      rating: course.rating,\r\n      general_description: course.general_description,\r\n    });\r\n    setReadOnly(true);\r\n    setSelectedFile(null);\r\n    setPreviewUrl(\"\");\r\n    setErrorMessage(\"\");\r\n    setShowModal(true);\r\n  };\r\n\r\n  const handleSubmit = async (e) => {\r\n    e.preventDefault();\r\n    setErrorMessage(\"\");\r\n   \r\n    const payloadForm = {\r\n      ...form,\r\n      fee: parseFloat(form.fee) || 0,\r\n      max_students: parseInt(form.max_students, 10) || 0,\r\n      enrolled_students: form.enrolled_students,\r\n      rating: form.rating !== \"\" ? parseFloat(form.rating) : null,\r\n    };\r\n    try {\r\n      if (isEditing) {\r\n        await axios.patch(\r\n          `${API_BASE}/courses/${editingId}`,\r\n          { course: payloadForm },\r\n          { headers: getAuthHeaders() },\r\n        );\r\n      } else {\r\n        await axios.post(\r\n          `${API_BASE}/courses`,\r\n          { course: payloadForm },\r\n          { headers: getAuthHeaders() },\r\n        );\r\n      }\r\n      setShowModal(false);\r\n      loadCourses();\r\n    } catch (err) {\r\n      console.error(err);\r\n      setErrorMessage(\r\n        \"Failed to save course. Please check the console for details.\",\r\n      );\r\n    }\r\n  };\r\n\r\n  const handleFileChange = (e) => {\r\n    const file = e.target.files[0];\r\n    if (!file) return;\r\n    setSelectedFile(file);\r\n    setPreviewUrl(URL.createObjectURL(file));\r\n  };\r\n\r\n  const handleImageUpload = async () => {\r\n    if (!selectedFile || !editingId) return;\r\n    setErrorMessage(\"\");\r\n    const data = new FormData();\r\n    data.append(\"image\", selectedFile);\r\n    try {\r\n      await axios.post(`${API_BASE}/courses/${editingId}/upload_image`, data, {\r\n        headers: { \"Content-Type\": \"multipart/form-data\", ...getAuthHeaders() },\r\n      });\r\n      setSelectedFile(null);\r\n      setPreviewUrl(\"\");\r\n      loadCourses();\r\n    } catch (err) {\r\n      console.error(err);\r\n      setErrorMessage(\r\n        \"Image upload failed. Please check the console for details.\",\r\n      );\r\n    }\r\n  };\r\n\r\n  const handleUserAdded = async () => {\r\n    try {\r\n      const updatedUsers = await loadUsers();\r\n      setUsers(updatedUsers);\r\n    } catch (error) {\r\n      console.error('Error refreshing users:', error);\r\n    }\r\n  };\r\n\r\n  const modalTitle = isEditing\r\n    ? readOnly\r\n      ? \"Course Details\"\r\n      : \"Edit Course\"\r\n    : \"Add Course\";\r\n\r\n  return (\r\n    <div className=\"cpbp-dashboard-container\">\r\n      <header className=\"cpbp-dashboard-header\">\r\n        <div className=\"cpbp-header-left\">\r\n          <span className=\"cpbp-header-title\">Admin Dashboard</span>\r\n          <button\r\n            type=\"button\"\r\n            className=\"cpbp-add-button\"\r\n            onClick={openAddModal}\r\n          >\r\n            {activeSection === \"Instructors\" ? \"Add Instructor\" : activeSection === \"Users\" ? \"Add User\" : \"Add Course\"}\r\n          </button>\r\n          <button\r\n            type=\"button\"\r\n            className=\"cpbp-theme-button\"\r\n            onClick={() => setIsLightTheme((t) => !t)}\r\n          >\r\n            {isLightTheme ? \"Dark Theme\" : \"Light Theme\"}\r\n          </button>\r\n        </div>\r\n        <div className=\"cpbp-header-right\">\r\n          <span className=\"cpbp-user-name\">\r\n            {user.first_name} {user.last_name}\r\n          </span>\r\n          <div className=\"cpbp-profile-pic-container\">\r\n            {user.avatar_url ? (\r\n              <img\r\n                src={user.avatar_url}\r\n                alt=\"avatar\"\r\n                className=\"cpbp-profile-pic\"\r\n              />\r\n            ) : (\r\n              <span className=\"cpbp-user-icon\">\uD83D\uDC64</span>\r\n            )}\r\n          </div>\r\n        </div>\r\n      </header>\r\n\r\n      <div className=\"cpbp-dashboard-body\">\r\n        <div className=\"cpbp-panel nav-panel\">\r\n          <nav className=\"cpbp-dashboard-nav\">\r\n            <div className=\"cpbp-nav-top\">\r\n              {sections.map((sec) => (\r\n                <button\r\n                  type=\"button\"\r\n                  key={sec}\r\n                  className={`cpbp-nav-button${activeSection === sec ? \" active\" : \"\"}`}\r\n                  onClick={() => setActiveSection(sec)}\r\n                >\r\n                  {sec}\r\n                </button>\r\n              ))}\r\n            </div>\r\n            <div className=\"cpbp-nav-bottom\">\r\n              <button\r\n                type=\"button\"\r\n                className=\"cpbp-nav-button\"\r\n                onClick={goHome}\r\n              >\r\n                Home\r\n              </button>\r\n              <button\r\n                type=\"button\"\r\n                className=\"cpbp-nav-button\"\r\n                onClick={handleLogout}\r\n              >\r\n                Logout\r\n              </button>\r\n            </div>\r\n          </nav>\r\n        </div>\r\n\r\n        <div className=\"cpbp-panel content-panel\">\r\n          <main className=\"cpbp-dashboard-content\">\r\n            {activeSection === \"Courses\" ? (\r\n              <div className=\"cpbp-cards-container\">\r\n                {courses.map((course) => (\r\n                  <div key={course.id} className=\"cpbp-card\">\r\n                    <img\r\n                      src={course.image_url || \"/default-course.jpg\"}\r\n                      alt={course.course_name}\r\n                      className=\"cpbp-card-image\"\r\n                    />\r\n                    <h3 className=\"cpbp-card-title\">{course.course_name}</h3>\r\n                    <div className=\"cpbp-card-actions\">\r\n                      <button\r\n                        type=\"button\"\r\n                        className=\"cpbp-btn-edit\"\r\n                        onClick={() => openEditModal(course)}\r\n                      >\r\n                        Details\r\n                      </button>\r\n                      <button type=\"button\" className=\"cpbp-btn-delete\">\r\n                        Delete\r\n                      </button>\r\n                    </div>\r\n                  </div>\r\n                ))}\r\n              </div>\r\n            ) : activeSection === \"Users\" ? (\r\n              <UsersTable users={users} onUserUpdate={setUsers} />\r\n            ) : (\r\n              <p className=\"cpbp-placeholder\">\r\n                {activeSection} view not implemented yet.\r\n              </p>\r\n            )}\r\n          </main>\r\n        </div>\r\n      </div>\r\n\r\n      {showModal && (\r\n        <div className=\"cpbp-modal-overlay\">\r\n          <div className=\"cpbp-modal-content\">\r\n            <button\r\n              type=\"button\"\r\n              className=\"cpbp-modal-close\"\r\n              onClick={() => setShowModal(false)}\r\n            >\r\n              ×\r\n            </button>\r\n            <h2 style={{ marginBottom: \"1rem\" }}>{modalTitle}</h2>\r\n            {errorMessage && (\r\n              <div className=\"cpbp-error-message\">{errorMessage}</div>\r\n            )}\r\n            <form className=\"cpbp-form\" onSubmit={handleSubmit}>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"course_name\">Course Name</label>\r\n                <input\r\n                  id=\"course_name\"\r\n                  name=\"course_name\"\r\n                  value={form.course_name}\r\n                  onChange={handleChange}\r\n                  required\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"start_date\">Start Date</label>\r\n                <input\r\n                  id=\"start_date\"\r\n                  type=\"date\"\r\n                  name=\"start_date\"\r\n                  value={form.start_date}\r\n                  onChange={handleChange}\r\n                  required\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"end_date\">End Date</label>\r\n                <input\r\n                  id=\"end_date\"\r\n                  type=\"date\"\r\n                  name=\"end_date\"\r\n                  value={form.end_date}\r\n                  onChange={handleChange}\r\n                  required\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"description\">Description</label>\r\n                <textarea\r\n                  id=\"description\"\r\n                  name=\"description\"\r\n                  value={form.description}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"benefits\">Benefits</label>\r\n                <input\r\n                  id=\"benefits\"\r\n                  name=\"benefits\"\r\n                  value={form.benefits}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"target_audience\">Target Audience</label>\r\n                <input\r\n                  id=\"target_audience\"\r\n                  name=\"target_audience\"\r\n                  value={form.target_audience}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"additional_info\">Additional Info</label>\r\n                <input\r\n                  id=\"additional_info\"\r\n                  name=\"additional_info\"\r\n                  value={form.additional_info}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"fee\">Fee (€)</label>\r\n                <input\r\n                  id=\"fee\"\r\n                  type=\"number\"\r\n                  step=\"0.01\"\r\n                  name=\"fee\"\r\n                  value={form.fee}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"max_students\">Max Students</label>\r\n                <input\r\n                  id=\"max_students\"\r\n                  type=\"number\"\r\n                  name=\"max_students\"\r\n                  value={form.max_students}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"course_status\">Course Status</label>\r\n                <select\r\n                  id=\"course_status\"\r\n                  name=\"course_status\"\r\n                  value={form.course_status}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                >\r\n                  <option value=\"planned\">Planned</option>\r\n                  <option value=\"active\">Active</option>\r\n                  <option value=\"completed\">Completed</option>\r\n                </select>\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"rating\">Rating</label>\r\n                <input\r\n                  id=\"rating\"\r\n                  type=\"number\"\r\n                  step=\"0.1\"\r\n                  name=\"rating\"\r\n                  value={form.rating}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"general_description\">General Description</label>\r\n                <textarea\r\n                  id=\"general_description\"\r\n                  name=\"general_description\"\r\n                  value={form.general_description}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              {isEditing && (\r\n                <div className=\"cpbp-form-group\">\r\n                  <label>Upload Image</label>\r\n                  <input\r\n                    type=\"file\"\r\n                    accept=\"image/*\"\r\n                    onChange={handleFileChange}\r\n                    disabled={readOnly}\r\n                  />\r\n                  {previewUrl && (\r\n                    <img\r\n                      src={previewUrl}\r\n                      alt=\"Preview\"\r\n                      style={{\r\n                        display: \"block\",\r\n                        maxWidth: \"100%\",\r\n                        marginTop: \"0.5rem\",\r\n                        borderRadius: \"4px\",\r\n                      }}\r\n                    />\r\n                  )}\r\n                  <button\r\n                    type=\"button\"\r\n                    className=\"cpbp-btn-submit\"\r\n                    onClick={handleImageUpload}\r\n                    disabled={!selectedFile || readOnly}\r\n                    style={{ marginTop: \"0.5rem\" }}\r\n                  >\r\n                    Upload Image\r\n                  </button>\r\n                </div>\r\n              )}\r\n              <div\r\n                className=\"cpbp-form-buttons\"\r\n                style={{ display: \"flex\", justifyContent: \"space-between\" }}\r\n              >\r\n                {isEditing && readOnly && (\r\n                  <button\r\n                    type=\"button\"\r\n                    className=\"cpbp-btn-edit\"\r\n                    onClick={() => setReadOnly(false)}\r\n                  >\r\n                    Edit\r\n                  </button>\r\n                )}\r\n                <button\r\n                  type=\"button\"\r\n                  className=\"cpbp-btn-cancel\"\r\n                  onClick={() => setShowModal(false)}\r\n                >\r\n                  Cancel\r\n                </button>\r\n                {!isEditing && (\r\n                  <button type=\"submit\" className=\"cpbp-btn-submit\">\r\n                    Create\r\n                  </button>\r\n                )}\r\n                {isEditing && !readOnly && (\r\n                  <button type=\"submit\" className=\"cpbp-btn-submit\">\r\n                    Save Changes\r\n                  </button>\r\n                )}\r\n              </div>\r\n            </form>\r\n          </div>\r\n        </div>\r\n      )}\r\n\r\n      {showAddUserModal && (\r\n        <AddUserForm\r\n          onClose={() => setShowAddUserModal(false)}\r\n          onUserAdded={handleUserAdded}\r\n        />\r\n      )}\r\n    </div>\r\n  );\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/components/CoursesPanelPage.jsx b/src/components/CoursesPanelPage.jsx
+--- a/src/components/CoursesPanelPage.jsx	(revision d3b69aaa43e90178f4d024e86bfb260dac74914e)
++++ b/src/components/CoursesPanelPage.jsx	(date 1757092252689)
+@@ -2,9 +2,17 @@
+ /* eslint-disable */
+ import React, { useState, useEffect, useCallback } from "react";
+ import axios from "axios";
++import { useNavigate } from "react-router-dom";
+ import { loadUsers } from "./Users/UsersServices";
+ import UsersTable from "./Users/UsersTable";
+ import AddUserForm from "./Users/AddUserForm";
++import InstructorAddEditModal from "../modals/InstructorAddEditModal";
++import {
++  getInstructors,
++  createInstructor,
++  updateInstructor,
++  deleteInstructor,
++} from "../services/InstructorService";
+ import "./CoursesPanelPage.css";
+ 
+ const API_BASE = "http://localhost:3000";
+@@ -36,6 +44,7 @@
+ };
+ 
+ export default function CoursesPanelPage() {
++  const navigate = useNavigate();
+   const [activeSection, setActiveSection] = useState("Courses");
+   const [user, setUser] = useState({
+     first_name: "",
+@@ -48,26 +57,49 @@
+   const [editingId, setEditingId] = useState(null);
+   const [readOnly, setReadOnly] = useState(false);
+   const [form, setForm] = useState(emptyForm);
+-  const [isLightTheme, setIsLightTheme] = useState(false);
++  const [isLightTheme, setIsLightTheme] = useState(true);
+   const [errorMessage, setErrorMessage] = useState("");
+ 
+   const [selectedFile, setSelectedFile] = useState(null);
+   const [previewUrl, setPreviewUrl] = useState("");
+   const [users, setUsers] = useState([]);
+   const [showAddUserModal, setShowAddUserModal] = useState(false);
++  const [instructors, setInstructors] = useState([]);
++  const [showInstructorModal, setShowInstructorModal] = useState(false);
++  const [editingInstructorId, setEditingInstructorId] = useState(null);
++  const [isInstructorReadOnly, setIsInstructorReadOnly] = useState(false);
++  const [currentInstructorIndex, setCurrentInstructorIndex] = useState(0);
++  const [isMobile, setIsMobile] = useState(() =>
++      typeof window !== "undefined"
++          ? window.matchMedia("(max-width: 425px)").matches
++          : false
++  );
++  const [instructorForm, setInstructorForm] = useState({
++    first_name: "",
++    last_name: "",
++    email: "",
++    course_name: "",
++    expertise: "",
++    description: "",
++  });
++  const [showDeleteInstructorModal, setShowDeleteInstructorModal] =
++      useState(false);
++  const [instructorToDelete, setInstructorToDelete] = useState(null);
+ 
+   const sections = ["Courses", "Users", "Instructors"];
+ 
+   const getAuthHeaders = () => {
+-    const token = sessionStorage.getItem("auth_token");
++    const token =
++        sessionStorage.getItem("auth_token") ||
++        localStorage.getItem("auth_token");
+     return token ? { Authorization: `Bearer ${token}` } : {};
+   };
+ 
+   const loadCourses = useCallback(() => {
+     axios
+-      .get(`${API_BASE}/courses`, { headers: getAuthHeaders() })
+-      .then((res) => setCourses(res.data))
+-      .catch(() => {});
++        .get(`${API_BASE}/courses`, { headers: getAuthHeaders() })
++        .then((res) => setCourses(res.data))
++        .catch(() => {});
+   }, []);
+ 
+   useEffect(() => {
+@@ -96,17 +128,54 @@
+     if (activeSection === "Courses") loadCourses();
+     if (activeSection === "Users") {
+       loadUsers()
+-        .then(setUsers)
+-        .catch(() => setUsers([]));
++          .then(setUsers)
++          .catch(() => setUsers([]));
+     }
++    if (activeSection === "Instructors") {
++      getInstructors()
++          .then(setInstructors)
++          .catch(() => setInstructors([]));
++    }
+   }, [activeSection, loadCourses]);
+ 
++  useEffect(() => {
++    if (typeof window === "undefined") return;
++    const mq = window.matchMedia("(max-width: 425px)");
++    const handler = (e) => setIsMobile(e.matches);
++    setIsMobile(mq.matches);
++    if (mq.addEventListener) mq.addEventListener("change", handler);
++    else mq.addListener(handler);
++    return () => {
++      if (mq.removeEventListener) mq.removeEventListener("change", handler);
++      else mq.removeListener(handler);
++    };
++  }, []);
++
++  useEffect(() => {
++    if (currentInstructorIndex >= instructors.length) {
++      setCurrentInstructorIndex(0);
++    }
++  }, [instructors, currentInstructorIndex]);
++
++  const showPrevInstructor = () => {
++    setCurrentInstructorIndex((idx) =>
++        instructors.length
++            ? (idx - 1 + instructors.length) % instructors.length
++            : 0
++    );
++  };
++  const showNextInstructor = () => {
++    setCurrentInstructorIndex((idx) =>
++        instructors.length ? (idx + 1) % instructors.length : 0
++    );
++  };
++
+   const goHome = () => {
+-    window.location.href = "/";
++    navigate("/");
+   };
+   const handleLogout = () => {
+     sessionStorage.removeItem("auth_token");
+-    window.location.href = "/login";
++    navigate("/login");
+   };
+ 
+   const handleChange = (e) => {
+@@ -114,9 +183,31 @@
+     setForm((f) => ({ ...f, [name]: value }));
+   };
+ 
++  const handleMaxStudentsChange = (e) => {
++    let { value } = e.target;
++    if (value === "") {
++      setForm((f) => ({ ...f, max_students: "" }));
++      return;
++    }
++    value = value.replace(/[^0-9]/g, "");
++    if (value === "") {
++      setForm((f) => ({ ...f, max_students: "" }));
++      return;
++    }
++    const clamped = Math.max(0, Math.min(1000, parseInt(value, 10)));
++    setForm((f) => ({ ...f, max_students: clamped }));
++  };
++
++  const handleInstructorChange = (e) => {
++    const { name, value } = e.target;
++    setInstructorForm((f) => ({ ...f, [name]: value }));
++  };
++
+   const openAddModal = () => {
+     if (activeSection === "Users") {
+       setShowAddUserModal(true);
++    } else if (activeSection === "Instructors") {
++      openInstructorAddModal();
+     } else {
+       setIsEditing(false);
+       setEditingId(null);
+@@ -157,7 +248,7 @@
+   const handleSubmit = async (e) => {
+     e.preventDefault();
+     setErrorMessage("");
+-   
++
+     const payloadForm = {
+       ...form,
+       fee: parseFloat(form.fee) || 0,
+@@ -168,15 +259,15 @@
+     try {
+       if (isEditing) {
+         await axios.patch(
+-          `${API_BASE}/courses/${editingId}`,
+-          { course: payloadForm },
+-          { headers: getAuthHeaders() },
++            `${API_BASE}/courses/${editingId}`,
++            { course: payloadForm },
++            { headers: getAuthHeaders() }
+         );
+       } else {
+         await axios.post(
+-          `${API_BASE}/courses`,
+-          { course: payloadForm },
+-          { headers: getAuthHeaders() },
++            `${API_BASE}/courses`,
++            { course: payloadForm },
++            { headers: getAuthHeaders() }
+         );
+       }
+       setShowModal(false);
+@@ -184,7 +275,7 @@
+     } catch (err) {
+       console.error(err);
+       setErrorMessage(
+-        "Failed to save course. Please check the console for details.",
++          "Failed to save course. Please check the console for details."
+       );
+     }
+   };
+@@ -211,7 +302,7 @@
+     } catch (err) {
+       console.error(err);
+       setErrorMessage(
+-        "Image upload failed. Please check the console for details.",
++          "Image upload failed. Please check the console for details."
+       );
+     }
+   };
+@@ -221,349 +312,685 @@
+       const updatedUsers = await loadUsers();
+       setUsers(updatedUsers);
+     } catch (error) {
+-      console.error('Error refreshing users:', error);
++      console.error("Error refreshing users:", error);
++    }
++  };
++
++  const handleInstructorSubmit = async (e) => {
++    e.preventDefault();
++    setErrorMessage("");
++    try {
++      if (editingInstructorId) {
++        await updateInstructor(
++            editingInstructorId,
++            instructorForm,
++            selectedFile
++        );
++      } else {
++        await createInstructor(instructorForm, selectedFile);
++      }
++      setShowInstructorModal(false);
++      setEditingInstructorId(null);
++      setInstructorForm({
++        first_name: "",
++        last_name: "",
++        email: "",
++        course_ids: [],
++        course_name: "",
++        expertise: "",
++        description: "",
++      });
++      setSelectedFile(null);
++      setPreviewUrl("");
++      getInstructors().then(setInstructors);
++    } catch (err) {
++      console.error(err);
++      setErrorMessage(
++          "Failed to save instructor. Please check the console for details."
++      );
++    }
++  };
++
++  const openInstructorAddModal = () => {
++    // Ensure courses are loaded before opening modal
++    if (courses.length === 0) {
++      loadCourses().then(() => {
++        setIsInstructorReadOnly(false);
++        setEditingInstructorId(null);
++        setInstructorForm({
++          first_name: "",
++          last_name: "",
++          email: "",
++          course_name: "",
++          expertise: "",
++          description: "",
++        });
++        setSelectedFile(null);
++        setPreviewUrl("");
++        setErrorMessage("");
++        setShowInstructorModal(true);
++      });
++    } else {
++      setIsInstructorReadOnly(false);
++      setEditingInstructorId(null);
++      setInstructorForm({
++        first_name: "",
++        last_name: "",
++        email: "",
++        course_name: "",
++        expertise: "",
++        description: "",
++      });
++      setSelectedFile(null);
++      setPreviewUrl("");
++      setErrorMessage("");
++      setShowInstructorModal(true);
++    }
++  };
++
++  const openInstructorEditModal = (instructor) => {
++    // Ensure courses are loaded before opening modal
++    if (courses.length === 0) {
++      loadCourses().then(() => {
++        setIsInstructorReadOnly(true);
++        setEditingInstructorId(instructor.id);
++        setInstructorForm({
++          first_name: instructor.first_name || "",
++          last_name: instructor.last_name || "",
++          email: instructor.email || "",
++          course_name: instructor.course_name || "",
++          expertise: instructor.expertise || "",
++          description: instructor.description || "",
++        });
++        setSelectedFile(null);
++        setPreviewUrl("");
++        setErrorMessage("");
++        setShowInstructorModal(true);
++      });
++    } else {
++      setIsInstructorReadOnly(true);
++      setEditingInstructorId(instructor.id);
++      setInstructorForm({
++        first_name: instructor.first_name || "",
++        last_name: instructor.last_name || "",
++        email: instructor.email || "",
++        course_name: instructor.course_name || "",
++        expertise: instructor.expertise || "",
++        description: instructor.description || "",
++      });
++      setSelectedFile(null);
++      setPreviewUrl("");
++      setErrorMessage("");
++      setShowInstructorModal(true);
++    }
++  };
++
++  const handleInstructorEdit = () => {
++    setIsInstructorReadOnly(false);
++  };
++
++  const handleInstructorDelete = async (instructor) => {
++    setInstructorToDelete(instructor);
++    setShowDeleteInstructorModal(true);
++  };
++
++  const confirmDeleteInstructor = async () => {
++    if (!instructorToDelete) return;
++
++    try {
++      await deleteInstructor(instructorToDelete.id);
++      getInstructors().then(setInstructors);
++      setShowDeleteInstructorModal(false);
++      setInstructorToDelete(null);
++    } catch (err) {
++      console.error(err);
++      setErrorMessage(
++          "Failed to delete instructor. Please check the console for details."
++      );
+     }
+   };
+ 
+   const modalTitle = isEditing
+-    ? readOnly
+-      ? "Course Details"
+-      : "Edit Course"
+-    : "Add Course";
++      ? readOnly
++          ? "Course Details"
++          : "Edit Course"
++      : "Add Course";
+ 
+   return (
+-    <div className="cpbp-dashboard-container">
+-      <header className="cpbp-dashboard-header">
+-        <div className="cpbp-header-left">
+-          <span className="cpbp-header-title">Admin Dashboard</span>
+-          <button
+-            type="button"
+-            className="cpbp-add-button"
+-            onClick={openAddModal}
+-          >
+-            {activeSection === "Instructors" ? "Add Instructor" : activeSection === "Users" ? "Add User" : "Add Course"}
+-          </button>
+-          <button
+-            type="button"
+-            className="cpbp-theme-button"
+-            onClick={() => setIsLightTheme((t) => !t)}
+-          >
+-            {isLightTheme ? "Dark Theme" : "Light Theme"}
+-          </button>
+-        </div>
+-        <div className="cpbp-header-right">
++      <div className="cpbp-dashboard-container">
++        <header className="cpbp-dashboard-header">
++          <div className="cpbp-header-left">
++            <span className="cpbp-header-title">Admin Dashboard</span>
++            <button
++                type="button"
++                className="cpbp-add-button"
++                onClick={openAddModal}
++            >
++              {activeSection === "Instructors"
++                  ? "Add Instructor"
++                  : activeSection === "Users"
++                      ? "Add User"
++                      : "Add Course"}
++            </button>
++            <button
++                type="button"
++                className="cpbp-theme-button"
++                onClick={() => setIsLightTheme((t) => !t)}
++            >
++              {isLightTheme ? "Dark Theme" : "Light Theme"}
++            </button>
++          </div>
++          <div className="cpbp-header-right">
+           <span className="cpbp-user-name">
+             {user.first_name} {user.last_name}
+           </span>
+-          <div className="cpbp-profile-pic-container">
+-            {user.avatar_url ? (
+-              <img
+-                src={user.avatar_url}
+-                alt="avatar"
+-                className="cpbp-profile-pic"
+-              />
+-            ) : (
+-              <span className="cpbp-user-icon">👤</span>
+-            )}
+-          </div>
+-        </div>
+-      </header>
++            <div className="cpbp-profile-pic-container">
++              {user.avatar_url ? (
++                  <img
++                      src={user.avatar_url}
++                      alt="avatar"
++                      className="cpbp-profile-pic"
++                  />
++              ) : (
++                  <span className="cpbp-user-icon">👤</span>
++              )}
++            </div>
++          </div>
++        </header>
+ 
+-      <div className="cpbp-dashboard-body">
+-        <div className="cpbp-panel nav-panel">
+-          <nav className="cpbp-dashboard-nav">
+-            <div className="cpbp-nav-top">
+-              {sections.map((sec) => (
+-                <button
+-                  type="button"
+-                  key={sec}
+-                  className={`cpbp-nav-button${activeSection === sec ? " active" : ""}`}
+-                  onClick={() => setActiveSection(sec)}
+-                >
+-                  {sec}
+-                </button>
+-              ))}
+-            </div>
+-            <div className="cpbp-nav-bottom">
+-              <button
+-                type="button"
+-                className="cpbp-nav-button"
+-                onClick={goHome}
+-              >
+-                Home
+-              </button>
+-              <button
+-                type="button"
+-                className="cpbp-nav-button"
+-                onClick={handleLogout}
+-              >
+-                Logout
+-              </button>
+-            </div>
+-          </nav>
+-        </div>
++        <div className="cpbp-dashboard-body">
++          <div className="cpbp-panel nav-panel">
++            <nav className="cpbp-dashboard-nav">
++              <div className="cpbp-nav-top">
++                {sections.map((sec) => (
++                    <button
++                        type="button"
++                        key={sec}
++                        className={`cpbp-nav-button${
++                            activeSection === sec ? " active" : ""
++                        }`}
++                        onClick={() => setActiveSection(sec)}
++                    >
++                      {sec}
++                    </button>
++                ))}
++              </div>
++              <div className="cpbp-nav-bottom">
++                <button
++                    type="button"
++                    className="cpbp-nav-button"
++                    onClick={goHome}
++                >
++                  Home
++                </button>
++                <button
++                    type="button"
++                    className="cpbp-nav-button"
++                    onClick={handleLogout}
++                >
++                  Logout
++                </button>
++              </div>
++            </nav>
++          </div>
+ 
+-        <div className="cpbp-panel content-panel">
+-          <main className="cpbp-dashboard-content">
+-            {activeSection === "Courses" ? (
+-              <div className="cpbp-cards-container">
+-                {courses.map((course) => (
+-                  <div key={course.id} className="cpbp-card">
+-                    <img
+-                      src={course.image_url || "/default-course.jpg"}
+-                      alt={course.course_name}
+-                      className="cpbp-card-image"
+-                    />
+-                    <h3 className="cpbp-card-title">{course.course_name}</h3>
+-                    <div className="cpbp-card-actions">
+-                      <button
+-                        type="button"
+-                        className="cpbp-btn-edit"
+-                        onClick={() => openEditModal(course)}
+-                      >
+-                        Details
+-                      </button>
+-                      <button type="button" className="cpbp-btn-delete">
+-                        Delete
+-                      </button>
+-                    </div>
+-                  </div>
+-                ))}
+-              </div>
+-            ) : activeSection === "Users" ? (
+-              <UsersTable users={users} onUserUpdate={setUsers} />
+-            ) : (
+-              <p className="cpbp-placeholder">
+-                {activeSection} view not implemented yet.
+-              </p>
+-            )}
+-          </main>
+-        </div>
+-      </div>
++          <div className="cpbp-panel content-panel">
++            <main className="cpbp-dashboard-content">
++              {activeSection === "Courses" ? (
++                  <div className="cpbp-cards-container">
++                    {courses.map((course) => (
++                        <div key={course.id} className="cpbp-card">
++                          <div className="cpbp-card-image-wrap">
++                            <img
++                                src={course.image_url || "/default-course.jpg"}
++                                alt={course.course_name}
++                                className="cpbp-card-image"
++                            />
++                          </div>
++                          <h3 className="cpbp-card-title">{course.course_name}</h3>
++                          <div className="cpbp-card-actions">
++                            <button
++                                type="button"
++                                className="cpbp-btn-edit"
++                                onClick={() => openEditModal(course)}
++                            >
++                              Details
++                            </button>
++                            <button type="button" className="cpbp-btn-delete">
++                              Delete
++                            </button>
++                          </div>
++                        </div>
++                    ))}
++                  </div>
++              ) : activeSection === "Users" ? (
++                  <UsersTable users={users} onUserUpdate={setUsers} />
++              ) : activeSection === "Instructors" ? (
++                  isMobile ? (
++                      <div className="instructors-slider">
++                        <button
++                            type="button"
++                            className="slider-arrow slider-arrow-left"
++                            onClick={showPrevInstructor}
++                            aria-label="Previous instructor"
++                        >
++                          ◀
++                        </button>
++                        <div className="slider-viewport">
++                          {instructors.length > 0 && (
++                              <div className="cpbp-card instructor-card">
++                                <div className="cpbp-card-image-wrap">
++                                  <img
++                                      src={
++                                          instructors[currentInstructorIndex]
++                                              ?.profile_pic_url || "/default-avatar.jpg"
++                                      }
++                                      alt={`${
++                                          instructors[currentInstructorIndex]?.first_name ||
++                                          ""
++                                      } ${
++                                          instructors[currentInstructorIndex]?.last_name ||
++                                          ""
++                                      }`}
++                                      className="cpbp-card-image"
++                                  />
++                                </div>
++                                <h3 className="cpbp-card-title">{`${
++                                    instructors[currentInstructorIndex]?.first_name || ""
++                                } ${
++                                    instructors[currentInstructorIndex]?.last_name || ""
++                                }`}</h3>
++                                <p className="cpbp-card-description">
++                                  {instructors[currentInstructorIndex]?.course_name ||
++                                      "No course assigned"}
++                                </p>
++                                <div className="cpbp-card-actions">
++                                  <button
++                                      type="button"
++                                      className="cpbp-btn-edit"
++                                      onClick={() =>
++                                          openInstructorEditModal(
++                                              instructors[currentInstructorIndex]
++                                          )
++                                      }
++                                  >
++                                    Details
++                                  </button>
++                                  <button
++                                      type="button"
++                                      className="cpbp-btn-delete"
++                                      onClick={() =>
++                                          handleInstructorDelete(
++                                              instructors[currentInstructorIndex]
++                                          )
++                                      }
++                                  >
++                                    Delete
++                                  </button>
++                                </div>
++                              </div>
++                          )}
++                        </div>
++                        <button
++                            type="button"
++                            className="slider-arrow slider-arrow-right"
++                            onClick={showNextInstructor}
++                            aria-label="Next instructor"
++                        >
++                          ▶
++                        </button>
++                      </div>
++                  ) : (
++                      <div className="cpbp-cards-container instructors-3col-desktop">
++                        {instructors.map((instructor) => (
++                            <div
++                                key={instructor.id}
++                                className="cpbp-card instructor-card"
++                            >
++                              <div className="cpbp-card-image-wrap">
++                                <img
++                                    src={
++                                        instructor.profile_pic_url || "/default-avatar.jpg"
++                                    }
++                                    alt={`${instructor.first_name} ${instructor.last_name}`}
++                                    className="cpbp-card-image"
++                                />
++                              </div>
++                              <h3 className="cpbp-card-title">{`${instructor.first_name} ${instructor.last_name}`}</h3>
++                              <p className="cpbp-card-description">
++                                {instructor.course_name || "No course assigned"}
++                              </p>
++                              <div className="cpbp-card-actions">
++                                <button
++                                    type="button"
++                                    className="cpbp-btn-edit"
++                                    onClick={() => openInstructorEditModal(instructor)}
++                                >
++                                  Details
++                                </button>
++                                <button
++                                    type="button"
++                                    className="cpbp-btn-delete"
++                                    onClick={() => handleInstructorDelete(instructor)}
++                                >
++                                  Delete
++                                </button>
++                              </div>
++                            </div>
++                        ))}
++                      </div>
++                  )
++              ) : (
++                  <p className="cpbp-placeholder">
++                    {activeSection} view not implemented yet.
++                  </p>
++              )}
++            </main>
++          </div>
++        </div>
+ 
+-      {showModal && (
+-        <div className="cpbp-modal-overlay">
+-          <div className="cpbp-modal-content">
+-            <button
+-              type="button"
+-              className="cpbp-modal-close"
+-              onClick={() => setShowModal(false)}
+-            >
+-              ×
+-            </button>
+-            <h2 style={{ marginBottom: "1rem" }}>{modalTitle}</h2>
+-            {errorMessage && (
+-              <div className="cpbp-error-message">{errorMessage}</div>
+-            )}
+-            <form className="cpbp-form" onSubmit={handleSubmit}>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="course_name">Course Name</label>
+-                <input
+-                  id="course_name"
+-                  name="course_name"
+-                  value={form.course_name}
+-                  onChange={handleChange}
+-                  required
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="start_date">Start Date</label>
+-                <input
+-                  id="start_date"
+-                  type="date"
+-                  name="start_date"
+-                  value={form.start_date}
+-                  onChange={handleChange}
+-                  required
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="end_date">End Date</label>
+-                <input
+-                  id="end_date"
+-                  type="date"
+-                  name="end_date"
+-                  value={form.end_date}
+-                  onChange={handleChange}
+-                  required
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="description">Description</label>
+-                <textarea
+-                  id="description"
+-                  name="description"
+-                  value={form.description}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="benefits">Benefits</label>
+-                <input
+-                  id="benefits"
+-                  name="benefits"
+-                  value={form.benefits}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="target_audience">Target Audience</label>
+-                <input
+-                  id="target_audience"
+-                  name="target_audience"
+-                  value={form.target_audience}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="additional_info">Additional Info</label>
+-                <input
+-                  id="additional_info"
+-                  name="additional_info"
+-                  value={form.additional_info}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="fee">Fee (€)</label>
+-                <input
+-                  id="fee"
+-                  type="number"
+-                  step="0.01"
+-                  name="fee"
+-                  value={form.fee}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="max_students">Max Students</label>
+-                <input
+-                  id="max_students"
+-                  type="number"
+-                  name="max_students"
+-                  value={form.max_students}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="course_status">Course Status</label>
+-                <select
+-                  id="course_status"
+-                  name="course_status"
+-                  value={form.course_status}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                >
+-                  <option value="planned">Planned</option>
+-                  <option value="active">Active</option>
+-                  <option value="completed">Completed</option>
+-                </select>
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="rating">Rating</label>
+-                <input
+-                  id="rating"
+-                  type="number"
+-                  step="0.1"
+-                  name="rating"
+-                  value={form.rating}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              <div className="cpbp-form-group">
+-                <label htmlFor="general_description">General Description</label>
+-                <textarea
+-                  id="general_description"
+-                  name="general_description"
+-                  value={form.general_description}
+-                  onChange={handleChange}
+-                  disabled={isEditing && readOnly}
+-                />
+-              </div>
+-              {isEditing && (
+-                <div className="cpbp-form-group">
+-                  <label>Upload Image</label>
+-                  <input
+-                    type="file"
+-                    accept="image/*"
+-                    onChange={handleFileChange}
+-                    disabled={readOnly}
+-                  />
+-                  {previewUrl && (
+-                    <img
+-                      src={previewUrl}
+-                      alt="Preview"
+-                      style={{
+-                        display: "block",
+-                        maxWidth: "100%",
+-                        marginTop: "0.5rem",
+-                        borderRadius: "4px",
+-                      }}
+-                    />
+-                  )}
+-                  <button
+-                    type="button"
+-                    className="cpbp-btn-submit"
+-                    onClick={handleImageUpload}
+-                    disabled={!selectedFile || readOnly}
+-                    style={{ marginTop: "0.5rem" }}
+-                  >
+-                    Upload Image
+-                  </button>
+-                </div>
+-              )}
+-              <div
+-                className="cpbp-form-buttons"
+-                style={{ display: "flex", justifyContent: "space-between" }}
+-              >
+-                {isEditing && readOnly && (
+-                  <button
+-                    type="button"
+-                    className="cpbp-btn-edit"
+-                    onClick={() => setReadOnly(false)}
+-                  >
+-                    Edit
+-                  </button>
+-                )}
+-                <button
+-                  type="button"
+-                  className="cpbp-btn-cancel"
+-                  onClick={() => setShowModal(false)}
+-                >
+-                  Cancel
+-                </button>
+-                {!isEditing && (
+-                  <button type="submit" className="cpbp-btn-submit">
+-                    Create
+-                  </button>
+-                )}
+-                {isEditing && !readOnly && (
+-                  <button type="submit" className="cpbp-btn-submit">
+-                    Save Changes
+-                  </button>
+-                )}
+-              </div>
+-            </form>
+-          </div>
+-        </div>
+-      )}
++        {showModal && (
++            <div className="cpbp-modal-overlay">
++              <div className="cpbp-modal-content">
++                <button
++                    type="button"
++                    className="cpbp-modal-close"
++                    onClick={() => setShowModal(false)}
++                >
++                  ×
++                </button>
++                <h2 style={{ marginBottom: "1rem" }}>{modalTitle}</h2>
++                {errorMessage && (
++                    <div className="cpbp-error-message">{errorMessage}</div>
++                )}
++                <form className="cpbp-form" onSubmit={handleSubmit}>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="course_name">Course Name</label>
++                    <input
++                        id="course_name"
++                        name="course_name"
++                        value={form.course_name}
++                        onChange={handleChange}
++                        required
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="start_date">Start Date</label>
++                    <input
++                        id="start_date"
++                        type="date"
++                        name="start_date"
++                        value={form.start_date}
++                        onChange={handleChange}
++                        required
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="end_date">End Date</label>
++                    <input
++                        id="end_date"
++                        type="date"
++                        name="end_date"
++                        value={form.end_date}
++                        onChange={handleChange}
++                        required
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="description">Description</label>
++                    <textarea
++                        id="description"
++                        name="description"
++                        value={form.description}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="benefits">Benefits</label>
++                    <input
++                        id="benefits"
++                        name="benefits"
++                        value={form.benefits}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="target_audience">Target Audience</label>
++                    <input
++                        id="target_audience"
++                        name="target_audience"
++                        value={form.target_audience}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="additional_info">Additional Info</label>
++                    <input
++                        id="additional_info"
++                        name="additional_info"
++                        value={form.additional_info}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="fee">Fee (€)</label>
++                    <input
++                        id="fee"
++                        type="number"
++                        step="0.01"
++                        name="fee"
++                        value={form.fee}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="max_students">Max Students</label>
++                    <input
++                        id="max_students"
++                        type="number"
++                        name="max_students"
++                        value={form.max_students}
++                        onChange={handleMaxStudentsChange}
++                        inputMode="numeric"
++                        min="0"
++                        max="1000"
++                        step="1"
++                        placeholder="e.g., 20"
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="course_status">Course Status</label>
++                    <select
++                        id="course_status"
++                        name="course_status"
++                        value={form.course_status}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    >
++                      <option value="planned">Planned</option>
++                      <option value="active">Active</option>
++                      <option value="completed">Completed</option>
++                    </select>
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="rating">Rating</label>
++                    <input
++                        id="rating"
++                        type="number"
++                        step="0.1"
++                        name="rating"
++                        value={form.rating}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  <div className="cpbp-form-group">
++                    <label htmlFor="general_description">General Description</label>
++                    <textarea
++                        id="general_description"
++                        name="general_description"
++                        value={form.general_description}
++                        onChange={handleChange}
++                        disabled={isEditing && readOnly}
++                    />
++                  </div>
++                  {isEditing && (
++                      <div className="cpbp-form-group">
++                        <label>Upload Image</label>
++                        <input
++                            type="file"
++                            accept="image/*"
++                            onChange={handleFileChange}
++                            disabled={readOnly}
++                        />
++                        {previewUrl && (
++                            <img
++                                src={previewUrl}
++                                alt="Preview"
++                                style={{
++                                  display: "block",
++                                  maxWidth: "100%",
++                                  marginTop: "0.5rem",
++                                  borderRadius: "4px",
++                                }}
++                            />
++                        )}
++                        <button
++                            type="button"
++                            className="cpbp-btn-submit"
++                            onClick={handleImageUpload}
++                            disabled={!selectedFile || readOnly}
++                            style={{ marginTop: "0.5rem" }}
++                        >
++                          Upload Image
++                        </button>
++                      </div>
++                  )}
++                  <div
++                      className="cpbp-form-buttons"
++                      style={{ display: "flex", justifyContent: "space-between" }}
++                  >
++                    {isEditing && readOnly && (
++                        <button
++                            type="button"
++                            className="cpbp-btn-edit"
++                            onClick={() => setReadOnly(false)}
++                        >
++                          Edit
++                        </button>
++                    )}
++                    <button
++                        type="button"
++                        className="cpbp-btn-cancel"
++                        onClick={() => setShowModal(false)}
++                    >
++                      Cancel
++                    </button>
++                    {!isEditing && (
++                        <button type="submit" className="cpbp-btn-submit">
++                          Create
++                        </button>
++                    )}
++                    {isEditing && !readOnly && (
++                        <button type="submit" className="cpbp-btn-submit">
++                          Save Changes
++                        </button>
++                    )}
++                  </div>
++                </form>
++              </div>
++            </div>
++        )}
+ 
+-      {showAddUserModal && (
+-        <AddUserForm
+-          onClose={() => setShowAddUserModal(false)}
+-          onUserAdded={handleUserAdded}
+-        />
+-      )}
+-    </div>
++        {showAddUserModal && (
++            <AddUserForm
++                onClose={() => setShowAddUserModal(false)}
++                onUserAdded={handleUserAdded}
++            />
++        )}
++
++        {showInstructorModal && (
++            <InstructorAddEditModal
++                open={showInstructorModal}
++                onClose={() => setShowInstructorModal(false)}
++                instructorForm={instructorForm}
++                isEditing={!!editingInstructorId}
++                readOnly={isInstructorReadOnly}
++                errorMessage={errorMessage}
++                instructorPhotoPreview={previewUrl}
++                handleInstructorChange={handleInstructorChange}
++                handlePhotoChange={handleFileChange}
++                handleSubmit={handleInstructorSubmit}
++                handleEdit={handleInstructorEdit}
++                courses={courses}
++            />
++        )}
++
++        {showDeleteInstructorModal && instructorToDelete && (
++            <div className="cpbp-modal-overlay">
++              <div className="cpbp-delete-modal-container">
++                <div className="cpbp-delete-modal-content">
++                  <div className="cpbp-delete-modal-header">
++                    <div className="cpbp-delete-icon-container">
++                      <svg
++                          className="cpbp-delete-icon"
++                          fill="currentColor"
++                          viewBox="0 0 24 24"
++                      >
++                        <path d="M12 2L1 21h22L12 2zm0 3.17L19.83 19H4.17L12 5.17zM11 16h2v2h-2zm0-6h2v4h-2z" />
++                      </svg>
++                    </div>
++                    <div className="cpbp-delete-modal-body">
++                      <h3 className="cpbp-delete-title">Delete Instructor</h3>
++                      <div className="cpbp-delete-message-container">
++                        <p className="cpbp-delete-message">
++                          Are you sure you want to delete instructor{" "}
++                          <span className="cpbp-delete-item-name">
++                        {instructorToDelete.first_name}{" "}
++                            {instructorToDelete.last_name}
++                      </span>
++                          ? This action cannot be undone.
++                        </p>
++                      </div>
++                    </div>
++                  </div>
++                </div>
++                <div className="cpbp-delete-modal-actions">
++                  <button
++                      type="button"
++                      className="cpbp-btn-delete-confirm"
++                      onClick={confirmDeleteInstructor}
++                      style={{
++                        backgroundColor: "#dc3545",
++                        color: "white",
++                        border: "1px solid #dc3545",
++                      }}
++                  >
++                    Confirm
++                  </button>
++                  <button
++                      type="button"
++                      className="cpbp-btn-cancel"
++                      onClick={() => {
++                        setShowDeleteInstructorModal(false);
++                        setInstructorToDelete(null);
++                      }}
++                  >
++                    Cancel
++                  </button>
++                </div>
++              </div>
++            </div>
++        )}
++      </div>
+   );
+ }

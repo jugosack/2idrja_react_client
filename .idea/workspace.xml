@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+        <option value="JavaScript File" />
+        <option value="JSX File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="development" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;trajkovski-lazar&quot;
+  }
+}</component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="b948f80d-4d49-42ac-8170-d0fb6aad72fb" />
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/jugosack/2idrja_react_client.git&quot;,
+    &quot;accountId&quot;: &quot;7841d72d-2ec2-4f66-8755-cc3e208dd47a&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="30Nt3VpOe2ulmrFxAhfBS8xQwR3" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;courses-homepage-feature&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/lazar/OneDrive/Desktop/Proekt_Za_Fakultet/2idrja_react_client&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.stylelint&quot;: &quot;C:\\Users\\lazar\\OneDrive\\Desktop\\Proekt_Za_Fakultet\\2idrja_react_client\\node_modules\\stylelint&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\WebStorm 2025.1.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\lazar\OneDrive\Desktop\Proekt_Za_Fakultet\2idrja_react_client\src\Forms" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-WS-251.26927.40" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="" />
+      <created>1753479659251</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1753479659251</updated>
+      <workItem from="1753479660315" duration="488000" />
+      <workItem from="1753480239044" duration="679000" />
+      <workItem from="1753481003371" duration="2773000" />
+      <workItem from="1753521371411" duration="927000" />
+      <workItem from="1753522768634" duration="610000" />
+      <workItem from="1753529099745" duration="33000" />
+      <workItem from="1753529718977" duration="2853000" />
+      <workItem from="1753563980828" duration="4353000" />
+      <workItem from="1753722361991" duration="1059000" />
+      <workItem from="1753806309706" duration="1572000" />
+      <workItem from="1753884412001" duration="1119000" />
+      <workItem from="1753887435348" duration="4839000" />
+      <workItem from="1753892512602" duration="6524000" />
+      <workItem from="1753984210239" duration="207000" />
+      <workItem from="1754062308044" duration="88000" />
+      <workItem from="1754070483932" duration="5306000" />
+      <workItem from="1754077013865" duration="1724000" />
+      <workItem from="1754135176293" duration="224000" />
+      <workItem from="1754135603304" duration="229000" />
+      <workItem from="1754170369695" duration="303000" />
+      <workItem from="1754324244202" duration="2861000" />
+      <workItem from="1754327683172" duration="1782000" />
+      <workItem from="1754330735801" duration="2099000" />
+      <workItem from="1754334270932" duration="975000" />
+      <workItem from="1754335409435" duration="36000" />
+      <workItem from="1754413282598" duration="166000" />
+      <workItem from="1754426448847" duration="718000" />
+      <workItem from="1754475280099" duration="90000" />
+      <workItem from="1754501223740" duration="1770000" />
+      <workItem from="1754609515926" duration="855000" />
+      <workItem from="1754617410440" duration="215000" />
+      <workItem from="1754931910414" duration="1487000" />
+      <workItem from="1754935178001" duration="368000" />
+      <workItem from="1755020863394" duration="1752000" />
+      <workItem from="1755104607338" duration="2531000" />
+      <workItem from="1755529122926" duration="3711000" />
+      <workItem from="1755535799804" duration="8000" />
+      <workItem from="1755622766507" duration="1255000" />
+      <workItem from="1755790368348" duration="1961000" />
+      <workItem from="1755794280184" duration="2447000" />
+      <workItem from="1755801754343" duration="619000" />
+      <workItem from="1755881840197" duration="1290000" />
+      <workItem from="1756059137155" duration="1710000" />
+      <workItem from="1756065372926" duration="618000" />
+      <workItem from="1756141022714" duration="3001000" />
+      <workItem from="1756313587883" duration="4185000" />
+      <workItem from="1756485479991" duration="2871000" />
+      <workItem from="1756675373009" duration="707000" />
+      <workItem from="1756680546563" duration="6414000" />
+      <workItem from="1756739802537" duration="109000" />
+      <workItem from="1756746150963" duration="4377000" />
+      <workItem from="1756918878731" duration="253000" />
+      <workItem from="1756920737875" duration="980000" />
+      <workItem from="1757085525242" duration="3229000" />
+      <workItem from="1757332674806" duration="6420000" />
+      <workItem from="1757694033744" duration="2353000" />
+      <workItem from="1757866964161" duration="2171000" />
+      <workItem from="1757939696662" duration="1691000" />
+      <workItem from="1758128849775" duration="1322000" />
+    </task>
+    <task id="LOCAL-00001" summary="Added Delete Modal in main component">
+      <option name="closed" value="true" />
+      <created>1754334653520</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1754334653520</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added Delete Modal in main component" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Delete Modal in main component" />
+  </component>
+</project>

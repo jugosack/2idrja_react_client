@@ -1,0 +1,2238 @@
+Index: src/components/CoursesPanelPage.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* eslint-disable jsx-a11y/label-has-associated-control, no-unused-vars, no-nested-ternary */\r\n/* eslint-disable */\r\nimport React, { useState, useEffect, useCallback } from \"react\";\r\nimport axios from \"axios\";\r\nimport { useNavigate } from \"react-router-dom\";\r\nimport { loadUsers } from \"./Users/UsersServices\";\r\nimport UsersTable from \"./Users/UsersTable\";\r\nimport AddUserForm from \"./Users/AddUserForm\";\r\nimport InstructorAddEditModal from \"../modals/InstructorAddEditModal\";\r\nimport {\r\n  getInstructors,\r\n  createInstructor,\r\n  updateInstructor,\r\n  deleteInstructor,\r\n} from \"../services/InstructorService\";\r\nimport \"./CoursesPanelPage.css\";\r\nimport \"../modals/modals.css\";\r\n\r\nconst API_BASE = \"http://localhost:3000\";\r\n\r\nfunction parseJwt(token) {\r\n  try {\r\n    const base64 = token.split(\".\")[1];\r\n    const json = atob(base64.replace(/-/g, \"+\").replace(/_/g, \"/\"));\r\n    return JSON.parse(json);\r\n  } catch {\r\n    return null;\r\n  }\r\n}\r\n\r\nconst emptyForm = {\r\n  course_name: \"\",\r\n  start_date: \"\",\r\n  end_date: \"\",\r\n  description: \"\",\r\n  benefits: \"\",\r\n  target_audience: \"\",\r\n  additional_info: \"\",\r\n  fee: \"\",\r\n  max_students: \"\",\r\n  enrolled_students: 0,\r\n  course_status: \"planned\",\r\n  rating: \"\",\r\n  general_description: \"\",\r\n};\r\n\r\nexport default function CoursesPanelPage() {\r\n  const navigate = useNavigate();\r\n  const [activeSection, setActiveSection] = useState(\"Courses\");\r\n  const [user, setUser] = useState({\r\n    first_name: \"\",\r\n    last_name: \"\",\r\n    avatar_url: \"\",\r\n  });\r\n  const [courses, setCourses] = useState([]);\r\n  const [showModal, setShowModal] = useState(false);\r\n  const [isEditing, setIsEditing] = useState(false);\r\n  const [editingId, setEditingId] = useState(null);\r\n  const [readOnly, setReadOnly] = useState(false);\r\n  const [form, setForm] = useState(emptyForm);\r\n  const [isLightTheme, setIsLightTheme] = useState(false);\r\n  const [errorMessage, setErrorMessage] = useState(\"\");\r\n\r\n  const [selectedFile, setSelectedFile] = useState(null);\r\n  const [previewUrl, setPreviewUrl] = useState(\"\");\r\n  const [users, setUsers] = useState([]);\r\n  const [showAddUserModal, setShowAddUserModal] = useState(false);\r\n  const [instructors, setInstructors] = useState([]);\r\n  const [showInstructorModal, setShowInstructorModal] = useState(false);\r\n  const [editingInstructorId, setEditingInstructorId] = useState(null);\r\n  const [isInstructorReadOnly, setIsInstructorReadOnly] = useState(false);\r\n  const [instructorForm, setInstructorForm] = useState({\r\n    first_name: \"\",\r\n    last_name: \"\",\r\n    email: \"\",\r\n    course_ids: [],\r\n    course_name: \"\",\r\n    expertise: \"\",\r\n    description: \"\",\r\n  });\r\n  const [showDeleteInstructorModal, setShowDeleteInstructorModal] =\r\n    useState(false);\r\n  const [instructorToDelete, setInstructorToDelete] = useState(null);\r\n\r\n  const sections = [\"Courses\", \"Users\", \"Instructors\"];\r\n\r\n  const getAuthHeaders = () => {\r\n    const token = sessionStorage.getItem(\"auth_token\");\r\n    return token ? { Authorization: `Bearer ${token}` } : {};\r\n  };\r\n\r\n  const loadCourses = useCallback(() => {\r\n    axios\r\n      .get(`${API_BASE}/courses`, { headers: getAuthHeaders() })\r\n      .then((res) => setCourses(res.data))\r\n      .catch(() => {});\r\n  }, []);\r\n\r\n  useEffect(() => {\r\n    document.body.classList.add(\"admin-dashboard-bg\");\r\n    return () => document.body.classList.remove(\"admin-dashboard-bg\");\r\n  }, []);\r\n\r\n  useEffect(() => {\r\n    document.body.classList.toggle(\"light-theme\", isLightTheme);\r\n  }, [isLightTheme]);\r\n\r\n  useEffect(() => {\r\n    const token = sessionStorage.getItem(\"auth_token\");\r\n    if (!token) return;\r\n    const payload = parseJwt(token);\r\n    if (payload?.first_name) {\r\n      setUser({\r\n        first_name: payload.first_name,\r\n        last_name: payload.last_name,\r\n        avatar_url: payload.avatar_url || \"\",\r\n      });\r\n    }\r\n  }, []);\r\n\r\n  useEffect(() => {\r\n    if (activeSection === \"Courses\") loadCourses();\r\n    if (activeSection === \"Users\") {\r\n      loadUsers()\r\n        .then(setUsers)\r\n        .catch(() => setUsers([]));\r\n    }\r\n    if (activeSection === \"Instructors\") {\r\n      getInstructors()\r\n        .then(setInstructors)\r\n        .catch(() => setInstructors([]));\r\n    }\r\n  }, [activeSection, loadCourses]);\r\n\r\n  const goHome = () => {\r\n    navigate(\"/\");\r\n  };\r\n  const handleLogout = () => {\r\n    sessionStorage.removeItem(\"auth_token\");\r\n    navigate(\"/login\");\r\n  };\r\n\r\n  const handleChange = (e) => {\r\n    const { name, value } = e.target;\r\n    setForm((f) => ({ ...f, [name]: value }));\r\n  };\r\n\r\n  const handleInstructorChange = (e) => {\r\n    const { name, value } = e.target;\r\n    setInstructorForm((f) => ({ ...f, [name]: value }));\r\n  };\r\n\r\n  const openAddModal = () => {\r\n    if (activeSection === \"Users\") {\r\n      setShowAddUserModal(true);\r\n    } else if (activeSection === \"Instructors\") {\r\n      openInstructorAddModal();\r\n    } else {\r\n      setIsEditing(false);\r\n      setEditingId(null);\r\n      setForm(emptyForm);\r\n      setReadOnly(false);\r\n      setSelectedFile(null);\r\n      setPreviewUrl(\"\");\r\n      setErrorMessage(\"\");\r\n      setShowModal(true);\r\n    }\r\n  };\r\n\r\n  const openEditModal = (course) => {\r\n    setIsEditing(true);\r\n    setEditingId(course.id);\r\n    setForm({\r\n      course_name: course.course_name,\r\n      start_date: course.start_date,\r\n      end_date: course.end_date,\r\n      description: course.description,\r\n      benefits: course.benefits,\r\n      target_audience: course.target_audience,\r\n      additional_info: course.additional_info,\r\n      fee: course.fee,\r\n      max_students: course.max_students,\r\n      enrolled_students: course.enrolled_students,\r\n      course_status: course.course_status,\r\n      rating: course.rating,\r\n      general_description: course.general_description,\r\n    });\r\n    setReadOnly(true);\r\n    setSelectedFile(null);\r\n    setPreviewUrl(\"\");\r\n    setErrorMessage(\"\");\r\n    setShowModal(true);\r\n  };\r\n\r\n  const handleSubmit = async (e) => {\r\n    e.preventDefault();\r\n    setErrorMessage(\"\");\r\n\r\n    const payloadForm = {\r\n      ...form,\r\n      fee: parseFloat(form.fee) || 0,\r\n      max_students: parseInt(form.max_students, 10) || 0,\r\n      enrolled_students: form.enrolled_students,\r\n      rating: form.rating !== \"\" ? parseFloat(form.rating) : null,\r\n    };\r\n    try {\r\n      if (isEditing) {\r\n        await axios.patch(\r\n          `${API_BASE}/courses/${editingId}`,\r\n          { course: payloadForm },\r\n          { headers: getAuthHeaders() }\r\n        );\r\n      } else {\r\n        await axios.post(\r\n          `${API_BASE}/courses`,\r\n          { course: payloadForm },\r\n          { headers: getAuthHeaders() }\r\n        );\r\n      }\r\n      setShowModal(false);\r\n      loadCourses();\r\n    } catch (err) {\r\n      console.error(err);\r\n      setErrorMessage(\r\n        \"Failed to save course. Please check the console for details.\"\r\n      );\r\n    }\r\n  };\r\n\r\n  const handleFileChange = (e) => {\r\n    const file = e.target.files[0];\r\n    if (!file) return;\r\n    setSelectedFile(file);\r\n    setPreviewUrl(URL.createObjectURL(file));\r\n  };\r\n\r\n  const handleImageUpload = async () => {\r\n    if (!selectedFile || !editingId) return;\r\n    setErrorMessage(\"\");\r\n    const data = new FormData();\r\n    data.append(\"image\", selectedFile);\r\n    try {\r\n      await axios.post(`${API_BASE}/courses/${editingId}/upload_image`, data, {\r\n        headers: { \"Content-Type\": \"multipart/form-data\", ...getAuthHeaders() },\r\n      });\r\n      setSelectedFile(null);\r\n      setPreviewUrl(\"\");\r\n      loadCourses();\r\n    } catch (err) {\r\n      console.error(err);\r\n      setErrorMessage(\r\n        \"Image upload failed. Please check the console for details.\"\r\n      );\r\n    }\r\n  };\r\n\r\n  const handleUserAdded = async () => {\r\n    try {\r\n      const updatedUsers = await loadUsers();\r\n      setUsers(updatedUsers);\r\n    } catch (error) {\r\n      console.error(\"Error refreshing users:\", error);\r\n    }\r\n  };\r\n\r\n  const handleInstructorSubmit = async (e) => {\r\n    e.preventDefault();\r\n    setErrorMessage(\"\");\r\n    try {\r\n      if (editingInstructorId) {\r\n        await updateInstructor(\r\n          editingInstructorId,\r\n          instructorForm,\r\n          selectedFile\r\n        );\r\n      } else {\r\n        await createInstructor(instructorForm, selectedFile);\r\n      }\r\n      setShowInstructorModal(false);\r\n      setEditingInstructorId(null);\r\n      setInstructorForm({\r\n        first_name: \"\",\r\n        last_name: \"\",\r\n        email: \"\",\r\n        course_ids: [],\r\n        course_name: \"\",\r\n        expertise: \"\",\r\n        description: \"\",\r\n      });\r\n      setSelectedFile(null);\r\n      setPreviewUrl(\"\");\r\n      getInstructors().then(setInstructors);\r\n    } catch (err) {\r\n      console.error(err);\r\n      setErrorMessage(\r\n        \"Failed to save instructor. Please check the console for details.\"\r\n      );\r\n    }\r\n  };\r\n\r\n  const openInstructorAddModal = () => {\r\n    // Ensure courses are loaded before opening modal\r\n    if (courses.length === 0) {\r\n      loadCourses().then(() => {\r\n        setIsInstructorReadOnly(false);\r\n        setEditingInstructorId(null);\r\n        setInstructorForm({\r\n          first_name: \"\",\r\n          last_name: \"\",\r\n          email: \"\",\r\n          course_ids: [],\r\n          course_name: \"\",\r\n          expertise: \"\",\r\n          description: \"\",\r\n        });\r\n        setSelectedFile(null);\r\n        setPreviewUrl(\"\");\r\n        setErrorMessage(\"\");\r\n        setShowInstructorModal(true);\r\n      });\r\n    } else {\r\n      setIsInstructorReadOnly(false);\r\n      setEditingInstructorId(null);\r\n      setInstructorForm({\r\n        first_name: \"\",\r\n        last_name: \"\",\r\n        email: \"\",\r\n        course_ids: [],\r\n        course_name: \"\",\r\n        expertise: \"\",\r\n        description: \"\",\r\n      });\r\n      setSelectedFile(null);\r\n      setPreviewUrl(\"\");\r\n      setErrorMessage(\"\");\r\n      setShowInstructorModal(true);\r\n    }\r\n  };\r\n\r\n  const openInstructorEditModal = (instructor) => {\r\n    // Ensure courses are loaded before opening modal\r\n    if (courses.length === 0) {\r\n      loadCourses().then(() => {\r\n        setIsInstructorReadOnly(true);\r\n        setEditingInstructorId(instructor.id);\r\n        setInstructorForm({\r\n          first_name: instructor.first_name || \"\",\r\n          last_name: instructor.last_name || \"\",\r\n          email: instructor.email || \"\",\r\n          course_ids: instructor.course_ids || [],\r\n          course_name: instructor.course_name || \"\",\r\n          expertise: instructor.expertise || \"\",\r\n          description: instructor.description || \"\",\r\n        });\r\n        setSelectedFile(null);\r\n        setPreviewUrl(\"\");\r\n        setErrorMessage(\"\");\r\n        setShowInstructorModal(true);\r\n      });\r\n    } else {\r\n      setIsInstructorReadOnly(true);\r\n      setEditingInstructorId(instructor.id);\r\n      setInstructorForm({\r\n        first_name: instructor.first_name || \"\",\r\n        last_name: instructor.last_name || \"\",\r\n        email: instructor.email || \"\",\r\n        course_ids: instructor.course_ids || [],\r\n        course_name: instructor.course_name || \"\",\r\n        expertise: instructor.expertise || \"\",\r\n        description: instructor.description || \"\",\r\n      });\r\n      setSelectedFile(null);\r\n      setPreviewUrl(\"\");\r\n      setErrorMessage(\"\");\r\n      setShowInstructorModal(true);\r\n    }\r\n  };\r\n\r\n  const handleInstructorEdit = () => {\r\n    setIsInstructorReadOnly(false);\r\n  };\r\n\r\n  const handleInstructorDelete = async (instructor) => {\r\n    setInstructorToDelete(instructor);\r\n    setShowDeleteInstructorModal(true);\r\n  };\r\n\r\n  const confirmDeleteInstructor = async () => {\r\n    if (!instructorToDelete) return;\r\n\r\n    try {\r\n      await deleteInstructor(instructorToDelete.id);\r\n      getInstructors().then(setInstructors);\r\n      setShowDeleteInstructorModal(false);\r\n      setInstructorToDelete(null);\r\n    } catch (err) {\r\n      console.error(err);\r\n      setErrorMessage(\r\n        \"Failed to delete instructor. Please check the console for details.\"\r\n      );\r\n    }\r\n  };\r\n\r\n  const modalTitle = isEditing\r\n    ? readOnly\r\n      ? \"Course Details\"\r\n      : \"Edit Course\"\r\n    : \"Add Course\";\r\n\r\n  return (\r\n    <div className=\"cpbp-dashboard-container\">\r\n      <header className=\"cpbp-dashboard-header\">\r\n        <div className=\"cpbp-header-left\">\r\n          <span className=\"cpbp-header-title\">Admin Dashboard</span>\r\n          <button\r\n            type=\"button\"\r\n            className=\"cpbp-add-button\"\r\n            onClick={openAddModal}\r\n          >\r\n            {activeSection === \"Instructors\"\r\n              ? \"Add Instructor\"\r\n              : activeSection === \"Users\"\r\n              ? \"Add User\"\r\n              : \"Add Course\"}\r\n          </button>\r\n          <button\r\n            type=\"button\"\r\n            className=\"cpbp-theme-button\"\r\n            onClick={() => setIsLightTheme((t) => !t)}\r\n          >\r\n            {isLightTheme ? \"Dark Theme\" : \"Light Theme\"}\r\n          </button>\r\n        </div>\r\n        <div className=\"cpbp-header-right\">\r\n          <span className=\"cpbp-user-name\">\r\n            {user.first_name} {user.last_name}\r\n          </span>\r\n          <div className=\"cpbp-profile-pic-container\">\r\n            {user.avatar_url ? (\r\n              <img\r\n                src={user.avatar_url}\r\n                alt=\"avatar\"\r\n                className=\"cpbp-profile-pic\"\r\n              />\r\n            ) : (\r\n              <span className=\"cpbp-user-icon\">\uD83D\uDC64</span>\r\n            )}\r\n          </div>\r\n        </div>\r\n      </header>\r\n\r\n      <div className=\"cpbp-dashboard-body\">\r\n        <div className=\"cpbp-panel nav-panel\">\r\n          <nav className=\"cpbp-dashboard-nav\">\r\n            <div className=\"cpbp-nav-top\">\r\n              {sections.map((sec) => (\r\n                <button\r\n                  type=\"button\"\r\n                  key={sec}\r\n                  className={`cpbp-nav-button${\r\n                    activeSection === sec ? \" active\" : \"\"\r\n                  }`}\r\n                  onClick={() => setActiveSection(sec)}\r\n                >\r\n                  {sec}\r\n                </button>\r\n              ))}\r\n            </div>\r\n            <div className=\"cpbp-nav-bottom\">\r\n              <button\r\n                type=\"button\"\r\n                className=\"cpbp-nav-button\"\r\n                onClick={goHome}\r\n              >\r\n                Home\r\n              </button>\r\n              <button\r\n                type=\"button\"\r\n                className=\"cpbp-nav-button\"\r\n                onClick={handleLogout}\r\n              >\r\n                Logout\r\n              </button>\r\n            </div>\r\n          </nav>\r\n        </div>\r\n\r\n        <div className=\"cpbp-panel content-panel\">\r\n          <main className=\"cpbp-dashboard-content\">\r\n            {activeSection === \"Courses\" ? (\r\n              <div className=\"cpbp-cards-container\">\r\n                {courses.map((course) => (\r\n                  <div key={course.id} className=\"cpbp-card\">\r\n                    <img\r\n                      src={course.image_url || \"/default-course.jpg\"}\r\n                      alt={course.course_name}\r\n                      className=\"cpbp-card-image\"\r\n                    />\r\n                    <h3 className=\"cpbp-card-title\">{course.course_name}</h3>\r\n                    <div className=\"cpbp-card-actions\">\r\n                      <button\r\n                        type=\"button\"\r\n                        className=\"cpbp-btn-edit\"\r\n                        onClick={() => openEditModal(course)}\r\n                      >\r\n                        Details\r\n                      </button>\r\n                      <button type=\"button\" className=\"cpbp-btn-delete\">\r\n                        Delete\r\n                      </button>\r\n                    </div>\r\n                  </div>\r\n                ))}\r\n              </div>\r\n            ) : activeSection === \"Users\" ? (\r\n              <UsersTable users={users} onUserUpdate={setUsers} />\r\n            ) : activeSection === \"Instructors\" ? (\r\n              <div className=\"cpbp-cards-container\">\r\n                {instructors.map((instructor) => (\r\n                  <div\r\n                    key={instructor.id}\r\n                    className=\"cpbp-card instructor-card\"\r\n                  >\r\n                    <img\r\n                      src={instructor.profile_pic_url || \"/default-avatar.jpg\"}\r\n                      alt={`${instructor.first_name} ${instructor.last_name}`}\r\n                      className=\"cpbp-card-image\"\r\n                    />\r\n                    <h3 className=\"cpbp-card-title\">{`${instructor.first_name} ${instructor.last_name}`}</h3>\r\n                    <p className=\"cpbp-card-description\">\r\n                      {instructor.course_name || \"No course assigned\"}\r\n                    </p>\r\n                    <div className=\"cpbp-card-actions\">\r\n                      <button\r\n                        type=\"button\"\r\n                        className=\"cpbp-btn-edit\"\r\n                        onClick={() => openInstructorEditModal(instructor)}\r\n                      >\r\n                        Details\r\n                      </button>\r\n                      <button\r\n                        type=\"button\"\r\n                        className=\"cpbp-btn-delete\"\r\n                        onClick={() => handleInstructorDelete(instructor)}\r\n                      >\r\n                        Delete\r\n                      </button>\r\n                    </div>\r\n                  </div>\r\n                ))}\r\n              </div>\r\n            ) : (\r\n              <p className=\"cpbp-placeholder\">\r\n                {activeSection} view not implemented yet.\r\n              </p>\r\n            )}\r\n          </main>\r\n        </div>\r\n      </div>\r\n\r\n      {showModal && (\r\n        <div className=\"cpbp-modal-overlay\">\r\n          <div className=\"cpbp-modal-content\">\r\n            <button\r\n              type=\"button\"\r\n              className=\"cpbp-modal-close\"\r\n              onClick={() => setShowModal(false)}\r\n            >\r\n              ×\r\n            </button>\r\n            <h2 style={{ marginBottom: \"1rem\" }}>{modalTitle}</h2>\r\n            {errorMessage && (\r\n              <div className=\"cpbp-error-message\">{errorMessage}</div>\r\n            )}\r\n            <form className=\"cpbp-form\" onSubmit={handleSubmit}>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"course_name\">Course Name</label>\r\n                <input\r\n                  id=\"course_name\"\r\n                  name=\"course_name\"\r\n                  value={form.course_name}\r\n                  onChange={handleChange}\r\n                  required\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"start_date\">Start Date</label>\r\n                <input\r\n                  id=\"start_date\"\r\n                  type=\"date\"\r\n                  name=\"start_date\"\r\n                  value={form.start_date}\r\n                  onChange={handleChange}\r\n                  required\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"end_date\">End Date</label>\r\n                <input\r\n                  id=\"end_date\"\r\n                  type=\"date\"\r\n                  name=\"end_date\"\r\n                  value={form.end_date}\r\n                  onChange={handleChange}\r\n                  required\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"description\">Description</label>\r\n                <textarea\r\n                  id=\"description\"\r\n                  name=\"description\"\r\n                  value={form.description}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"benefits\">Benefits</label>\r\n                <input\r\n                  id=\"benefits\"\r\n                  name=\"benefits\"\r\n                  value={form.benefits}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"target_audience\">Target Audience</label>\r\n                <input\r\n                  id=\"target_audience\"\r\n                  name=\"target_audience\"\r\n                  value={form.target_audience}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"additional_info\">Additional Info</label>\r\n                <input\r\n                  id=\"additional_info\"\r\n                  name=\"additional_info\"\r\n                  value={form.additional_info}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"fee\">Fee (€)</label>\r\n                <input\r\n                  id=\"fee\"\r\n                  type=\"number\"\r\n                  step=\"0.01\"\r\n                  name=\"fee\"\r\n                  value={form.fee}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"max_students\">Max Students</label>\r\n                <input\r\n                  id=\"max_students\"\r\n                  type=\"number\"\r\n                  name=\"max_students\"\r\n                  value={form.max_students}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"course_status\">Course Status</label>\r\n                <select\r\n                  id=\"course_status\"\r\n                  name=\"course_status\"\r\n                  value={form.course_status}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                >\r\n                  <option value=\"planned\">Planned</option>\r\n                  <option value=\"active\">Active</option>\r\n                  <option value=\"completed\">Completed</option>\r\n                </select>\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"rating\">Rating</label>\r\n                <input\r\n                  id=\"rating\"\r\n                  type=\"number\"\r\n                  step=\"0.1\"\r\n                  name=\"rating\"\r\n                  value={form.rating}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              <div className=\"cpbp-form-group\">\r\n                <label htmlFor=\"general_description\">General Description</label>\r\n                <textarea\r\n                  id=\"general_description\"\r\n                  name=\"general_description\"\r\n                  value={form.general_description}\r\n                  onChange={handleChange}\r\n                  disabled={isEditing && readOnly}\r\n                />\r\n              </div>\r\n              {isEditing && (\r\n                <div className=\"cpbp-form-group\">\r\n                  <label>Upload Image</label>\r\n                  <input\r\n                    type=\"file\"\r\n                    accept=\"image/*\"\r\n                    onChange={handleFileChange}\r\n                    disabled={readOnly}\r\n                  />\r\n                  {previewUrl && (\r\n                    <img\r\n                      src={previewUrl}\r\n                      alt=\"Preview\"\r\n                      style={{\r\n                        display: \"block\",\r\n                        maxWidth: \"100%\",\r\n                        marginTop: \"0.5rem\",\r\n                        borderRadius: \"4px\",\r\n                      }}\r\n                    />\r\n                  )}\r\n                  <button\r\n                    type=\"button\"\r\n                    className=\"cpbp-btn-submit\"\r\n                    onClick={handleImageUpload}\r\n                    disabled={!selectedFile || readOnly}\r\n                    style={{ marginTop: \"0.5rem\" }}\r\n                  >\r\n                    Upload Image\r\n                  </button>\r\n                </div>\r\n              )}\r\n              <div\r\n                className=\"cpbp-form-buttons\"\r\n                style={{ display: \"flex\", justifyContent: \"space-between\" }}\r\n              >\r\n                {isEditing && readOnly && (\r\n                  <button\r\n                    type=\"button\"\r\n                    className=\"cpbp-btn-edit\"\r\n                    onClick={() => setReadOnly(false)}\r\n                  >\r\n                    Edit\r\n                  </button>\r\n                )}\r\n                <button\r\n                  type=\"button\"\r\n                  className=\"cpbp-btn-cancel\"\r\n                  onClick={() => setShowModal(false)}\r\n                >\r\n                  Cancel\r\n                </button>\r\n                {!isEditing && (\r\n                  <button type=\"submit\" className=\"cpbp-btn-submit\">\r\n                    Create\r\n                  </button>\r\n                )}\r\n                {isEditing && !readOnly && (\r\n                  <button type=\"submit\" className=\"cpbp-btn-submit\">\r\n                    Save Changes\r\n                  </button>\r\n                )}\r\n              </div>\r\n            </form>\r\n          </div>\r\n        </div>\r\n      )}\r\n\r\n      {showAddUserModal && (\r\n        <AddUserForm\r\n          onClose={() => setShowAddUserModal(false)}\r\n          onUserAdded={handleUserAdded}\r\n        />\r\n      )}\r\n\r\n      {showInstructorModal && (\r\n        <InstructorAddEditModal\r\n          open={showInstructorModal}\r\n          onClose={() => setShowInstructorModal(false)}\r\n          instructorForm={instructorForm}\r\n          isEditing={!!editingInstructorId}\r\n          readOnly={isInstructorReadOnly}\r\n          errorMessage={errorMessage}\r\n          instructorPhotoPreview={previewUrl}\r\n          handleInstructorChange={handleInstructorChange}\r\n          handlePhotoChange={handleFileChange}\r\n          handleSubmit={handleInstructorSubmit}\r\n          handleEdit={handleInstructorEdit}\r\n          courses={courses}\r\n        />\r\n      )}\r\n\r\n      {showDeleteInstructorModal && instructorToDelete && (\r\n        <div className=\"cpbp-modal-overlay\">\r\n          <div className=\"cpbp-delete-modal-container\">\r\n            <div className=\"cpbp-delete-modal-content\">\r\n              <div className=\"cpbp-delete-modal-header\">\r\n                <div className=\"cpbp-delete-icon-container\">\r\n                  <svg\r\n                    className=\"cpbp-delete-icon\"\r\n                    fill=\"currentColor\"\r\n                    viewBox=\"0 0 24 24\"\r\n                  >\r\n                    <path d=\"M12 2L1 21h22L12 2zm0 3.17L19.83 19H4.17L12 5.17zM11 16h2v2h-2zm0-6h2v4h-2z\" />\r\n                  </svg>\r\n                </div>\r\n                <div className=\"cpbp-delete-modal-body\">\r\n                  <h3 className=\"cpbp-delete-title\">Delete Instructor</h3>\r\n                  <div className=\"cpbp-delete-message-container\">\r\n                    <p className=\"cpbp-delete-message\">\r\n                      Are you sure you want to delete instructor{\" \"}\r\n                      <span className=\"cpbp-delete-item-name\">\r\n                        {instructorToDelete.first_name}{\" \"}\r\n                        {instructorToDelete.last_name}\r\n                      </span>\r\n                      ? This action cannot be undone.\r\n                    </p>\r\n                  </div>\r\n                </div>\r\n              </div>\r\n            </div>\r\n            <div className=\"cpbp-delete-modal-actions\">\r\n              <button\r\n                type=\"button\"\r\n                className=\"cpbp-btn-delete-confirm\"\r\n                onClick={confirmDeleteInstructor}\r\n                style={{\r\n                  backgroundColor: \"#dc3545\",\r\n                  color: \"white\",\r\n                  border: \"1px solid #dc3545\",\r\n                }}\r\n              >\r\n                Confirm\r\n              </button>\r\n              <button\r\n                type=\"button\"\r\n                className=\"cpbp-btn-cancel\"\r\n                onClick={() => {\r\n                  setShowDeleteInstructorModal(false);\r\n                  setInstructorToDelete(null);\r\n                }}\r\n              >\r\n                Cancel\r\n              </button>\r\n            </div>\r\n          </div>\r\n        </div>\r\n      )}\r\n    </div>\r\n  );\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/components/CoursesPanelPage.jsx b/src/components/CoursesPanelPage.jsx
+--- a/src/components/CoursesPanelPage.jsx	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ b/src/components/CoursesPanelPage.jsx	(date 1757092163679)
+@@ -14,7 +14,6 @@
+   deleteInstructor,
+ } from "../services/InstructorService";
+ import "./CoursesPanelPage.css";
+-import "../modals/modals.css";
+ 
+ const API_BASE = "http://localhost:3000";
+ 
+@@ -58,7 +57,7 @@
+   const [editingId, setEditingId] = useState(null);
+   const [readOnly, setReadOnly] = useState(false);
+   const [form, setForm] = useState(emptyForm);
+-  const [isLightTheme, setIsLightTheme] = useState(false);
++  const [isLightTheme, setIsLightTheme] = useState(true);
+   const [errorMessage, setErrorMessage] = useState("");
+ 
+   const [selectedFile, setSelectedFile] = useState(null);
+@@ -69,11 +68,16 @@
+   const [showInstructorModal, setShowInstructorModal] = useState(false);
+   const [editingInstructorId, setEditingInstructorId] = useState(null);
+   const [isInstructorReadOnly, setIsInstructorReadOnly] = useState(false);
++  const [currentInstructorIndex, setCurrentInstructorIndex] = useState(0);
++  const [isMobile, setIsMobile] = useState(() =>
++    typeof window !== "undefined"
++      ? window.matchMedia("(max-width: 425px)").matches
++      : false
++  );
+   const [instructorForm, setInstructorForm] = useState({
+     first_name: "",
+     last_name: "",
+     email: "",
+-    course_ids: [],
+     course_name: "",
+     expertise: "",
+     description: "",
+@@ -85,7 +89,9 @@
+   const sections = ["Courses", "Users", "Instructors"];
+ 
+   const getAuthHeaders = () => {
+-    const token = sessionStorage.getItem("auth_token");
++    const token =
++      sessionStorage.getItem("auth_token") ||
++      localStorage.getItem("auth_token");
+     return token ? { Authorization: `Bearer ${token}` } : {};
+   };
+ 
+@@ -132,6 +138,38 @@
+     }
+   }, [activeSection, loadCourses]);
+ 
++  useEffect(() => {
++    if (typeof window === "undefined") return;
++    const mq = window.matchMedia("(max-width: 425px)");
++    const handler = (e) => setIsMobile(e.matches);
++    setIsMobile(mq.matches);
++    if (mq.addEventListener) mq.addEventListener("change", handler);
++    else mq.addListener(handler);
++    return () => {
++      if (mq.removeEventListener) mq.removeEventListener("change", handler);
++      else mq.removeListener(handler);
++    };
++  }, []);
++
++  useEffect(() => {
++    if (currentInstructorIndex >= instructors.length) {
++      setCurrentInstructorIndex(0);
++    }
++  }, [instructors, currentInstructorIndex]);
++
++  const showPrevInstructor = () => {
++    setCurrentInstructorIndex((idx) =>
++      instructors.length
++        ? (idx - 1 + instructors.length) % instructors.length
++        : 0
++    );
++  };
++  const showNextInstructor = () => {
++    setCurrentInstructorIndex((idx) =>
++      instructors.length ? (idx + 1) % instructors.length : 0
++    );
++  };
++
+   const goHome = () => {
+     navigate("/");
+   };
+@@ -145,6 +183,21 @@
+     setForm((f) => ({ ...f, [name]: value }));
+   };
+ 
++  const handleMaxStudentsChange = (e) => {
++    let { value } = e.target;
++    if (value === "") {
++      setForm((f) => ({ ...f, max_students: "" }));
++      return;
++    }
++    value = value.replace(/[^0-9]/g, "");
++    if (value === "") {
++      setForm((f) => ({ ...f, max_students: "" }));
++      return;
++    }
++    const clamped = Math.max(0, Math.min(1000, parseInt(value, 10)));
++    setForm((f) => ({ ...f, max_students: clamped }));
++  };
++
+   const handleInstructorChange = (e) => {
+     const { name, value } = e.target;
+     setInstructorForm((f) => ({ ...f, [name]: value }));
+@@ -308,7 +361,6 @@
+           first_name: "",
+           last_name: "",
+           email: "",
+-          course_ids: [],
+           course_name: "",
+           expertise: "",
+           description: "",
+@@ -325,7 +377,6 @@
+         first_name: "",
+         last_name: "",
+         email: "",
+-        course_ids: [],
+         course_name: "",
+         expertise: "",
+         description: "",
+@@ -347,7 +398,6 @@
+           first_name: instructor.first_name || "",
+           last_name: instructor.last_name || "",
+           email: instructor.email || "",
+-          course_ids: instructor.course_ids || [],
+           course_name: instructor.course_name || "",
+           expertise: instructor.expertise || "",
+           description: instructor.description || "",
+@@ -364,7 +414,6 @@
+         first_name: instructor.first_name || "",
+         last_name: instructor.last_name || "",
+         email: instructor.email || "",
+-        course_ids: instructor.course_ids || [],
+         course_name: instructor.course_name || "",
+         expertise: instructor.expertise || "",
+         description: instructor.description || "",
+@@ -491,11 +540,13 @@
+               <div className="cpbp-cards-container">
+                 {courses.map((course) => (
+                   <div key={course.id} className="cpbp-card">
+-                    <img
+-                      src={course.image_url || "/default-course.jpg"}
+-                      alt={course.course_name}
+-                      className="cpbp-card-image"
+-                    />
++                    <div className="cpbp-card-image-wrap">
++                      <img
++                        src={course.image_url || "/default-course.jpg"}
++                        alt={course.course_name}
++                        className="cpbp-card-image"
++                      />
++                    </div>
+                     <h3 className="cpbp-card-title">{course.course_name}</h3>
+                     <div className="cpbp-card-actions">
+                       <button
+@@ -515,40 +566,120 @@
+             ) : activeSection === "Users" ? (
+               <UsersTable users={users} onUserUpdate={setUsers} />
+             ) : activeSection === "Instructors" ? (
+-              <div className="cpbp-cards-container">
+-                {instructors.map((instructor) => (
+-                  <div
+-                    key={instructor.id}
+-                    className="cpbp-card instructor-card"
+-                  >
+-                    <img
+-                      src={instructor.profile_pic_url || "/default-avatar.jpg"}
+-                      alt={`${instructor.first_name} ${instructor.last_name}`}
+-                      className="cpbp-card-image"
+-                    />
+-                    <h3 className="cpbp-card-title">{`${instructor.first_name} ${instructor.last_name}`}</h3>
+-                    <p className="cpbp-card-description">
+-                      {instructor.course_name || "No course assigned"}
+-                    </p>
+-                    <div className="cpbp-card-actions">
+-                      <button
+-                        type="button"
+-                        className="cpbp-btn-edit"
+-                        onClick={() => openInstructorEditModal(instructor)}
+-                      >
+-                        Details
+-                      </button>
+-                      <button
+-                        type="button"
+-                        className="cpbp-btn-delete"
+-                        onClick={() => handleInstructorDelete(instructor)}
+-                      >
+-                        Delete
+-                      </button>
+-                    </div>
+-                  </div>
+-                ))}
+-              </div>
++              isMobile ? (
++                <div className="instructors-slider">
++                  <button
++                    type="button"
++                    className="slider-arrow slider-arrow-left"
++                    onClick={showPrevInstructor}
++                    aria-label="Previous instructor"
++                  >
++                    ◀
++                  </button>
++                  <div className="slider-viewport">
++                    {instructors.length > 0 && (
++                      <div className="cpbp-card instructor-card">
++                        <div className="cpbp-card-image-wrap">
++                          <img
++                            src={
++                              instructors[currentInstructorIndex]
++                                ?.profile_pic_url || "/default-avatar.jpg"
++                            }
++                            alt={`${
++                              instructors[currentInstructorIndex]?.first_name ||
++                              ""
++                            } ${
++                              instructors[currentInstructorIndex]?.last_name ||
++                              ""
++                            }`}
++                            className="cpbp-card-image"
++                          />
++                        </div>
++                        <h3 className="cpbp-card-title">{`${
++                          instructors[currentInstructorIndex]?.first_name || ""
++                        } ${
++                          instructors[currentInstructorIndex]?.last_name || ""
++                        }`}</h3>
++                        <p className="cpbp-card-description">
++                          {instructors[currentInstructorIndex]?.course_name ||
++                            "No course assigned"}
++                        </p>
++                        <div className="cpbp-card-actions">
++                          <button
++                            type="button"
++                            className="cpbp-btn-edit"
++                            onClick={() =>
++                              openInstructorEditModal(
++                                instructors[currentInstructorIndex]
++                              )
++                            }
++                          >
++                            Details
++                          </button>
++                          <button
++                            type="button"
++                            className="cpbp-btn-delete"
++                            onClick={() =>
++                              handleInstructorDelete(
++                                instructors[currentInstructorIndex]
++                              )
++                            }
++                          >
++                            Delete
++                          </button>
++                        </div>
++                      </div>
++                    )}
++                  </div>
++                  <button
++                    type="button"
++                    className="slider-arrow slider-arrow-right"
++                    onClick={showNextInstructor}
++                    aria-label="Next instructor"
++                  >
++                    ▶
++                  </button>
++                </div>
++              ) : (
++                <div className="cpbp-cards-container instructors-3col-desktop">
++                  {instructors.map((instructor) => (
++                    <div
++                      key={instructor.id}
++                      className="cpbp-card instructor-card"
++                    >
++                      <div className="cpbp-card-image-wrap">
++                        <img
++                          src={
++                            instructor.profile_pic_url || "/default-avatar.jpg"
++                          }
++                          alt={`${instructor.first_name} ${instructor.last_name}`}
++                          className="cpbp-card-image"
++                        />
++                      </div>
++                      <h3 className="cpbp-card-title">{`${instructor.first_name} ${instructor.last_name}`}</h3>
++                      <p className="cpbp-card-description">
++                        {instructor.course_name || "No course assigned"}
++                      </p>
++                      <div className="cpbp-card-actions">
++                        <button
++                          type="button"
++                          className="cpbp-btn-edit"
++                          onClick={() => openInstructorEditModal(instructor)}
++                        >
++                          Details
++                        </button>
++                        <button
++                          type="button"
++                          className="cpbp-btn-delete"
++                          onClick={() => handleInstructorDelete(instructor)}
++                        >
++                          Delete
++                        </button>
++                      </div>
++                    </div>
++                  ))}
++                </div>
++              )
+             ) : (
+               <p className="cpbp-placeholder">
+                 {activeSection} view not implemented yet.
+@@ -667,7 +798,12 @@
+                   type="number"
+                   name="max_students"
+                   value={form.max_students}
+-                  onChange={handleChange}
++                  onChange={handleMaxStudentsChange}
++                  inputMode="numeric"
++                  min="0"
++                  max="1000"
++                  step="1"
++                  placeholder="e.g., 20"
+                   disabled={isEditing && readOnly}
+                 />
+               </div>
+Index: src/components/CoursesPanelPage.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* 1) Import Poppins */\r\n@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');\r\n\r\n/* Admin-only gradient */\r\nbody.admin-dashboard-bg {\r\n  font-family: 'Poppins', sans-serif;\r\n  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);\r\n  color: #fff;\r\n  min-height: 100vh;\r\n  margin: 0;\r\n}\r\n\r\n/* Light-theme override */\r\nbody.light-theme.admin-dashboard-bg {\r\n  background: linear-gradient(to left, #685ed8, #b698aa);\r\n  color: #333;\r\n}\r\n\r\n/* reset */\r\n* {\r\n  margin: 0;\r\n  padding: 0;\r\n  box-sizing: border-box;\r\n}\r\n\r\n/* wrapper */\r\n.cpbp-dashboard-container {\r\n  max-width: 1200px;\r\n  margin: 2rem auto;\r\n  padding: 2rem;\r\n  background: rgba(0, 0, 0, 0.5);\r\n  border-radius: 12px;\r\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);\r\n}\r\n\r\n/* adjusted transparency for light theme container */\r\nbody.light-theme .cpbp-dashboard-container {\r\n  background: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n/* panel \"window\" style */\r\n.cpbp-panel {\r\n  background: rgba(255, 255, 255, 0.1);\r\n  border: 1px solid rgba(255, 255, 255, 0.25);\r\n  border-radius: 8px;\r\n  padding: 1rem;\r\n  display: flex;\r\n  flex-direction: column;\r\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\r\n}\r\n\r\n/* light-theme panel base */\r\nbody.light-theme .cpbp-panel {\r\n  background: #fff;\r\n  border-color: #ccc;\r\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\r\n}\r\n\r\n/* make nav & content panels 30% opaque */\r\n.cpbp-panel.nav-panel,\r\n.cpbp-panel.content-panel {\r\n  background: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n/* and in dark mode, same transparency over dark bg */\r\nbody.admin-dashboard-bg .cpbp-panel.nav-panel,\r\nbody.admin-dashboard-bg .cpbp-panel.content-panel {\r\n  background: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n/* header */\r\n.cpbp-dashboard-header {\r\n  display: flex;\r\n  justify-content: space-between;\r\n  align-items: center;\r\n  margin-bottom: 2rem;\r\n}\r\n\r\n.cpbp-header-left {\r\n  display: flex;\r\n  align-items: center;\r\n  gap: 1rem;\r\n}\r\n\r\n.cpbp-header-title {\r\n  font-size: 2.25rem;\r\n  font-weight: 700;\r\n  color: inherit;\r\n}\r\n\r\n.cpbp-add-button {\r\n  border: none;\r\n  border-radius: 6px;\r\n  padding: 0.5rem 1rem;\r\n  background: #28a745;\r\n  color: #fff;\r\n  cursor: pointer;\r\n  transition: background 0.2s;\r\n}\r\n\r\n.cpbp-add-button:hover {\r\n  background: #218838;\r\n}\r\n\r\nbody.light-theme .cpbp-add-button {\r\n  background: #ffeaa7;\r\n  color: #2d3436;\r\n}\r\n\r\nbody.light-theme .cpbp-add-button:hover {\r\n  background: #fdcb6e;\r\n}\r\n\r\n.cpbp-theme-button {\r\n  border: none;\r\n  border-radius: 6px;\r\n  padding: 0.5rem 1rem;\r\n  background: linear-gradient(to left, #685ed8, #b698aa);\r\n  color: #fff;\r\n  cursor: pointer;\r\n  transition: opacity 0.2s;\r\n}\r\n\r\n.cpbp-theme-button:hover {\r\n  opacity: 0.8;\r\n}\r\n\r\n.cpbp-header-right {\r\n  display: flex;\r\n  align-items: center;\r\n}\r\n\r\n.cpbp-user-name {\r\n  margin-right: 0.75rem;\r\n  color: inherit;\r\n}\r\n\r\n.cpbp-profile-pic-container {\r\n  width: 2.5rem;\r\n  height: 2.5rem;\r\n  border-radius: 50%;\r\n  overflow: hidden;\r\n  background: rgba(255, 255, 255, 0.1);\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n}\r\n\r\n.cpbp-profile-pic {\r\n  width: 100%;\r\n  height: 100%;\r\n  object-fit: cover;\r\n}\r\n\r\n/* make the body a two-column grid */\r\n.cpbp-dashboard-body {\r\n  display: grid;\r\n  grid-template-columns: 200px 1fr;\r\n  gap: 1rem;\r\n}\r\n\r\n/* sidebar/nav */\r\n.cpbp-dashboard-nav {\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-between;\r\n  height: 100%;\r\n}\r\n\r\n.cpbp-nav-top {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 1rem;\r\n}\r\n\r\n.cpbp-nav-bottom {\r\n  display: flex;\r\n  justify-content: center;\r\n  gap: 0.5rem;\r\n  padding-left: 0;\r\n}\r\n\r\n.cpbp-nav-button {\r\n  background: rgba(255, 255, 255, 0.05);\r\n  border: none;\r\n  color: #ccc;\r\n  text-align: left;\r\n  font-weight: 500;\r\n  border-radius: 8px;\r\n  cursor: pointer;\r\n  transition: background 0.2s, transform 0.1s;\r\n}\r\n\r\n.cpbp-nav-top .cpbp-nav-button,\r\n.cpbp-nav-bottom .cpbp-nav-button {\r\n  padding: 0.85rem 1.25rem;\r\n  font-size: 1rem;\r\n}\r\n\r\n.cpbp-nav-button:hover {\r\n  background: rgba(255, 255, 255, 0.1);\r\n  transform: translateX(4px);\r\n}\r\n\r\n.cpbp-nav-button.active {\r\n  background: rgba(255, 255, 255, 0.15);\r\n  color: #fff;\r\n  border-left: 4px solid #fff;\r\n  padding-left: calc(1.25rem - 4px);\r\n}\r\n\r\nbody.light-theme .cpbp-nav-button {\r\n  background: rgba(0, 0, 0, 0.05);\r\n  color: #333;\r\n}\r\n\r\nbody.light-theme .cpbp-nav-button:hover {\r\n  background: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\nbody.light-theme .cpbp-nav-button.active {\r\n  background: #b698aa;\r\n  color: #fff;\r\n  border-left-color: #b698aa;\r\n}\r\n\r\n/* main content */\r\n.cpbp-dashboard-content {\r\n  flex: 1;\r\n  padding-left: 0;\r\n}\r\n\r\n/* cards */\r\n.cpbp-cards-container {\r\n  display: grid;\r\n  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));\r\n  gap: 1rem;\r\n}\r\n\r\n.cpbp-card {\r\n  display: flex;\r\n  flex-direction: column;\r\n  align-items: center;\r\n  background: rgba(255, 255, 255, 0.1);\r\n  border-radius: 8px;\r\n  padding: 1rem 0 0.5rem;\r\n  transition: transform 0.2s, box-shadow 0.2s;\r\n}\r\n\r\n.cpbp-card:hover {\r\n  transform: translateY(-4px);\r\n  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);\r\n}\r\n\r\n.cpbp-card-image {\r\n  width: 100%;\r\n  height: 120px;\r\n  object-fit: cover;\r\n}\r\n\r\n.cpbp-card-title {\r\n  margin: 0.5rem 0;\r\n  font-size: 1.1rem;\r\n  color: #fff;\r\n  text-align: center;\r\n}\r\n\r\n.cpbp-card-actions {\r\n  display: flex;\r\n  flex-direction: column;\r\n  gap: 0.5rem;\r\n  margin-top: 0.5rem;\r\n}\r\n\r\n.cpbp-btn-edit,\r\n.cpbp-btn-delete {\r\n  padding: 0.5rem 1rem;\r\n  border: none;\r\n  border-radius: 4px;\r\n  cursor: pointer;\r\n  font-size: 0.9rem;\r\n}\r\n\r\n.cpbp-btn-edit {\r\n  background: #ccc;\r\n  color: #000;\r\n}\r\n\r\n.cpbp-btn-edit:hover {\r\n  background: #bbb;\r\n}\r\n\r\n.cpbp-btn-delete {\r\n  background: #e74c3c;\r\n  color: #fff;\r\n}\r\n\r\n.cpbp-btn-delete:hover {\r\n  background: #c0392b;\r\n}\r\n\r\nbody.light-theme .cpbp-card {\r\n  background: rgba(0, 0, 0, 0.05);\r\n}\r\n\r\nbody.light-theme .cpbp-card-title {\r\n  color: #333;\r\n}\r\n\r\n/* placeholder */\r\n.cpbp-placeholder {\r\n  color: #ccc;\r\n  font-style: italic;\r\n  padding: 2rem;\r\n}\r\n\r\nbody.light-theme .cpbp-placeholder {\r\n  color: #666;\r\n}\r\n\r\n/* modal overlay */\r\n.cpbp-modal-overlay {\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100vw;\r\n  height: 100vh;\r\n  background: rgba(0, 0, 0, 0.6);\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  z-index: 1000;\r\n}\r\n\r\n/* modal content */\r\n.cpbp-modal-content {\r\n  position: relative;\r\n  width: 80vw;\r\n  max-width: 700px;\r\n  min-width: 500px;\r\n  max-height: 90vh;\r\n  overflow-y: auto;\r\n  background: #fff;\r\n  color: #000;\r\n  padding: 2rem;\r\n  border-radius: 12px;\r\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);\r\n}\r\n\r\n/* close */\r\n.cpbp-modal-close {\r\n  position: absolute;\r\n  top: 0.75rem;\r\n  right: 0.75rem;\r\n  background: transparent;\r\n  border: none;\r\n  font-size: 1.5rem;\r\n  cursor: pointer;\r\n}\r\n\r\n/* form */\r\n.cpbp-form-group {\r\n  margin-bottom: 1.25rem;\r\n}\r\n\r\n.cpbp-form-group label {\r\n  display: block;\r\n  margin-bottom: 0.75rem;\r\n  font-size: 0.9rem;\r\n  color: #333;\r\n}\r\n\r\n.cpbp-form-group input,\r\n.cpbp-form-group textarea,\r\n.cpbp-form-group select {\r\n  width: 100%;\r\n  padding: 0.5rem;\r\n  border: 1px solid #ccc;\r\n  border-radius: 4px;\r\n  font-family: inherit;\r\n}\r\n\r\n/* form buttons */\r\n.cpbp-form-buttons {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.75rem;\r\n  margin-top: 1.5rem;\r\n}\r\n\r\n.cpbp-btn-submit,\r\n.cpbp-btn-cancel {\r\n  padding: 0.6rem 1.2rem;\r\n  border: none;\r\n  border-radius: 6px;\r\n  cursor: pointer;\r\n  font-size: 1rem;\r\n}\r\n\r\n.cpbp-btn-submit {\r\n  background-color: #28a745;\r\n  color: #fff;\r\n}\r\n\r\n.cpbp-btn-submit:hover {\r\n  background-color: #218838;\r\n}\r\n\r\n.cpbp-btn-cancel {\r\n  background-color: #6c757d;\r\n  color: #fff;\r\n}\r\n\r\n.cpbp-btn-cancel:hover {\r\n  background-color: #5a6268;\r\n}\r\n\r\n/* responsive */\r\n@media (max-width: 768px) {\r\n  .cpbp-dashboard-body {\r\n    display: flex;\r\n    flex-direction: column;\r\n  }\r\n}\r\n\r\n/* Tablet Responsive Styles */\r\n@media (min-width: 481px) and (max-width: 1024px) {\r\n  .cpbp-nav-bottom {\r\n    margin-top: 5px !important;\r\n  }\r\n\r\n  /* Center Search Users input above table for tablet */\r\n  .users-table-header {\r\n    display: flex !important;\r\n    justify-content: center !important;\r\n    align-items: center !important;\r\n    margin-bottom: 1rem !important;\r\n  }\r\n\r\n  .users-search-input {\r\n    display: block !important;\r\n    margin: 0 auto !important;\r\n    text-align: center !important;\r\n    width: 80% !important;\r\n    max-width: 300px !important;\r\n  }\r\n\r\n  /* Hide search icon for tablet */\r\n  .users-search-icon {\r\n    display: none !important;\r\n  }\r\n}\r\n\r\n/* ── Image‑Upload Styles ── */\r\n\r\n/* file input */\r\n.cpbp-modal-content input[type=\"file\"] {\r\n  margin-top: 0.5rem;\r\n}\r\n\r\n/* preview thumbnail */\r\n.cpbp-modal-content img[src^=\"blob:\"] {\r\n  display: block;\r\n  max-width: 100%;\r\n  margin-top: 0.5rem;\r\n  border-radius: 4px;\r\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);\r\n}\r\n\r\n/* override only the \"Upload Image\" button */\r\n.cpbp-modal-content .cpbp-btn-submit {\r\n  /* make upload button blue */\r\n  background-color: #4a90e2;\r\n}\r\n\r\n.cpbp-modal-content .cpbp-btn-submit:hover {\r\n  background-color: #357ab8;\r\n}\r\n\r\n/* Mobile S Responsive Styles */\r\n@media (max-width: 480px) {\r\n  /* Prevent horizontal scrolling globally */\r\n  body {\r\n    overflow-x: hidden !important;\r\n    width: 100% !important;\r\n    max-width: 100vw !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n  }\r\n\r\n  html {\r\n    overflow-x: hidden !important;\r\n    width: 100% !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n  }\r\n\r\n  /* Make dashboard container full screen */\r\n  .cpbp-dashboard-container {\r\n    margin: 0 !important;\r\n    padding: 0.5rem !important;\r\n    border-radius: 0 !important;\r\n    max-width: 100vw !important;\r\n    min-height: 100vh !important;\r\n    width: 100vw !important;\r\n    height: 100vh !important;\r\n    overflow: hidden !important;\r\n    box-sizing: border-box !important;\r\n    position: fixed !important;\r\n    top: 0 !important;\r\n    left: 0 !important;\r\n    right: 0 !important;\r\n    bottom: 0 !important;\r\n    z-index: 1000 !important;\r\n  }\r\n\r\n  /* Ensure all content stays within viewport */\r\n  .cpbp-dashboard-header,\r\n  .cpbp-dashboard-body,\r\n  .cpbp-panel,\r\n  .cpbp-dashboard-nav,\r\n  .cpbp-dashboard-content {\r\n    max-width: 100% !important;\r\n    overflow-x: hidden !important;\r\n    box-sizing: border-box !important;\r\n    width: 100% !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n  }\r\n\r\n  /* Header layout for mobile S - Stacked and centered */\r\n  .cpbp-dashboard-header {\r\n    flex-direction: column !important;\r\n    gap: 1rem !important;\r\n    align-items: center !important;\r\n    text-align: center !important;\r\n    margin: 0 !important;\r\n    padding: 1rem 0.5rem !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n  }\r\n\r\n  .cpbp-header-left {\r\n    flex-direction: column !important;\r\n    gap: 1rem !important;\r\n    align-items: center !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n  }\r\n\r\n  .cpbp-header-right {\r\n    flex-direction: column !important;\r\n    gap: 1rem !important;\r\n    align-items: center !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    order: 2 !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n  }\r\n\r\n  /* Title section for mobile S - Compact and centered */\r\n  .cpbp-header-title {\r\n    font-size: 1.5rem !important;\r\n    white-space: nowrap !important;\r\n    overflow: hidden !important;\r\n    text-overflow: ellipsis !important;\r\n    max-width: 100% !important;\r\n    text-align: center !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n    flex-shrink: 0 !important;\r\n    font-weight: 600 !important;\r\n  }\r\n\r\n  /* Profile section styling */\r\n  .cpbp-profile-pic-container {\r\n    width: 3rem !important;\r\n    height: 3rem !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n    flex-shrink: 0 !important;\r\n    border: 2px solid rgba(255, 255, 255, 0.3) !important;\r\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;\r\n  }\r\n\r\n  .cpbp-user-name {\r\n    font-size: 1rem !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n    flex-shrink: 0 !important;\r\n    font-weight: 500 !important;\r\n  }\r\n\r\n  /* Button group styling - Previous design */\r\n  .cpbp-add-button,\r\n  .cpbp-theme-button {\r\n    width: 100% !important;\r\n    max-width: 280px !important;\r\n    padding: 0.5rem 1rem !important;\r\n    font-size: 0.9rem !important;\r\n    margin: 0 !important;\r\n    border-radius: 6px !important;\r\n    transition: background 0.2s !important;\r\n  }\r\n\r\n  .cpbp-add-button {\r\n    background: #28a745 !important;\r\n    color: #fff !important;\r\n    border: none !important;\r\n  }\r\n\r\n  .cpbp-add-button:hover {\r\n    background: #218838 !important;\r\n  }\r\n\r\n  .cpbp-theme-button {\r\n    background: linear-gradient(to left, #685ed8, #b698aa) !important;\r\n    color: #fff !important;\r\n    border: none !important;\r\n  }\r\n\r\n  .cpbp-theme-button:hover {\r\n    opacity: 0.8 !important;\r\n  }\r\n\r\n  /* Light theme button overrides */\r\n  body.light-theme .cpbp-add-button {\r\n    background: #ffeaa7 !important;\r\n    color: #2d3436 !important;\r\n  }\r\n\r\n  body.light-theme .cpbp-add-button:hover {\r\n    background: #fdcb6e !important;\r\n  }\r\n\r\n  body.light-theme .cpbp-theme-button {\r\n    background: linear-gradient(to left, #685ed8, #b698aa) !important;\r\n    color: #fff !important;\r\n  }\r\n\r\n  /* Dashboard body for mobile S - Stacked layout */\r\n  .cpbp-dashboard-body {\r\n    flex-direction: column !important;\r\n    gap: 1rem !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    overflow-x: hidden !important;\r\n    margin: 0 !important;\r\n    padding: 0 0.5rem !important;\r\n  }\r\n\r\n  .cpbp-panel.nav-panel {\r\n    order: 1 !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    overflow-x: hidden !important;\r\n    margin: 0 !important;\r\n    padding: 0.25rem !important;\r\n  }\r\n\r\n  .cpbp-panel.content-panel {\r\n    order: 2 !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    overflow-x: hidden !important;\r\n    margin: 0 !important;\r\n    padding: 0.75rem !important;\r\n  }\r\n\r\n  /* Navigation for mobile S - Enhanced design */\r\n  .cpbp-dashboard-nav {\r\n    flex-direction: column !important;\r\n    justify-content: center !important;\r\n    align-items: center !important;\r\n    gap: 0.75rem !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    overflow: hidden !important;\r\n    padding: 1rem !important;\r\n    margin: 0 !important;\r\n    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%) !important;\r\n    border-radius: 12px !important;\r\n    border: 1px solid rgba(255, 255, 255, 0.3) !important;\r\n    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;\r\n    backdrop-filter: blur(8px) !important;\r\n    box-sizing: border-box !important;\r\n  }\r\n\r\n  .cpbp-nav-top {\r\n    flex-direction: row !important;\r\n    gap: 0.25rem !important;\r\n    justify-content: center !important;\r\n    align-items: center !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    margin: 0 !important;\r\n    padding: 0.25rem !important;\r\n    flex-wrap: nowrap !important;\r\n  }\r\n\r\n  .cpbp-nav-bottom {\r\n    flex-direction: row !important;\r\n    gap: 0.3rem !important;\r\n    justify-content: center !important;\r\n    align-items: center !important;\r\n    width: 100% !important;\r\n    max-width: 100% !important;\r\n    margin: 0 !important;\r\n    padding: 0.25rem !important;\r\n    flex-wrap: wrap !important;\r\n    margin-top: 0.25rem !important;\r\n  }\r\n\r\n  .cpbp-nav-button {\r\n    padding: 0.4rem 0.6rem !important;\r\n    font-size: 0.7rem !important;\r\n    min-width: auto !important;\r\n    max-width: none !important;\r\n    overflow: visible !important;\r\n    text-overflow: unset !important;\r\n    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%) !important;\r\n    border: 1px solid rgba(255, 255, 255, 0.4) !important;\r\n    color: #fff !important;\r\n    text-align: center !important;\r\n    transition: all 0.3s ease !important;\r\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;\r\n    flex-shrink: 0 !important;\r\n    margin: 0.1rem !important;\r\n    border-radius: 6px !important;\r\n    font-weight: 600 !important;\r\n    cursor: pointer !important;\r\n    white-space: nowrap !important;\r\n    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;\r\n    box-sizing: border-box !important;\r\n  }\r\n\r\n  .cpbp-nav-button:hover {\r\n    background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%) !important;\r\n    transform: translateY(-2px) !important;\r\n    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;\r\n    border-color: rgba(255, 255, 255, 0.6) !important;\r\n  }\r\n\r\n  .cpbp-nav-button.active {\r\n    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%) !important;\r\n    color: #fff !important;\r\n    border-color: rgba(255, 255, 255, 0.7) !important;\r\n    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3) !important;\r\n  }\r\n\r\n  /* Light theme navigation styles */\r\n  body.light-theme .cpbp-dashboard-nav {\r\n    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.25) 100%) !important;\r\n    border-color: rgba(255, 255, 255, 0.5) !important;\r\n  }\r\n\r\n  body.light-theme .cpbp-nav-button {\r\n    background: linear-gradient(135deg, rgba(104, 94, 216, 0.8) 0%, rgba(182, 152, 170, 0.7) 100%) !important;\r\n    border-color: rgba(104, 94, 216, 0.6) !important;\r\n    color: #fff !important;\r\n    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;\r\n  }\r\n\r\n  body.light-theme .cpbp-nav-button:hover {\r\n    background: linear-gradient(135deg, rgba(104, 94, 216, 0.9) 0%, rgba(182, 152, 170, 0.8) 100%) !important;\r\n    border-color: rgba(104, 94, 216, 0.7) !important;\r\n  }\r\n\r\n  body.light-theme .cpbp-nav-button.active {\r\n    background: linear-gradient(135deg, rgba(104, 94, 216, 1) 0%, rgba(182, 152, 170, 0.9) 100%) !important;\r\n    color: #fff !important;\r\n    border-color: rgba(104, 94, 216, 0.8) !important;\r\n  }\r\n\r\n  /* Modal content for mobile S */\r\n  .cpbp-modal-content {\r\n    width: 95vw !important;\r\n    max-width: 95vw !important;\r\n    min-width: auto !important;\r\n    margin: 0.5rem !important;\r\n    padding: 1.5rem !important;\r\n    overflow-x: hidden !important;\r\n  }\r\n\r\n  .cpbp-form-group {\r\n    margin-bottom: 1rem !important;\r\n  }\r\n\r\n  .cpbp-form-group label {\r\n    font-size: 0.9rem !important;\r\n    margin: 0 !important;\r\n    padding: 0 !important;\r\n  }\r\n\r\n  .cpbp-form-group input,\r\n  .cpbp-form-group textarea,\r\n  .cpbp-form-group select {\r\n    font-size: 0.9rem !important;\r\n    padding: 0.6rem !important;\r\n    max-width: 100% !important;\r\n    overflow-x: hidden !important;\r\n    margin: 0 !important;\r\n  }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/components/CoursesPanelPage.css b/src/components/CoursesPanelPage.css
+--- a/src/components/CoursesPanelPage.css	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ b/src/components/CoursesPanelPage.css	(date 1756689005786)
+@@ -1,9 +1,9 @@
+ /* 1) Import Poppins */
+-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
++@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+ 
+ /* Admin-only gradient */
+ body.admin-dashboard-bg {
+-  font-family: 'Poppins', sans-serif;
++  font-family: "Poppins", sans-serif;
+   background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+   color: #fff;
+   min-height: 100vh;
+@@ -237,6 +237,79 @@
+   gap: 1rem;
+ }
+ 
++/* Mobile: force one instructor per row; S/M/L breakpoints up to 425px */
++@media (max-width: 425px) {
++  .instructors-1col-mobile {
++    grid-template-columns: 1fr !important;
++    overflow-x: hidden;
++  }
++  .instructors-1col-mobile .cpbp-card {
++    display: flex;
++    flex-direction: column;
++    margin-bottom: 2.5rem; /* extra space so next card never peeks */
++  }
++  /* Mobile slider layout */
++  .instructors-slider {
++    display: grid;
++    grid-template-columns: auto 1fr auto;
++    align-items: center;
++    gap: 0.5rem;
++  }
++  .slider-viewport {
++    overflow: hidden;
++  }
++  .slider-arrow {
++    background: rgba(255, 255, 255, 0.25);
++    color: #fff;
++    border: 1px solid rgba(255, 255, 255, 0.4);
++    width: 36px;
++    height: 36px;
++    border-radius: 50%;
++    display: inline-flex;
++    align-items: center;
++    justify-content: center;
++    cursor: pointer;
++  }
++  .slider-arrow:active {
++    transform: scale(0.98);
++  }
++  .slider-arrow-left {
++    margin-left: 0.25rem;
++  }
++  .slider-arrow-right {
++    margin-right: 0.25rem;
++  }
++  .instructors-1col-mobile .cpbp-card-actions {
++    margin-top: 0.75rem;
++  }
++  .instructors-1col-mobile .instructor-card-image,
++  .instructors-1col-mobile .cpbp-card.instructor-card .cpbp-card-image {
++    height: 160px;
++    object-fit: contain;
++  }
++}
++
++/* Desktop-only: center instructors grid and use fixed column width */
++@media (min-width: 1025px) {
++  .instructors-grid {
++    justify-content: center;
++    grid-template-columns: repeat(auto-fit, minmax(260px, 260px));
++  }
++  /* Force exactly 3 columns on large desktop widths to avoid right-side gap */
++  @media (min-width: 1440px) {
++    .instructors-3col-desktop {
++      grid-template-columns: repeat(3, 240px) !important;
++      justify-content: center;
++    }
++  }
++  @media (min-width: 2560px) {
++    .instructors-3col-desktop {
++      grid-template-columns: repeat(3, 240px) !important;
++      justify-content: center;
++    }
++  }
++}
++
+ .cpbp-card {
+   display: flex;
+   flex-direction: column;
+@@ -255,7 +328,54 @@
+ .cpbp-card-image {
+   width: 100%;
+   height: 120px;
+-  object-fit: cover;
++  object-fit: contain;
++  object-position: center center;
++  background-color: transparent;
++}
++
++/* Instructor-only: ensure image fully fills the card without affecting other cards */
++.cpbp-card.instructor-card .cpbp-card-image {
++  width: 100%;
++  height: 180px;
++  object-fit: contain;
++  object-position: center center;
++  display: block;
++}
++
++/* Wrapper to provide blurred background fill for letterboxing */
++.cpbp-card-image-wrap {
++  position: relative;
++  width: 100%;
++  height: 120px;
++  overflow: hidden;
++  background: transparent !important;
++}
++
++.cpbp-card-image-wrap::before {
++  content: "";
++  position: absolute;
++  inset: 0;
++  display: none !important;
++}
++
++.cpbp-card.instructor-card .cpbp-card-image-wrap {
++  height: 180px;
++}
++
++/* Instructor-specific hooks for targeted styling without affecting course cards */
++.instructor-card-image-wrap {
++  height: 180px;
++}
++
++.instructor-card-image {
++  height: 180px;
++}
++
++.instructor-card-image {
++  position: relative;
++  z-index: 1;
++  object-fit: contain;
++  object-position: center center;
+ }
+ 
+ .cpbp-card-title {
+@@ -269,7 +389,8 @@
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+-  margin-top: 0.5rem;
++  margin-top: auto;
++  align-items: center;
+ }
+ 
+ .cpbp-btn-edit,
+@@ -279,6 +400,8 @@
+   border-radius: 4px;
+   cursor: pointer;
+   font-size: 0.9rem;
++  height: 40px;
++  width: 120px;
+ }
+ 
+ .cpbp-btn-edit {
+@@ -426,7 +549,7 @@
+ /* Tablet Responsive Styles */
+ @media (min-width: 481px) and (max-width: 1024px) {
+   .cpbp-nav-bottom {
+-    margin-top: 5px !important;
++    margin-top: 14px !important;
+   }
+ 
+   /* Center Search Users input above table for tablet */
+@@ -681,7 +804,11 @@
+     overflow: hidden !important;
+     padding: 1rem !important;
+     margin: 0 !important;
+-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(255, 255, 255, 0.15) 0%,
++      rgba(255, 255, 255, 0.1) 100%
++    ) !important;
+     border-radius: 12px !important;
+     border: 1px solid rgba(255, 255, 255, 0.3) !important;
+     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+@@ -721,7 +848,11 @@
+     max-width: none !important;
+     overflow: visible !important;
+     text-overflow: unset !important;
+-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(255, 255, 255, 0.25) 0%,
++      rgba(255, 255, 255, 0.15) 100%
++    ) !important;
+     border: 1px solid rgba(255, 255, 255, 0.4) !important;
+     color: #fff !important;
+     text-align: center !important;
+@@ -738,14 +869,22 @@
+   }
+ 
+   .cpbp-nav-button:hover {
+-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.25) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(255, 255, 255, 0.35) 0%,
++      rgba(255, 255, 255, 0.25) 100%
++    ) !important;
+     transform: translateY(-2px) !important;
+     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+     border-color: rgba(255, 255, 255, 0.6) !important;
+   }
+ 
+   .cpbp-nav-button.active {
+-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(255, 255, 255, 0.4) 0%,
++      rgba(255, 255, 255, 0.3) 100%
++    ) !important;
+     color: #fff !important;
+     border-color: rgba(255, 255, 255, 0.7) !important;
+     box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3) !important;
+@@ -753,40 +892,59 @@
+ 
+   /* Light theme navigation styles */
+   body.light-theme .cpbp-dashboard-nav {
+-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.25) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(255, 255, 255, 0.4) 0%,
++      rgba(255, 255, 255, 0.25) 100%
++    ) !important;
+     border-color: rgba(255, 255, 255, 0.5) !important;
+   }
+ 
+   body.light-theme .cpbp-nav-button {
+-    background: linear-gradient(135deg, rgba(104, 94, 216, 0.8) 0%, rgba(182, 152, 170, 0.7) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(104, 94, 216, 0.8) 0%,
++      rgba(182, 152, 170, 0.7) 100%
++    ) !important;
+     border-color: rgba(104, 94, 216, 0.6) !important;
+     color: #fff !important;
+     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+   }
+ 
+   body.light-theme .cpbp-nav-button:hover {
+-    background: linear-gradient(135deg, rgba(104, 94, 216, 0.9) 0%, rgba(182, 152, 170, 0.8) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(104, 94, 216, 0.9) 0%,
++      rgba(182, 152, 170, 0.8) 100%
++    ) !important;
+     border-color: rgba(104, 94, 216, 0.7) !important;
+   }
+ 
+   body.light-theme .cpbp-nav-button.active {
+-    background: linear-gradient(135deg, rgba(104, 94, 216, 1) 0%, rgba(182, 152, 170, 0.9) 100%) !important;
++    background: linear-gradient(
++      135deg,
++      rgba(104, 94, 216, 1) 0%,
++      rgba(182, 152, 170, 0.9) 100%
++    ) !important;
+     color: #fff !important;
+     border-color: rgba(104, 94, 216, 0.8) !important;
+   }
+ 
+   /* Modal content for mobile S */
+   .cpbp-modal-content {
+-    width: 95vw !important;
+-    max-width: 95vw !important;
++    width: 92vw !important;
++    max-width: 92vw !important;
+     min-width: auto !important;
+-    margin: 0.5rem !important;
+-    padding: 1.5rem !important;
+-    overflow-x: hidden !important;
++    margin: 0.5rem auto !important;
++    padding: 1rem !important;
++    overflow: hidden !important;
++    max-height: 90vh !important;
++    display: flex !important;
++    flex-direction: column !important;
+   }
+ 
+   .cpbp-form-group {
+-    margin-bottom: 1rem !important;
++    margin-bottom: 0.75rem !important;
+   }
+ 
+   .cpbp-form-group label {
+Index: src/components/CoursesFrontend.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/components/CoursesFrontend.jsx b/src/components/CoursesFrontend.jsx
+deleted file mode 100644
+--- a/src/components/CoursesFrontend.jsx	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ /dev/null	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
+@@ -1,317 +0,0 @@
+-import React, { useState } from 'react';
+-import Navbar from './ui/Navbar';
+-import coursesFrontEndImg from './images/Courses_Front_End.png';
+-import profileImg1 from './images/Profile_img_1.png';
+-import profileImg2 from './images/Profile_img_2.png';
+-import profileImg3 from './images/Profile_img_3.png';
+-import './Courses.css';
+-import './CoursesFrontend.css';
+-import Footer from './ui/Footer';
+-
+-// Functional component
+-const Frontend = () => {
+-  const [isExpanded, setIsExpanded] = useState({
+-    course: false,
+-    instructor1: false,
+-    instructor2: false,
+-    instructor3: false,
+-  });
+-
+-  const handleToggle = (section) => {
+-    setIsExpanded((prevState) => ({
+-      ...prevState,
+-      [section]: !prevState[section],
+-    }));
+-  };
+-
+-  return (
+-    <div className="container-fluid p-0 m-0">
+-      <Navbar className="active text-white" />
+-      <img
+-        className="img-fluid w-100 cover-img"
+-        src={coursesFrontEndImg}
+-        alt="Frontend course"
+-      />
+-      <div className="d-flex flex-column my-5 frame">
+-        <h1 className="mt-3 mb-2 ms-5">FrontEnd Courses</h1>
+-        <h3 className="mb-5 ms-5">
+-          Elevate Your Skills with Our Cutting-Edge Front-End Development Course!
+-        </h3>
+-        <div className="text-container">
+-          <div
+-            className={`paragraph-content ${isExpanded.course ? '' : 'text-truncated-mobile'
+-            }`}
+-          >
+-            <p className="pt-5 mx-5 paragraph-justified">
+-              Embark on a transformative journey in the dynamic realm of web development with our
+-              comprehensive Front-End Development course. This meticulously crafted program is designed
+-              for aspiring developers eager to master the art of creating visually stunning and
+-              seamlessly interactive user interfaces. Dive into the essentials of HTML, CSS/CSS/Saas,
+-              JavaScript, Bootstrap, and Git version control, honing a skill set that forms the backbone
+-              of modern web development.
+-              <br />
+-              <br />
+-              Throughout the course, our expert instructors will guide you through the intricacies of
+-              these foundational technologies, ensuring you gain a deep understanding of their
+-              capabilities and nuances. From crafting pixel-perfect layouts with HTML and CSS to
+-              implementing dynamic functionality with JavaScript, you&apos;ll acquire the proficiency to
+-              bring your creative vision to life.
+-              <br />
+-              <br />
+-              Navigate the intricacies of CSS/CSS (Saas) for efficient styling, harness the power of
+-              Bootstrap for responsive design, and master version control with Git to streamline
+-              collaborative projects. Our hands-on approach and real-world projects will empower you to
+-              build a robust portfolio showcasing your mastery of these essential front-end
+-              technologies.
+-              <br />
+-              <br />
+-              Join us and unlock the door to a world of limitless possibilities in front-end
+-              development. Enroll today and empower yourself with the knowledge and skills to thrive in
+-              the digital landscape!
+-              <br />
+-              <br />
+-              💡 🖥️ #CodeToCreate #FrontEndMastery
+-            </p>
+-          </div>
+-          {!isExpanded.course ? (
+-            <span
+-              id="see-more-front-end-development"
+-              className="toggle-text-inline"
+-              role="button"
+-              tabIndex="0"
+-              onClick={() => handleToggle('course')}
+-              onKeyDown={(e) => e.key === 'Enter' && handleToggle('course')}
+-            >
+-              ... View More
+-            </span>
+-          ) : (
+-            <div className="toggle-text-container">
+-              <span
+-                className="toggle-text"
+-                role="button"
+-                tabIndex="0"
+-                onClick={() => handleToggle('course')}
+-                onKeyDown={(e) => e.key === 'Enter' && handleToggle('course')}
+-              >
+-                View Less
+-              </span>
+-            </div>
+-          )}
+-        </div>
+-
+-      </div>
+-
+-      <div className="d-flex flex-column my-5 frame ">
+-        <h1 className="d-flex mt-3 mb-2 justify-content-center">Our instructors</h1>
+-      </div>
+-      <div className="">
+-        {/* instructor 1 */}
+-        <div className="d-flex flex-column flex-lg-row mt-4 mb-3">
+-          {/* image */}
+-          <div className="d-flex flex-column col-lg-4 col-12 ">
+-            <img className="img-fluid" src={profileImg1} alt="Project" />
+-          </div>
+-          {/* text */}
+-          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
+-            <h1 className="mt-3 mx-5">Full Name 1</h1>
+-            <div className="text-container">
+-              <div
+-                className={`paragraph-content ${isExpanded.instructor1 ? '' : 'text-truncated-mobile'
+-                }`}
+-              >
+-                <p className="pt-5 mx-5 paragraph-justified">
+-                  Meet our seasoned Front-End Development instructor, a dynamic industry professional
+-                  with a passion for cultivating the next generation of web developers. With a wealth of
+-                  hands-on experience and a proven track record in the field, our instructor brings a
+-                  unique blend of expertise and enthusiasm to the classroom.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Join us, and let our experienced instructor guide you on a transformative journey
+-                  toward front-end mastery!
+-                  <br />
+-                  <br />
+-                  🚀 💻 #CodeWithConfidence #FrontEndInstructor
+-                </p>
+-              </div>
+-              {!isExpanded.instructor1 ? (
+-                <span
+-                  id="see-more-front-end-instructor1"
+-                  className="toggle-text-inline"
+-                  role="button"
+-                  tabIndex="0"
+-                  onClick={() => handleToggle('instructor1')}
+-                  onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor1')}
+-                >
+-                  ... View More
+-                </span>
+-              ) : (
+-                <div className="toggle-text-container">
+-                  <span
+-                    className="toggle-text"
+-                    role="button"
+-                    tabIndex="0"
+-                    onClick={() => handleToggle('instructor1')}
+-                    onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor1')}
+-                  >
+-                    View Less
+-                  </span>
+-                </div>
+-              )}
+-            </div>
+-
+-          </div>
+-        </div>
+-
+-        {/* instructor 2 */}
+-        <div className="d-flex flex-column flex-lg-row mt-4 mb-3">
+-          {/* text */}
+-          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
+-            <h1 className="mt-3 mx-5">Full Name 2</h1>
+-            <div className="text-container">
+-              <div
+-                className={`paragraph-content ${isExpanded.instructor2 ? '' : 'text-truncated-mobile'
+-                }`}
+-              >
+-                <p className="pt-5 mx-5 paragraph-justified">
+-                  Meet our seasoned Front-End Development instructor, a dynamic industry professional
+-                  with a passion for cultivating the next generation of web developers. With a wealth of
+-                  hands-on experience and a proven track record in the field, our instructor brings a
+-                  unique blend of expertise and enthusiasm to the classroom.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Join us, and let our experienced instructor guide you on a transformative journey
+-                  toward front-end mastery!
+-                  <br />
+-                  <br />
+-                  🚀 💻 #CodeWithConfidence #FrontEndInstructor
+-                </p>
+-              </div>
+-              {!isExpanded.instructor2 ? (
+-                <span
+-                  id="see-more-front-end-instructor2"
+-                  className="toggle-text-inline"
+-                  role="button"
+-                  tabIndex="0"
+-                  onClick={() => handleToggle('instructor2')}
+-                  onKeyDown={(e) => e.key === 'Enter' && handleToggle()}
+-                >
+-                  ... View More
+-                </span>
+-              ) : (
+-                <div className="toggle-text-container">
+-                  <span
+-                    className="toggle-text"
+-                    role="button"
+-                    tabIndex="0"
+-                    onClick={() => handleToggle('instructor2')}
+-                    onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor2')}
+-                  >
+-                    View Less
+-                  </span>
+-                </div>
+-              )}
+-            </div>
+-
+-          </div>
+-          {/* image */}
+-          <div className="d-flex flex-column col-lg-4 col-12 align-self-start">
+-            <img className="img-fluid" src={profileImg2} alt="Project" />
+-          </div>
+-        </div>
+-
+-        {/* instructor 3 */}
+-        <div className="d-flex flex-column flex-lg-row mt-4 mb-3">
+-          {/* image */}
+-          <div className="d-flex flex-column col-lg-4 col-12 ">
+-            <img className="img-fluid" src={profileImg3} alt="Project" />
+-          </div>
+-          {/* text */}
+-          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
+-            <h1 className="mt-3 mx-5">Full Name 3</h1>
+-            <div className="text-container">
+-              <div
+-                className={`paragraph-content ${isExpanded.instructor3 ? '' : 'text-truncated-mobile'
+-                }`}
+-              >
+-                <p className="pt-5 mx-5 paragraph-justified">
+-                  Meet our seasoned Front-End Development instructor, a dynamic industry professional
+-                  with a passion for cultivating the next generation of web developers. With a wealth of
+-                  hands-on experience and a proven track record in the field, our instructor brings a
+-                  unique blend of expertise and enthusiasm to the classroom.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Join us, and let our experienced instructor guide you on a transformative journey
+-                  toward front-end mastery!
+-                  <br />
+-                  <br />
+-                  🚀 💻 #CodeWithConfidence #FrontEndInstructor
+-                </p>
+-              </div>
+-              {!isExpanded.instructor3 ? (
+-                <span
+-                  id="see-more-front-end-instructor3"
+-                  className="toggle-text-inline"
+-                  role="button"
+-                  tabIndex="0"
+-                  onClick={() => handleToggle('instructor3')}
+-                  onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor3')}
+-                >
+-                  ... View More
+-                </span>
+-              ) : (
+-                <div className="toggle-text-container">
+-                  <span
+-                    className="toggle-text"
+-                    role="button"
+-                    tabIndex="0"
+-                    onClick={() => handleToggle('instructor3')}
+-                    onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor3')}
+-                  >
+-                    View Less
+-                  </span>
+-                </div>
+-              )}
+-            </div>
+-
+-          </div>
+-        </div>
+-
+-      </div>
+-      <div className="pt-5">
+-        <Footer />
+-      </div>
+-    </div>
+-  );
+-};
+-
+-export default Frontend;
+Index: src/components/CoursesUIUX.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/components/CoursesUIUX.css b/src/components/CoursesUIUX.css
+deleted file mode 100644
+--- a/src/components/CoursesUIUX.css	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ /dev/null	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
+@@ -1,139 +0,0 @@
+-.cover-img {
+-  height: 30em;
+-  object-fit: cover;
+-}
+-
+-.instructor-image-container {
+-  height: 100%;
+-  display: flex;
+-  align-items: stretch;
+-
+-  /* Set flexible height for better appearance */
+-  min-height: 350px;
+-  max-height: 450px;
+-  width: 100%;
+-}
+-
+-.instructor-image {
+-  width: 100%;
+-  height: 100%;
+-  object-fit: cover;
+-  object-position: top center;
+-
+-  /* Flexible dimensions for better appearance */
+-  max-height: 450px;
+-  border-radius: 8px;
+-}
+-
+-.instructor-section {
+-  display: flex;
+-  align-items: stretch;
+-  margin-left: 1rem;
+-  margin-right: 0.5rem;
+-}
+-
+-.instructor-text-content {
+-  display: flex;
+-  flex-direction: column;
+-  justify-content: flex-start;
+-}
+-
+-.instructor-section .col-lg-4 {
+-  padding-left: 0;
+-  padding-right: 0;
+-}
+-
+-.instructor-section .col-lg-7 {
+-  padding-left: 0;
+-  padding-right: 0;
+-}
+-
+-.instructor-section .row {
+-  margin-left: 0;
+-  margin-right: 0;
+-}
+-
+-.instructor-section .col-lg-4,
+-.instructor-section .col-lg-7 {
+-  margin-left: 0;
+-  margin-right: 0;
+-}
+-
+-.instructor-section:nth-child(even) .col-lg-7 {
+-  padding-right: 2rem;
+-}
+-
+-.instructor-section:nth-child(odd) .col-lg-7 {
+-  padding-right: 2rem;
+-}
+-
+-#see-more-front-end-development,
+-#see-more-front-end-instructor1,
+-#see-more-front-end-instructor2,
+-#see-more-front-end-instructor3 {
+-  padding-right: 30px;
+-  padding-left: 60px;
+-}
+-
+-@media (max-width: 800px) {
+-  .cover-img {
+-    object-fit: contain !important;
+-    height: auto !important;
+-  }
+-}
+-
+-/* tablet screen responsiveness  */
+-@media (min-width: 500px) and (max-width: 800px) {
+-  #see-more-front-end-development {
+-    margin-right: 10px;
+-  }
+-
+-  #see-more-front-end-instructor1,
+-  #see-more-front-end-instructor2,
+-  #see-more-front-end-instructor3 {
+-    margin-right: 190px;
+-  }
+-}
+-
+-@media (max-width: 991px) {
+-  /* Set image first */
+-  .d-flex.flex-column.col-lg-4.col-12 {
+-    order: -2; /* Moves image to the top */
+-  }
+-
+-  /* Set name second */
+-  .d-flex.flex-column.col-lg-7.col-12 h1 {
+-    order: -1;
+-    text-align: center;
+-    margin-top: 15px;
+-  }
+-
+-  /* Set description third */
+-  .d-flex.flex-column.col-lg-7.col-12 p {
+-    text-align: left;
+-  }
+-
+-  /* Mobile image sizing */
+-  .instructor-image-container {
+-    min-height: 250px;
+-    max-height: 300px;
+-  }
+-
+-  .instructor-image {
+-    min-height: 250px;
+-    max-height: 300px;
+-  }
+-}
+-
+-@media (max-width: 576px) {
+-  /* Smaller mobile image sizing */
+-  .instructor-image-container {
+-    min-height: 200px;
+-    max-height: 250px;
+-  }
+-
+-  .instructor-image {
+-    min-height: 200px;
+-    max-height: 250px;
+-  }
+-}
+Index: src/components/CoursesUIUX.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/components/CoursesUIUX.jsx b/src/components/CoursesUIUX.jsx
+deleted file mode 100644
+--- a/src/components/CoursesUIUX.jsx	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ /dev/null	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
+@@ -1,286 +0,0 @@
+-import React, { useState } from 'react';
+-import Navbar from './ui/Navbar';
+-import coursesUIUX from './images/Courses_UI_UX.png';
+-import profileImg1 from './images/Profile_img_1.png';
+-import profileImg2 from './images/Profile_img_2.png';
+-import profileImg3 from './images/Profile_img_3.png';
+-import './Courses.css';
+-import './CoursesUIUX.css';
+-import Footer from './ui/Footer';
+-
+-// Functional component
+-const UiUx = () => {
+-  const [isExpanded, setIsExpanded] = useState({
+-    course: false,
+-    instructor1: false,
+-    instructor2: false,
+-    instructor3: false,
+-  });
+-
+-  const handleToggle = (section) => {
+-    setIsExpanded((prevState) => ({
+-      ...prevState,
+-      [section]: !prevState[section],
+-    }));
+-  };
+-
+-  return (
+-    <div className="container-fluid p-0 m-0">
+-      <Navbar className="active text-white" />
+-      <img
+-        className="img-fluid w-100 cover-img"
+-        src={coursesUIUX}
+-        alt="Frontend course"
+-      />
+-      <div className="d-flex flex-column my-5 frame">
+-        <h1 className="mt-3 mb-5 ms-5">Front-end development</h1>
+-        <h3 className="mb-5 ms-5">
+-          Elevate Your Skills with Our Cutting-Edge Front-End Development Course!
+-        </h3>
+-        <div className="text-container">
+-          <div
+-            className={`paragraph-content ${isExpanded.course ? '' : 'text-truncated-mobile'
+-            }`}
+-          >
+-            <p className="pt-5 mx-5 paragraph-justified">
+-              Embark on a transformative journey in the dynamic realm of web development with our
+-              comprehensive Front-End Development course. This meticulously crafted program is designed
+-              for aspiring developers eager to master the art of creating visually stunning and
+-              seamlessly interactive user interfaces. Dive into the essentials of HTML, CSS/CSS/Saas,
+-              JavaScript, Bootstrap, and Git version control, honing a skill set that forms the backbone
+-              of modern web development.
+-              <br />
+-              <br />
+-              Throughout the course, our expert instructors will guide you through the intricacies of
+-              these foundational technologies, ensuring you gain a deep understanding of their
+-              capabilities and nuances. From crafting pixel-perfect layouts with HTML and CSS to
+-              implementing dynamic functionality with JavaScript, you&apos;ll acquire the proficiency to
+-              bring your creative vision to life.
+-              <br />
+-              <br />
+-              Navigate the intricacies of CSS/CSS (Saas) for efficient styling, harness the power of
+-              Bootstrap for responsive design, and master version control with Git to streamline
+-              collaborative projects. Our hands-on approach and real-world projects will empower you to
+-              build a robust portfolio showcasing your mastery of these essential front-end
+-              technologies.
+-              <br />
+-              <br />
+-              Join us and unlock the door to a world of limitless possibilities in front-end
+-              development. Enroll today and empower yourself with the knowledge and skills to thrive in
+-              the digital landscape!
+-              <br />
+-              <br />
+-              💡 🖥️ #CodeToCreate #FrontEndMastery
+-            </p>
+-          </div>
+-          {!isExpanded.course ? (
+-            <span
+-              id="see-more-front-end-development"
+-              className="toggle-text-inline"
+-              role="button"
+-              tabIndex="0"
+-              onClick={() => handleToggle('course')}
+-              onKeyDown={(e) => e.key === 'Enter' && handleToggle('course')}
+-            >
+-              ... View More
+-            </span>
+-          ) : (
+-            <div className="toggle-text-container">
+-              <span
+-                className="toggle-text"
+-                role="button"
+-                tabIndex="0"
+-                onClick={() => handleToggle('course')}
+-                onKeyDown={(e) => e.key === 'Enter' && handleToggle('course')}
+-              >
+-                View Less
+-              </span>
+-            </div>
+-          )}
+-        </div>
+-
+-      </div>
+-
+-      <div className="d-flex flex-column my-5 frame ">
+-        <h1 className="d-flex mt-3 mb-2 justify-content-center">Our instructors</h1>
+-      </div>
+-      <div className="">
+-        {/* instructor 1 */}
+-        <div className="d-flex flex-column flex-lg-row mt-4 mb-3">
+-          {/* image */}
+-          <div className="d-flex flex-column col-lg-4 col-12 ">
+-            <img className="img-fluid" src={profileImg1} alt="Project" />
+-          </div>
+-          {/* text */}
+-          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
+-            <h1 className="mt-3 mx-5">Full Name 1</h1>
+-            <div className="text-container">
+-              <div
+-                className={`paragraph-content ${isExpanded.instructor1 ? '' : 'text-truncated-mobile'
+-                }`}
+-              >
+-                <p className="pt-5 mx-5 paragraph-justified">
+-                  Meet our seasoned Front-End Development instructor, a dynamic industry professional
+-                  with a passion for cultivating the next generation of web developers. With a wealth of
+-                  hands-on experience and a proven track record in the field, our instructor brings a
+-                  unique blend of expertise and enthusiasm to the classroom.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Join us, and let our experienced instructor guide you on a transformative journey
+-                  toward front-end mastery!
+-                  <br />
+-                  <br />
+-                  🚀 💻 #CodeWithConfidence #FrontEndInstructor
+-                </p>
+-              </div>
+-              {!isExpanded.instructor1 ? (
+-                <span
+-                  id="see-more-front-end-instructor1"
+-                  className="toggle-text-inline"
+-                  role="button"
+-                  tabIndex="0"
+-                  onClick={() => handleToggle('instructor1')}
+-                  onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor1')}
+-                >
+-                  ... View More
+-                </span>
+-              ) : (
+-                <div className="toggle-text-container">
+-                  <span
+-                    className="toggle-text"
+-                    role="button"
+-                    tabIndex="0"
+-                    onClick={() => handleToggle('instructor1')}
+-                    onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor1')}
+-                  >
+-                    View Less
+-                  </span>
+-                </div>
+-              )}
+-            </div>
+-
+-          </div>
+-        </div>
+-
+-        {/* instructor 2 */}
+-        <div className="d-flex flex-column flex-lg-row mt-4 mb-3">
+-          {/* image */}
+-          <div className="d-flex flex-column col-lg-4 col-12 align-self-start">
+-            <img className="img-fluid" src={profileImg2} alt="Project" />
+-          </div>
+-          {/* text */}
+-          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
+-            <h1 className="mt-3 mx-5">Full Name 2</h1>
+-            <p className="pt-5 mx-5 paragraph-justified">
+-              Meet our seasoned Front-End Development instructor, a dynamic industry professional
+-              with a passion for cultivating the next generation of web developers. With a wealth of
+-              hands-on experience and a proven track record in the field, our instructor brings a
+-              unique blend of expertise and enthusiasm to the classroom.
+-              <br />
+-              <br />
+-              Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-              CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-              for learners of all levels.
+-              <br />
+-              <br />
+-              Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-              CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-              for learners of all levels.
+-              <br />
+-              <br />
+-              Join us, and let our experienced instructor guide you on a transformative journey
+-              toward front-end mastery!
+-              <br />
+-              <br />
+-              🚀 💻 #CodeWithConfidence #FrontEndInstructor
+-            </p>
+-          </div>
+-        </div>
+-
+-        {/* instructor 3 */}
+-        <div className="d-flex flex-column flex-lg-row mt-4 mb-3">
+-          {/* image */}
+-          <div className="d-flex flex-column col-lg-4 col-12 ">
+-            <img className="img-fluid" src={profileImg3} alt="Project" />
+-          </div>
+-          {/* text */}
+-          <div className="d-flex flex-column col-lg-7 col-12  mt-2 align-self-start ">
+-            <h1 className="mt-3 mx-5">Full Name 3</h1>
+-            <div className="text-container">
+-              <div
+-                className={`paragraph-content ${isExpanded.instructor3 ? '' : 'text-truncated-mobile'
+-                }`}
+-              >
+-                <p className="pt-5 mx-5 paragraph-justified">
+-                  Meet our seasoned Front-End Development instructor, a dynamic industry professional
+-                  with a passion for cultivating the next generation of web developers. With a wealth of
+-                  hands-on experience and a proven track record in the field, our instructor brings a
+-                  unique blend of expertise and enthusiasm to the classroom.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Their engaging teaching style seamlessly demystifies complex concepts, making HTML,
+-                  CSS/CSS (Saas), JavaScript, Bootstrap, and Git version control accessible and exciting
+-                  for learners of all levels.
+-                  <br />
+-                  <br />
+-                  Join us, and let our experienced instructor guide you on a transformative journey
+-                  toward front-end mastery!
+-                  <br />
+-                  <br />
+-                  <br />
+-                  🚀 💻 #CodeWithConfidence #FrontEndInstructor
+-                </p>
+-              </div>
+-              {!isExpanded.instructor3 ? (
+-                <span
+-                  id="see-more-front-end-instructor3"
+-                  className="toggle-text-inline"
+-                  role="button"
+-                  tabIndex="0"
+-                  onClick={() => handleToggle('instructor3')}
+-                  onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor3')}
+-                >
+-                  ... View More
+-                </span>
+-              ) : (
+-                <div className="toggle-text-container">
+-                  <span
+-                    className="toggle-text"
+-                    role="button"
+-                    tabIndex="0"
+-                    onClick={() => handleToggle('instructor3')}
+-                    onKeyDown={(e) => e.key === 'Enter' && handleToggle('instructor3')}
+-                  >
+-                    View Less
+-                  </span>
+-                </div>
+-              )}
+-            </div>
+-
+-          </div>
+-        </div>
+-
+-      </div>
+-      <div className="pt-5">
+-        <Footer />
+-      </div>
+-    </div>
+-  );
+-};
+-
+-export default UiUx;
+Index: src/components/CoursesFrontend.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/components/CoursesFrontend.css b/src/components/CoursesFrontend.css
+deleted file mode 100644
+--- a/src/components/CoursesFrontend.css	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ /dev/null	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
+@@ -1,126 +0,0 @@
+-.cover-img {
+-  height: 30em !important;
+-  object-fit: cover !important;
+-}
+-
+-.instructor-section {
+-  display: flex;
+-  align-items: stretch;
+-  margin-left: 1rem;
+-  margin-right: 0.5rem;
+-}
+-
+-.instructor-image-container {
+-  display: flex;
+-  align-items: stretch;
+-  width: 100%;
+-  flex: 1;
+-}
+-
+-.instructor-image {
+-  object-fit: cover;
+-  object-position: top center;
+-  width: 100%;
+-  height: 100%;
+-  border-radius: 8px;
+-}
+-
+-.instructor-text-content {
+-  display: flex;
+-  flex-direction: column;
+-  justify-content: flex-start;
+-  flex: 1;
+-}
+-
+-.instructor-section .col-lg-4 {
+-  padding-left: 0;
+-  padding-right: 0;
+-}
+-
+-.instructor-section .col-lg-7 {
+-  padding-left: 0;
+-  padding-right: 0;
+-}
+-
+-.instructor-section .row {
+-  margin-left: 0;
+-  margin-right: 0;
+-}
+-
+-.instructor-section .col-lg-4,
+-.instructor-section .col-lg-7 {
+-  margin-left: 0;
+-  margin-right: 0;
+-}
+-
+-.instructor-section:nth-child(even) .col-lg-7 {
+-  padding-right: 2rem;
+-}
+-
+-.instructor-section:nth-child(odd) .col-lg-7 {
+-  padding-left: 2rem;
+-}
+-
+-/* Alternating instructor layout */
+-.instructor-left .instructor-text-content {
+-  padding-left: 2rem;
+-}
+-
+-.instructor-right .instructor-text-content {
+-  padding-right: 2rem;
+-}
+-
+-@media (max-width: 991px) {
+-  .instructor-section {
+-    margin-left: 0.5rem;
+-    margin-right: 0.25rem;
+-  }
+-
+-  /* Remove the alternating spacing on mobile */
+-  .instructor-section:nth-child(even) .col-lg-7,
+-  .instructor-section:nth-child(odd) .col-lg-7 {
+-    padding-left: 0;
+-    padding-right: 0;
+-  }
+-
+-  /* Set image first */
+-  .d-flex.flex-column.col-lg-4.col-12 {
+-    order: -2; /* Moves image to the top */
+-  }
+-
+-  /* Set name second */
+-  .d-flex.flex-column.col-lg-7.col-12 h1 {
+-    order: -1;
+-    text-align: center;
+-    margin-top: 15px;
+-  }
+-
+-  /* Set description third */
+-  .d-flex.flex-column.col-lg-7.col-12 p {
+-    text-align: left;
+-  }
+-
+-  /* Mobile image sizing */
+-  .instructor-image-container {
+-    height: 300px;
+-    width: 100%;
+-  }
+-
+-  .instructor-image {
+-    height: 300px;
+-    width: 100%;
+-  }
+-}
+-
+-@media (max-width: 576px) {
+-  /* Smaller mobile image sizing */
+-  .instructor-image-container {
+-    height: 250px;
+-    width: 100%;
+-  }
+-
+-  .instructor-image {
+-    height: 250px;
+-    width: 100%;
+-  }
+-}
+Index: src/components/CourseDetails.jsx
+===================================================================
+diff --git a/src/components/CourseDetails.jsx b/src/components/CourseDetails.jsx
+new file mode 100644
+--- /dev/null	(date 1757091681886)
++++ b/src/components/CourseDetails.jsx	(date 1757091681886)
+@@ -0,0 +1,294 @@
++/* eslint-disable */
++import React, { useEffect, useState } from "react";
++import { useParams } from "react-router-dom";
++import { getCourseById } from "../services/CourseService";
++import { getInstructors } from "../services/InstructorService";
++import Navbar from "./ui/Navbar";
++import Footer from "./ui/Footer";
++import coursesReact from "./images/Courses_React.png";
++import "./Courses.css";
++import "./CoursesReact.css";
++import "./CourseDetails.css";
++
++export default function CourseDetails() {
++  const { id } = useParams();
++  const [course, setCourse] = useState(null);
++  const [loading, setLoading] = useState(true);
++  const [error, setError] = useState(null);
++  const [instructors, setInstructors] = useState([]);
++  const [isExpanded, setIsExpanded] = useState({ course: false });
++
++  useEffect(() => {
++    let isMounted = true;
++    const fetchData = async () => {
++      try {
++        setLoading(true);
++        const data = await getCourseById(id);
++        if (!isMounted) return;
++        setCourse(data);
++
++        try {
++          const allInstructors = await getInstructors();
++          if (!isMounted) return;
++          const courseName = (data?.course_name || "").toLowerCase();
++          const filtered = allInstructors.filter(
++            (inst) => (inst?.course_name || "").toLowerCase() === courseName
++          );
++          setInstructors(filtered);
++        } catch (e) {
++          setInstructors([]);
++        }
++      } catch (e) {
++        if (isMounted) setError("Failed to load course");
++      } finally {
++        if (isMounted) setLoading(false);
++      }
++    };
++    if (id) fetchData();
++    return () => {
++      isMounted = false;
++    };
++  }, [id]);
++
++  if (loading)
++    return (
++      <div className="container py-5 text-center text-white">Loading...</div>
++    );
++  if (error)
++    return (
++      <div className="container py-5 text-center text-danger">{error}</div>
++    );
++  if (!course)
++    return (
++      <div className="container py-5 text-center text-white">
++        Course not found
++      </div>
++    );
++
++  const headerTitle = course.course_name || "Course";
++  const headerSubtitle = course.general_description || course.description || "";
++  const audienceText =
++    course.target_audience || course.who_can_take || course.who_is_it_for || "";
++  const prerequisitesText = course.prerequisites || "";
++  const outcomes = course.outcomes || course.learning_outcomes || "";
++  const duration = course.duration || course.length || "";
++  const price = course.price || course.cost || "";
++  const level = course.level || course.difficulty || "";
++
++  return (
++    <div className="container-fluid p-0 m-0 course-details-page">
++      <Navbar className="active text-white" />
++      <div
++        className="course-hero"
++        style={{ backgroundImage: `url(${course.image_url || coursesReact})` }}
++      >
++        <div className="course-hero-overlay" />
++      </div>
++
++      <div className="container">
++        <div className="course-header">
++          <h1 className="course-title">{headerTitle}</h1>
++          {headerSubtitle && (
++            <p className="course-subtitle">{headerSubtitle}</p>
++          )}
++
++          <div className="text-container">
++            <div
++              className={`paragraph-content ${
++                isExpanded.course ? "" : "text-truncated-mobile"
++              }`}
++            >
++              <p className="pt-3 paragraph-lead">
++                {course.description || headerSubtitle || headerTitle}
++              </p>
++            </div>
++            {!isExpanded.course ? (
++              <span
++                id="see-more-course-details"
++                className="toggle-text-inline"
++                role="button"
++                tabIndex="0"
++                onClick={() => setIsExpanded((s) => ({ ...s, course: true }))}
++                onKeyDown={(e) =>
++                  e.key === "Enter" &&
++                  setIsExpanded((s) => ({ ...s, course: true }))
++                }
++              >
++                ... View More
++              </span>
++            ) : (
++              <div className="toggle-text-container">
++                <span
++                  className="toggle-text"
++                  role="button"
++                  tabIndex="0"
++                  onClick={() =>
++                    setIsExpanded((s) => ({ ...s, course: false }))
++                  }
++                  onKeyDown={(e) =>
++                    e.key === "Enter" &&
++                    setIsExpanded((s) => ({ ...s, course: false }))
++                  }
++                >
++                  View Less
++                </span>
++              </div>
++            )}
++          </div>
++
++          <div className="course-meta-bar row gx-2 gy-2 mt-3">
++            {duration && (
++              <div className="col-auto">
++                <span className="chip">Duration: {duration}</span>
++              </div>
++            )}
++            {level && (
++              <div className="col-auto">
++                <span className="chip">Level: {level}</span>
++              </div>
++            )}
++            {price && (
++              <div className="col-auto">
++                <span className="chip">Price: {price}</span>
++              </div>
++            )}
++          </div>
++        </div>
++      </div>
++
++      {/* Description moved above into header; no separate Overview block */}
++
++      {/* WHO IT'S FOR */}
++      {audienceText && (
++        <div className="container">
++          <div className="course-section">
++            <h2 className="section-title">Who is this for?</h2>
++            <p className="m-0 paragraph-justified">{audienceText}</p>
++          </div>
++        </div>
++      )}
++
++      {/* PREREQUISITES */}
++      {prerequisitesText && (
++        <div className="container">
++          <div className="course-section">
++            <h2 className="section-title">Prerequisites</h2>
++            <p className="m-0 paragraph-justified">{prerequisitesText}</p>
++          </div>
++        </div>
++      )}
++
++      {/* OUTCOMES */}
++      {outcomes && (
++        <div className="container">
++          <div className="course-section">
++            <h2 className="section-title">What you'll learn</h2>
++            {Array.isArray(outcomes) ? (
++              <ul className="list-unstyled m-0">
++                {outcomes.map((item, i) => (
++                  <li key={i} className="mb-2">
++                    • {item}
++                  </li>
++                ))}
++              </ul>
++            ) : (
++              <p className="m-0 paragraph-justified">{outcomes}</p>
++            )}
++          </div>
++        </div>
++      )}
++
++      {/* INSTRUCTORS */}
++      <div className="container">
++        <div className="course-section">
++          <h2 className="section-title">Our instructors</h2>
++          <div className="">
++            {instructors.map((inst, idx) => {
++              const key = inst.id || idx;
++              const toggleKey = `inst_${key}`;
++              const expanded = !!isExpanded[toggleKey];
++              return (
++                <div
++                  key={key}
++                  className="d-flex flex-column flex-lg-row mt-4 mb-3 instructor-section"
++                >
++                  <div className="d-flex flex-column col-lg-4 col-12 instructor-image-container">
++                    <img
++                      className="img-fluid instructor-image"
++                      src={inst.profile_pic_url || "/default-avatar.jpg"}
++                      alt={`${inst.first_name || ""} ${inst.last_name || ""}`}
++                    />
++                  </div>
++                  <div className="d-flex flex-column col-lg-7 col-12 mt-2 align-self-start instructor-text-content">
++                    <h3 className="mt-3 mx-0">
++                      {`${inst.first_name || ""} ${
++                        inst.last_name || ""
++                      }`.trim() || "Instructor"}
++                    </h3>
++                    <div className="text-container">
++                      <div
++                        className={`paragraph-content ${
++                          expanded ? "" : "text-truncated-mobile"
++                        }`}
++                      >
++                        <p className="pt-3 paragraph-justified">
++                          {inst.description ||
++                            inst.expertise ||
++                            inst.course_name ||
++                            ""}
++                        </p>
++                      </div>
++                      {!expanded ? (
++                        <span
++                          className="toggle-text-inline"
++                          role="button"
++                          tabIndex="0"
++                          onClick={() =>
++                            setIsExpanded((s) => ({ ...s, [toggleKey]: true }))
++                          }
++                          onKeyDown={(e) =>
++                            e.key === "Enter" &&
++                            setIsExpanded((s) => ({ ...s, [toggleKey]: true }))
++                          }
++                        >
++                          ... View More
++                        </span>
++                      ) : (
++                        <div className="toggle-text-container">
++                          <span
++                            className="toggle-text"
++                            role="button"
++                            tabIndex="0"
++                            onClick={() =>
++                              setIsExpanded((s) => ({
++                                ...s,
++                                [toggleKey]: false,
++                              }))
++                            }
++                            onKeyDown={(e) =>
++                              e.key === "Enter" &&
++                              setIsExpanded((s) => ({
++                                ...s,
++                                [toggleKey]: false,
++                              }))
++                            }
++                          >
++                            View Less
++                          </span>
++                        </div>
++                      )}
++                    </div>
++                  </div>
++                </div>
++              );
++            })}
++          </div>
++        </div>
++      </div>
++
++      <div className="pt-4">
++        <Footer />
++      </div>
++    </div>
++  );
++}
+Index: src/components/CourseDetails.css
+===================================================================
+diff --git a/src/components/CourseDetails.css b/src/components/CourseDetails.css
+new file mode 100644
+--- /dev/null	(date 1757086618545)
++++ b/src/components/CourseDetails.css	(date 1757086618545)
+@@ -0,0 +1,163 @@
++.course-details-page .instructor-image-container {
++  min-height: 280px;
++  max-height: none;
++  height: auto;
++}
++
++.course-details-page .instructor-image {
++  width: 100%;
++  height: auto;
++  max-height: none;
++  object-fit: contain;
++  object-position: center center;
++  border-radius: 8px;
++}
++
++@media (max-width: 991px) {
++  .course-details-page .instructor-image-container {
++    min-height: 220px;
++  }
++}
++
++/* HERO */
++.course-details-page .course-hero {
++  position: relative;
++  width: 100%;
++  min-height: 320px;
++  background-size: cover;
++  background-position: center center;
++}
++
++.course-details-page .course-hero-overlay {
++  position: absolute;
++  inset: 0;
++  background: rgba(0, 0, 0, 0.25);
++}
++
++.course-details-page .course-hero-content {
++  position: relative;
++  z-index: 1;
++  color: #fff;
++  padding: 80px 24px;
++  max-width: 1024px;
++  margin: 0 auto;
++}
++.course-details-page .course-header {
++  padding: 24px 0 0 0;
++}
++
++.course-details-page .course-title {
++  font-size: 2rem;
++  font-weight: 800;
++  margin: 0;
++}
++
++.course-details-page .course-subtitle {
++  margin-top: 6px;
++  font-size: 1.1rem;
++  color: #374151;
++}
++
++.course-details-page .course-hero-title {
++  margin: 0;
++  font-size: 2.25rem;
++  font-weight: 700;
++}
++
++.course-details-page .course-hero-subtitle {
++  margin-top: 8px;
++  font-size: 1.1rem;
++  opacity: 0.9;
++}
++
++/* KEY FACTS */
++.course-details-page .key-facts .fact-card {
++  background: #ffffff;
++  border: 1px solid rgba(0, 0, 0, 0.08);
++  border-radius: 10px;
++  padding: 16px;
++}
++
++.course-details-page .key-facts .fact-label {
++  font-size: 0.85rem;
++  color: #6b7280;
++}
++
++.course-details-page .key-facts .fact-value {
++  font-size: 1.1rem;
++  font-weight: 600;
++}
++
++.course-details-page .enroll-btn {
++  height: 100%;
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++}
++.course-details-page .course-meta-bar .chip {
++  display: inline-flex;
++  align-items: center;
++  padding: 6px 12px;
++  border-radius: 999px;
++  background: #f3f4f6;
++  color: #111827;
++  font-size: 0.9rem;
++  border: 1px solid #e5e7eb;
++}
++
++/* SECTIONS */
++.course-details-page .course-section {
++  background: #ffffff;
++  border: 1px solid rgba(0, 0, 0, 0.08);
++  border-radius: 10px;
++  padding: 24px;
++  margin-top: 24px;
++}
++
++.course-details-page .section-title {
++  font-size: 1.5rem;
++  font-weight: 700;
++  margin-bottom: 12px;
++}
++
++.course-details-page .paragraph-justified {
++  text-align: justify;
++}
++
++.course-details-page .paragraph-lead {
++  font-size: 1.05rem;
++  line-height: 1.8;
++  color: #1f2937;
++}
++
++.course-details-page .overview-image-wrap {
++  width: 100%;
++  display: flex;
++  justify-content: center;
++  margin-bottom: 12px;
++}
++
++.course-details-page .overview-image {
++  width: 100%;
++  max-height: 340px;
++  object-fit: cover;
++  border-radius: 10px;
++}
++
++.course-details-page .text-truncated-mobile {
++  display: -webkit-box;
++  -webkit-line-clamp: 5;
++  -webkit-box-orient: vertical;
++  overflow: hidden;
++  line-clamp: 5;
++}
++
++.course-details-page .toggle-text-inline {
++  color: #0d6efd;
++  cursor: pointer;
++  user-select: none;
++}
++
++.course-details-page .toggle-text-container {
++  margin-top: 8px;
++}
+Index: src/Forms/InstructorForm.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* eslint-disable jsx-a11y/label-has-associated-control */\r\n/* eslint-disable */\r\n\r\nimport React from \"react\";\r\n\r\nexport default function InstructorForm({\r\n  form,\r\n  onChange,\r\n  readOnly,\r\n  isEditing,\r\n  onCancel,\r\n  onEdit,\r\n  onSubmit,\r\n  errorMessage,\r\n  courses = [], // Add courses prop for dropdown\r\n}) {\r\n  console.log(\"Courses passed to InstructorForm:\", courses);\r\n  return (\r\n    <>\r\n      <div className=\"cpbp-form-group\">\r\n        <label>First Name</label>\r\n        <input\r\n          type=\"text\"\r\n          name=\"first_name\"\r\n          value={form.first_name || \"\"}\r\n          onChange={onChange}\r\n          disabled={readOnly}\r\n          required\r\n        />\r\n      </div>\r\n\r\n      <div className=\"cpbp-form-group\">\r\n        <label>Last Name</label>\r\n        <input\r\n          type=\"text\"\r\n          name=\"last_name\"\r\n          value={form.last_name || \"\"}\r\n          onChange={onChange}\r\n          disabled={readOnly}\r\n          required\r\n        />\r\n      </div>\r\n\r\n      <div className=\"cpbp-form-group\">\r\n        <label>Email</label>\r\n        <input\r\n          type=\"email\"\r\n          name=\"email\"\r\n          value={form.email || \"\"}\r\n          onChange={onChange}\r\n          disabled={readOnly}\r\n          required\r\n        />\r\n      </div>\r\n\r\n      <div className=\"cpbp-form-group\">\r\n        <label>Course</label>\r\n        <select\r\n          name=\"course_ids\"\r\n          value={form.course_ids?.[0] || \"\"}\r\n          onChange={(e) => {\r\n            const courseId = parseInt(e.target.value);\r\n            onChange({\r\n              target: {\r\n                name: \"course_ids\",\r\n                value: courseId ? [courseId] : [],\r\n              },\r\n            });\r\n          }}\r\n          disabled={readOnly}\r\n          required\r\n          style={{ minHeight: \"40px\" }}\r\n        >\r\n          <option value=\"\">Select a course...</option>\r\n          {courses && courses.length > 0 ? (\r\n            courses.map((course) => (\r\n              <option key={course.id} value={course.id}>\r\n                {course.course_name}\r\n              </option>\r\n            ))\r\n          ) : (\r\n            <option value=\"\" disabled>\r\n              No courses available\r\n            </option>\r\n          )}\r\n        </select>\r\n      </div>\r\n\r\n      <div className=\"cpbp-form-group\">\r\n        <label>Expertise</label>\r\n        <input\r\n          type=\"text\"\r\n          name=\"expertise\"\r\n          value={form.expertise || \"\"}\r\n          onChange={onChange}\r\n          disabled={readOnly}\r\n          placeholder=\"e.g., Frontend Development, JavaScript\"\r\n        />\r\n      </div>\r\n\r\n      <div className=\"cpbp-form-group\">\r\n        <label>Description</label>\r\n        <textarea\r\n          name=\"description\"\r\n          value={form.description || \"\"}\r\n          onChange={onChange}\r\n          disabled={readOnly}\r\n          rows=\"4\"\r\n          placeholder=\"Brief description of the instructor's background and teaching style...\"\r\n        />\r\n      </div>\r\n    </>\r\n  );\r\n}\r\n
+===================================================================
+diff --git a/src/Forms/InstructorForm.jsx b/src/Forms/InstructorForm.jsx
+--- a/src/Forms/InstructorForm.jsx	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ b/src/Forms/InstructorForm.jsx	(date 1756683415865)
+@@ -1,4 +1,3 @@
+-/* eslint-disable jsx-a11y/label-has-associated-control */
+ /* eslint-disable */
+ 
+ import React from "react";
+@@ -56,14 +55,14 @@
+       <div className="cpbp-form-group">
+         <label>Course</label>
+         <select
+-          name="course_ids"
+-          value={form.course_ids?.[0] || ""}
++          name="course_name"
++          value={form.course_name || ""}
+           onChange={(e) => {
+-            const courseId = parseInt(e.target.value);
++            const selectedName = e.target.value;
+             onChange({
+               target: {
+-                name: "course_ids",
+-                value: courseId ? [courseId] : [],
++                name: "course_name",
++                value: selectedName,
+               },
+             });
+           }}
+@@ -74,7 +73,7 @@
+           <option value="">Select a course...</option>
+           {courses && courses.length > 0 ? (
+             courses.map((course) => (
+-              <option key={course.id} value={course.id}>
++              <option key={course.id} value={course.course_name}>
+                 {course.course_name}
+               </option>
+             ))
+Index: src/services/InstructorService.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* eslint-disable jsx-a11y/label-has-associated-control, no-unused-vars, no-nested-ternary */\r\n/* eslint-disable */\r\n\r\nimport axios from \"axios\";\r\nconst API_BASE = \"http://localhost:3000\";\r\n\r\nexport function getAuthHeaders() {\r\n  const token = sessionStorage.getItem(\"auth_token\");\r\n  return token ? { Authorization: `Bearer ${token}` } : {};\r\n}\r\n\r\nexport async function getInstructors() {\r\n  try {\r\n    const res = await axios.get(`${API_BASE}/instructors`, {\r\n      headers: getAuthHeaders(),\r\n    });\r\n    return res.data;\r\n  } catch (error) {\r\n    if (error.response?.status === 401 || error.response?.status === 403) {\r\n      sessionStorage.removeItem(\"auth_token\");\r\n      window.location.href = \"/login\";\r\n      return [];\r\n    }\r\n    throw error;\r\n  }\r\n}\r\n\r\nexport async function createInstructor(data, file) {\r\n  const formData = new FormData();\r\n  Object.entries(data).forEach(([key, value]) => {\r\n    if (key === \"course_ids\" && Array.isArray(value)) {\r\n      // Handle course_ids array - append each course_id separately\r\n      value.forEach((courseId) => {\r\n        formData.append(\"course_ids[]\", courseId);\r\n      });\r\n    } else {\r\n      formData.append(key, value);\r\n    }\r\n  });\r\n  if (file) formData.append(\"profile_pic\", file);\r\n\r\n  const res = await axios.post(`${API_BASE}/instructors`, formData, {\r\n    headers: { \"Content-Type\": \"multipart/form-data\", ...getAuthHeaders() },\r\n  });\r\n  return res.data;\r\n}\r\n\r\nexport async function updateInstructor(id, data, file) {\r\n  const formData = new FormData();\r\n  Object.entries(data).forEach(([key, value]) => {\r\n    if (key === \"course_ids\" && Array.isArray(value)) {\r\n      // Handle course_ids array - append each course_id separately\r\n      value.forEach((courseId) => {\r\n        formData.append(\"course_ids[]\", courseId);\r\n      });\r\n    } else {\r\n      formData.append(key, value);\r\n    }\r\n  });\r\n  if (file) formData.append(\"profile_pic\", file);\r\n\r\n  const res = await axios.put(`${API_BASE}/instructors/${id}`, formData, {\r\n    headers: { \"Content-Type\": \"multipart/form-data\", ...getAuthHeaders() },\r\n  });\r\n  return res.data;\r\n}\r\n\r\nexport async function deleteInstructor(id) {\r\n  return axios.delete(`${API_BASE}/instructors/${id}`, {\r\n    headers: getAuthHeaders(),\r\n  });\r\n}\r\n
+===================================================================
+diff --git a/src/services/InstructorService.js b/src/services/InstructorService.js
+--- a/src/services/InstructorService.js	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ b/src/services/InstructorService.js	(date 1756751692347)
+@@ -1,11 +1,11 @@
+-/* eslint-disable jsx-a11y/label-has-associated-control, no-unused-vars, no-nested-ternary */
+ /* eslint-disable */
+ 
+ import axios from "axios";
+ const API_BASE = "http://localhost:3000";
+ 
+ export function getAuthHeaders() {
+-  const token = sessionStorage.getItem("auth_token");
++  const token =
++    sessionStorage.getItem("auth_token") || localStorage.getItem("auth_token");
+   return token ? { Authorization: `Bearer ${token}` } : {};
+ }
+ 
+@@ -28,12 +28,9 @@
+ export async function createInstructor(data, file) {
+   const formData = new FormData();
+   Object.entries(data).forEach(([key, value]) => {
+-    if (key === "course_ids" && Array.isArray(value)) {
+-      // Handle course_ids array - append each course_id separately
+-      value.forEach((courseId) => {
+-        formData.append("course_ids[]", courseId);
+-      });
+-    } else {
++    if (key === "course_name") {
++      formData.append("course_name", value);
++    } else if (key !== "course_ids") {
+       formData.append(key, value);
+     }
+   });
+@@ -48,12 +45,9 @@
+ export async function updateInstructor(id, data, file) {
+   const formData = new FormData();
+   Object.entries(data).forEach(([key, value]) => {
+-    if (key === "course_ids" && Array.isArray(value)) {
+-      // Handle course_ids array - append each course_id separately
+-      value.forEach((courseId) => {
+-        formData.append("course_ids[]", courseId);
+-      });
+-    } else {
++    if (key === "course_name") {
++      formData.append("course_name", value);
++    } else if (key !== "course_ids") {
+       formData.append(key, value);
+     }
+   });
+Index: src/model/Instructor.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* eslint-disable */\r\n\r\nexport const Instructor = {\r\n  first_name: \"\",\r\n  last_name: \"\",\r\n  course_ids: [],\r\n  description: \"\",\r\n  expertise: \"\",\r\n  email: \"\",\r\n};\r\n
+===================================================================
+diff --git a/src/model/Instructor.js b/src/model/Instructor.js
+--- a/src/model/Instructor.js	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ b/src/model/Instructor.js	(date 1756683587611)
+@@ -3,7 +3,7 @@
+ export const Instructor = {
+   first_name: "",
+   last_name: "",
+-  course_ids: [],
++  course_name: "",
+   description: "",
+   expertise: "",
+   email: "",
+Index: src/modals/InstructorAddEditModal.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>/* eslint-disable */\r\nimport InstructorForm from \"../Forms/InstructorForm\";\r\n\r\nexport default function InstructorAddEditModal({\r\n  open,\r\n  onClose,\r\n  instructorForm,\r\n  isEditing,\r\n  readOnly,\r\n  errorMessage,\r\n  instructorPhotoPreview,\r\n  handleInstructorChange,\r\n  handlePhotoChange,\r\n  handleSubmit,\r\n  handleEdit,\r\n  courses = [], // Add courses prop\r\n}) {\r\n  if (!open) return null;\r\n\r\n  const modalTitle = isEditing\r\n    ? readOnly\r\n      ? \"Instructor Details\"\r\n      : \"Edit Instructor\"\r\n    : \"Add Instructor\";\r\n\r\n  return (\r\n    <div className=\"cpbp-modal-overlay\">\r\n      <div className=\"cpbp-modal-content\">\r\n        <button type=\"button\" className=\"cpbp-modal-close\" onClick={onClose}>\r\n          ×\r\n        </button>\r\n        <h2>{modalTitle}</h2>\r\n        {errorMessage && (\r\n          <div className=\"cpbp-error-message\">{errorMessage}</div>\r\n        )}\r\n\r\n        <form className=\"cpbp-form\" onSubmit={handleSubmit}>\r\n          <InstructorForm\r\n            form={instructorForm}\r\n            onChange={handleInstructorChange}\r\n            readOnly={readOnly}\r\n            courses={courses} // Pass courses to the form\r\n          />\r\n\r\n          {!readOnly && (\r\n            <div className=\"cpbp-form-group\">\r\n              <label>Upload Photo</label>\r\n              <input\r\n                type=\"file\"\r\n                accept=\"image/*\"\r\n                onChange={handlePhotoChange}\r\n              />\r\n              {instructorPhotoPreview &&\r\n                instructorPhotoPreview.startsWith(\"blob:\") && (\r\n                  <img\r\n                    src={instructorPhotoPreview}\r\n                    alt=\"Preview\"\r\n                    style={{\r\n                      display: \"block\",\r\n                      maxWidth: \"200px\",\r\n                      maxHeight: \"200px\",\r\n                      marginTop: \"1rem\",\r\n                      borderRadius: \"4px\",\r\n                    }}\r\n                  />\r\n                )}\r\n            </div>\r\n          )}\r\n\r\n          <div className=\"cpbp-form-buttons\">\r\n            {isEditing && readOnly ? (\r\n              <>\r\n                <button\r\n                  type=\"button\"\r\n                  className=\"cpbp-btn-submit\"\r\n                  onClick={(e) => {\r\n                    e.preventDefault();\r\n                    e.stopPropagation();\r\n                    handleEdit();\r\n                  }}\r\n                >\r\n                  Edit\r\n                </button>\r\n                <button\r\n                  type=\"button\"\r\n                  className=\"cpbp-btn-cancel\"\r\n                  onClick={onClose}\r\n                >\r\n                  Close\r\n                </button>\r\n              </>\r\n            ) : (\r\n              <>\r\n                <button type=\"submit\" className=\"cpbp-btn-submit\">\r\n                  {isEditing ? \"Update Instructor\" : \"Add Instructor\"}\r\n                </button>\r\n                <button\r\n                  type=\"button\"\r\n                  className=\"cpbp-btn-cancel\"\r\n                  onClick={onClose}\r\n                >\r\n                  Cancel\r\n                </button>\r\n              </>\r\n            )}\r\n          </div>\r\n        </form>\r\n      </div>\r\n    </div>\r\n  );\r\n}\r\n
+===================================================================
+diff --git a/src/modals/InstructorAddEditModal.jsx b/src/modals/InstructorAddEditModal.jsx
+--- a/src/modals/InstructorAddEditModal.jsx	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ b/src/modals/InstructorAddEditModal.jsx	(date 1757092163668)
+@@ -1,5 +1,6 @@
+ /* eslint-disable */
+ import InstructorForm from "../Forms/InstructorForm";
++import "./InstructorModal.css";
+ 
+ export default function InstructorAddEditModal({
+   open,
+@@ -24,7 +25,7 @@
+     : "Add Instructor";
+ 
+   return (
+-    <div className="cpbp-modal-overlay">
++    <div className="cpbp-modal-overlay instructor-modal">
+       <div className="cpbp-modal-content">
+         <button type="button" className="cpbp-modal-close" onClick={onClose}>
+           ×
+@@ -39,7 +40,7 @@
+             form={instructorForm}
+             onChange={handleInstructorChange}
+             readOnly={readOnly}
+-            courses={courses} // Pass courses to the form
++            courses={courses}
+           />
+ 
+           {!readOnly && (
+Index: src/modals/modals.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>.cpbp-modal-overlay {\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  width: 100vw;\r\n  height: 100vh;\r\n  background: rgba(0, 0, 0, 0.6);\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  z-index: 1000;\r\n  backdrop-filter: blur(4px);\r\n}\r\n\r\n.cpbp-modal-content {\r\n  position: relative;\r\n  width: 80vw;\r\n  max-width: 700px;\r\n  min-width: 500px;\r\n  max-height: 90vh;\r\n  overflow-y: auto;\r\n  background: rgba(255, 255, 255, 0.1);\r\n  color: #fff;\r\n  padding: 2rem;\r\n  border-radius: 12px;\r\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);\r\n  border: 1px solid rgba(255, 255, 255, 0.25);\r\n  backdrop-filter: blur(10px);\r\n}\r\n\r\n.cpbp-modal-close {\r\n  position: absolute;\r\n  top: 0.75rem;\r\n  right: 0.75rem;\r\n  background: transparent;\r\n  border: none;\r\n  font-size: 1.5rem;\r\n  cursor: pointer;\r\n  color: #fff;\r\n  width: 2rem;\r\n  height: 2rem;\r\n  border-radius: 50%;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  transition: all 0.3s ease;\r\n}\r\n\r\n.cpbp-modal-close:hover {\r\n  background: rgba(255, 255, 255, 0.1);\r\n  transform: scale(1.1);\r\n}\r\n\r\n.cpbp-form-group {\r\n  margin-bottom: 1.25rem;\r\n}\r\n\r\n.cpbp-form-group label {\r\n  display: block;\r\n  margin-bottom: 0.75rem;\r\n  font-size: 0.9rem;\r\n  color: #fff;\r\n  font-weight: 500;\r\n}\r\n\r\n.cpbp-form-group input,\r\n.cpbp-form-group textarea,\r\n.cpbp-form-group select {\r\n  width: 100%;\r\n  padding: 0.75rem;\r\n  border: 1px solid rgba(255, 255, 255, 0.3);\r\n  border-radius: 6px;\r\n  font-family: inherit;\r\n  background: rgba(255, 255, 255, 0.1);\r\n  color: #fff;\r\n  transition: all 0.3s ease;\r\n}\r\n\r\n.cpbp-form-group input:focus,\r\n.cpbp-form-group textarea:focus,\r\n.cpbp-form-group select:focus {\r\n  outline: none;\r\n  border-color: rgba(255, 255, 255, 0.6);\r\n  background: rgba(255, 255, 255, 0.15);\r\n  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);\r\n}\r\n\r\n.cpbp-form-group input::placeholder,\r\n.cpbp-form-group textarea::placeholder {\r\n  color: rgba(255, 255, 255, 0.6);\r\n}\r\n\r\n.cpbp-form-buttons {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 0.75rem;\r\n  margin-top: 1.5rem;\r\n}\r\n\r\n.cpbp-btn-submit,\r\n.cpbp-btn-cancel {\r\n  padding: 0.75rem 1.5rem;\r\n  border: none;\r\n  border-radius: 6px;\r\n  cursor: pointer;\r\n  font-size: 1rem;\r\n  font-weight: 500;\r\n  transition: all 0.3s ease;\r\n}\r\n\r\n.cpbp-btn-submit {\r\n  background: #28a745;\r\n  color: #fff;\r\n  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);\r\n}\r\n\r\n.cpbp-btn-submit:hover {\r\n  background: #218838;\r\n  transform: translateY(-2px);\r\n  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);\r\n}\r\n\r\n.cpbp-btn-cancel {\r\n  background: rgba(255, 255, 255, 0.1);\r\n  color: #fff;\r\n  border: 1px solid rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n.cpbp-btn-cancel:hover {\r\n  background: rgba(255, 255, 255, 0.2);\r\n  border-color: rgba(255, 255, 255, 0.5);\r\n}\r\n\r\n.cpbp-error-message {\r\n  background: rgba(231, 76, 60, 0.2);\r\n  border: 1px solid rgba(231, 76, 60, 0.5);\r\n  color: #e74c3c;\r\n  padding: 0.75rem;\r\n  border-radius: 6px;\r\n  margin-bottom: 1rem;\r\n  font-size: 0.9rem;\r\n}\r\n\r\n.cpbp-delete-modal-container {\r\n  position: relative;\r\n  width: 90vw;\r\n  max-width: 500px;\r\n  min-width: 400px;\r\n  background: rgba(255, 255, 255, 0.1);\r\n  color: #fff;\r\n  border-radius: 12px;\r\n  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);\r\n  overflow: hidden;\r\n  transform: translateY(0);\r\n  transition: all 0.3s ease;\r\n  border: 1px solid rgba(255, 255, 255, 0.25);\r\n  backdrop-filter: blur(10px);\r\n}\r\n\r\n.cpbp-delete-modal-content {\r\n  padding: 2rem;\r\n}\r\n\r\n.cpbp-delete-modal-header {\r\n  display: flex;\r\n  align-items: flex-start;\r\n  gap: 1.5rem;\r\n}\r\n\r\n.cpbp-delete-icon-container {\r\n  flex-shrink: 0;\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  width: 4rem;\r\n  height: 4rem;\r\n  border-radius: 50%;\r\n  background: rgba(231, 76, 60, 0.2);\r\n  border: 2px solid rgba(231, 76, 60, 0.5);\r\n  animation: pulse 2s infinite;\r\n}\r\n\r\n.cpbp-delete-icon {\r\n  width: 2rem;\r\n  height: 2rem;\r\n  color: #e74c3c;\r\n}\r\n\r\n.cpbp-delete-modal-body {\r\n  flex: 1;\r\n  text-align: left;\r\n}\r\n\r\n.cpbp-delete-title {\r\n  font-size: 1.5rem;\r\n  font-weight: 600;\r\n  color: #fff;\r\n  margin-bottom: 1rem;\r\n  line-height: 1.5;\r\n}\r\n\r\n.cpbp-delete-message-container {\r\n  margin-top: 0.5rem;\r\n}\r\n\r\n.cpbp-delete-message {\r\n  font-size: 1rem;\r\n  color: #fff;\r\n  line-height: 1.6;\r\n  font-weight: 500;\r\n}\r\n\r\n.cpbp-delete-item-name {\r\n  font-weight: 600;\r\n  color: #e74c3c;\r\n}\r\n\r\n.cpbp-delete-modal-actions {\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  gap: 1rem;\r\n  padding: 1.5rem 2rem;\r\n  background: rgba(255, 255, 255, 0.05);\r\n  border-top: 1px solid rgba(255, 255, 255, 0.1);\r\n}\r\n\r\n.cpbp-btn-delete-confirm {\r\n  padding: 0.75rem 1.5rem;\r\n  border: none;\r\n  border-radius: 6px;\r\n  cursor: pointer;\r\n  font-size: 1rem;\r\n  font-weight: 500;\r\n  background: #28a745;\r\n  color: #fff;\r\n  transition: all 0.3s ease;\r\n  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);\r\n}\r\n\r\n.cpbp-btn-delete-confirm:hover {\r\n  background: #218838;\r\n  transform: translateY(-2px);\r\n  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);\r\n}\r\n\r\n.cpbp-btn-delete-confirm:focus {\r\n  outline: none;\r\n  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.5);\r\n}\r\n\r\n/* ── Image Upload Styles ── */\r\n\r\n.cpbp-modal-content input[type=\"file\"] {\r\n  margin-top: 0.5rem;\r\n  background: rgba(255, 255, 255, 0.1);\r\n  border: 1px solid rgba(255, 255, 255, 0.3);\r\n  border-radius: 6px;\r\n  padding: 0.5rem;\r\n  color: #fff;\r\n}\r\n\r\n.cpbp-modal-content input[type=\"file\"]::-webkit-file-upload-button {\r\n  background: rgba(255, 255, 255, 0.2);\r\n  border: none;\r\n  border-radius: 4px;\r\n  padding: 0.5rem 1rem;\r\n  color: #fff;\r\n  cursor: pointer;\r\n  margin-right: 1rem;\r\n  transition: all 0.3s ease;\r\n}\r\n\r\n.cpbp-modal-content input[type=\"file\"]::-webkit-file-upload-button:hover {\r\n  background: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n.cpbp-modal-content img[src^=\"blob:\"] {\r\n  display: block;\r\n  max-width: 100%;\r\n  margin-top: 0.5rem;\r\n  border-radius: 8px;\r\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\r\n  border: 2px solid rgba(255, 255, 255, 0.2);\r\n}\r\n\r\n.cpbp-modal-content .cpbp-btn-submit {\r\n  background: linear-gradient(135deg, #4a90e2, #357ab8);\r\n  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);\r\n}\r\n\r\n.cpbp-modal-content .cpbp-btn-submit:hover {\r\n  background: linear-gradient(135deg, #357ab8, #2c5aa0);\r\n  box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);\r\n}\r\n\r\n@keyframes pulse {\r\n  0% {\r\n    transform: scale(1);\r\n  }\r\n\r\n  50% {\r\n    transform: scale(1.05);\r\n  }\r\n\r\n  100% {\r\n    transform: scale(1);\r\n  }\r\n}\r\n\r\n@keyframes modalFadeIn {\r\n  from {\r\n    opacity: 0;\r\n    transform: scale(0.9) translateY(-20px);\r\n  }\r\n\r\n  to {\r\n    opacity: 1;\r\n    transform: scale(1) translateY(0);\r\n  }\r\n}\r\n\r\n.cpbp-modal-content,\r\n.cpbp-delete-modal-container {\r\n  animation: modalFadeIn 0.3s ease-out;\r\n}\r\n\r\nbody.light-theme .cpbp-modal-content {\r\n  background: rgba(255, 255, 255, 0.3);\r\n  color: #fff;\r\n  border-color: #ccc;\r\n}\r\n\r\nbody.light-theme .cpbp-form-group label {\r\n  color: #fff;\r\n}\r\n\r\nbody.light-theme .cpbp-form-group input,\r\nbody.light-theme .cpbp-form-group textarea,\r\nbody.light-theme .cpbp-form-group select {\r\n  background: rgba(255, 255, 255, 0.8);\r\n  color: #333;\r\n  border-color: #ccc;\r\n}\r\n\r\nbody.light-theme .cpbp-form-group input:focus,\r\nbody.light-theme .cpbp-form-group textarea:focus,\r\nbody.light-theme .cpbp-form-group select:focus {\r\n  background: rgba(255, 255, 255, 0.95);\r\n  border-color: #999;\r\n}\r\n\r\nbody.light-theme .cpbp-form-group input::placeholder,\r\nbody.light-theme .cpbp-form-group textarea::placeholder {\r\n  color: #666;\r\n}\r\n\r\nbody.light-theme .cpbp-btn-cancel {\r\n  background: rgba(0, 0, 0, 0.05);\r\n  border-color: #ccc;\r\n  color: #fff;\r\n}\r\n\r\nbody.light-theme .cpbp-btn-cancel:hover {\r\n  background: rgba(0, 0, 0, 0.1);\r\n  border-color: #999;\r\n}\r\n\r\nbody.light-theme .cpbp-modal-close {\r\n  color: #333;\r\n}\r\n\r\nbody.light-theme .cpbp-modal-close:hover {\r\n  background: rgba(0, 0, 0, 0.1);\r\n}\r\n\r\nbody.light-theme .cpbp-delete-modal-container {\r\n  background: rgba(255, 255, 255, 0.3);\r\n  color: #fff;\r\n  border-color: #ccc;\r\n}\r\n\r\nbody.light-theme .cpbp-delete-icon-container {\r\n  background:\r\n    linear-gradient(\r\n      135deg,\r\n      rgba(231, 76, 60, 0.3),\r\n      rgba(231, 76, 60, 0.2)\r\n    );\r\n  border: 2px solid rgba(231, 76, 60, 0.6);\r\n  animation: pulse 2s infinite;\r\n  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);\r\n}\r\n\r\nbody.light-theme .cpbp-delete-title {\r\n  color: #fff;\r\n  font-weight: 700;\r\n}\r\n\r\nbody.light-theme .cpbp-delete-message {\r\n  color: #fff;\r\n  font-weight: 500;\r\n}\r\n\r\nbody.light-theme .cpbp-delete-modal-actions {\r\n  background:\r\n    linear-gradient(\r\n      135deg,\r\n      rgba(104, 94, 216, 0.1),\r\n      rgba(182, 152, 170, 0.1)\r\n    );\r\n  border-top: 2px solid rgba(104, 94, 216, 0.3);\r\n}\r\n\r\n@media (max-width: 768px) {\r\n  .cpbp-modal-content,\r\n  .cpbp-delete-modal-container {\r\n    width: 95vw;\r\n    min-width: auto;\r\n    margin: 1rem;\r\n  }\r\n\r\n  .cpbp-delete-modal-header {\r\n    flex-direction: column;\r\n    align-items: center;\r\n    text-align: center;\r\n    gap: 1rem;\r\n  }\r\n\r\n  .cpbp-delete-modal-actions {\r\n    flex-direction: column;\r\n    gap: 0.75rem;\r\n  }\r\n\r\n  .cpbp-btn-delete-confirm,\r\n  .cpbp-btn-cancel {\r\n    width: 100%;\r\n  }\r\n}\r\n
+===================================================================
+diff --git a/src/modals/modals.css b/src/modals/modals.css
+--- a/src/modals/modals.css	(revision 2632fd095d6defa1e01b3b8ef0ffa2c54df34331)
++++ b/src/modals/modals.css	(date 1757092163671)
+@@ -76,6 +76,24 @@
+   transition: all 0.3s ease;
+ }
+ 
++body.admin-dashboard-bg:not(.light-theme)
++  .cpbp-modal-content
++  .cpbp-form-group
++  select {
++  background: rgba(255, 255, 255, 0.1) !important;
++  color: #fff !important;
++  border-color: rgba(255, 255, 255, 0.3) !important;
++}
++
++body.admin-dashboard-bg:not(.light-theme)
++  .cpbp-modal-content
++  .cpbp-form-group
++  select
++  option {
++  background-color: #1f1f1f;
++  color: #fff;
++}
++
+ .cpbp-form-group input:focus,
+ .cpbp-form-group textarea:focus,
+ .cpbp-form-group select:focus {
+@@ -380,12 +398,11 @@
+ }
+ 
+ body.light-theme .cpbp-delete-icon-container {
+-  background:
+-    linear-gradient(
+-      135deg,
+-      rgba(231, 76, 60, 0.3),
+-      rgba(231, 76, 60, 0.2)
+-    );
++  background: linear-gradient(
++    135deg,
++    rgba(231, 76, 60, 0.3),
++    rgba(231, 76, 60, 0.2)
++  );
+   border: 2px solid rgba(231, 76, 60, 0.6);
+   animation: pulse 2s infinite;
+   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+@@ -402,12 +419,11 @@
+ }
+ 
+ body.light-theme .cpbp-delete-modal-actions {
+-  background:
+-    linear-gradient(
+-      135deg,
+-      rgba(104, 94, 216, 0.1),
+-      rgba(182, 152, 170, 0.1)
+-    );
++  background: linear-gradient(
++    135deg,
++    rgba(104, 94, 216, 0.1),
++    rgba(182, 152, 170, 0.1)
++  );
+   border-top: 2px solid rgba(104, 94, 216, 0.3);
+ }
+ 
