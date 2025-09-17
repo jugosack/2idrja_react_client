@@ -51,6 +51,15 @@
   transform: scale(1.1);
 }
 
+.cpbp-form-group select {
+  background-color: #161a22 !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 .cpbp-form-group {
   margin-bottom: 1.25rem;
 }

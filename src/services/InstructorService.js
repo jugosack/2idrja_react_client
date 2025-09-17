@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control, no-unused-vars, no-nested-ternary */
 /* eslint-disable */
 
 import axios from "axios";
@@ -18,6 +17,9 @@ export async function getInstructors() {
   } catch (error) {
     if (error.response?.status === 401 || error.response?.status === 403) {
       sessionStorage.removeItem("auth_token");
+      try {
+        localStorage.removeItem("auth_token");
+      } catch (_) {}
       window.location.href = "/login";
       return [];
     }
@@ -28,12 +30,9 @@ export async function getInstructors() {
 export async function createInstructor(data, file) {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    if (key === "course_ids" && Array.isArray(value)) {
-      // Handle course_ids array - append each course_id separately
-      value.forEach((courseId) => {
-        formData.append("course_ids[]", courseId);
-      });
-    } else {
+    if (key === "course_name") {
+      formData.append("course_name", value);
+    } else if (key !== "course_ids") {
       formData.append(key, value);
     }
   });
@@ -48,12 +47,9 @@ export async function createInstructor(data, file) {
 export async function updateInstructor(id, data, file) {
   const formData = new FormData();
   Object.entries(data).forEach(([key, value]) => {
-    if (key === "course_ids" && Array.isArray(value)) {
-      // Handle course_ids array - append each course_id separately
-      value.forEach((courseId) => {
-        formData.append("course_ids[]", courseId);
-      });
-    } else {
+    if (key === "course_name") {
+      formData.append("course_name", value);
+    } else if (key !== "course_ids") {
       formData.append(key, value);
     }
   });

@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="" />
+    <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CourseDetails.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseDetails.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modals/InstructorModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/InstructorModal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modals/modals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/modals.css" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,7 +63,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;courses-homepage-feature&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-courses-homepage&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/lazar/OneDrive/Desktop/Proekt_Za_Fakultet/2idrja_react_client&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -150,6 +156,7 @@
       <workItem from="1757866964161" duration="2171000" />
       <workItem from="1757939696662" duration="1691000" />
       <workItem from="1758128849775" duration="1322000" />
+      <workItem from="1758133954396" duration="138000" />
     </task>
     <task id="LOCAL-00001" summary="Added Delete Modal in main component">
       <option name="closed" value="true" />
