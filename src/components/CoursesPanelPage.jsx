@@ -88,6 +88,14 @@ export default function CoursesPanelPage() {
 
   const sections = ["Courses", "Users", "Instructors"];
 
+  // --- Instructors mobile slider state ---
+  const [currentInstructorIndex, setCurrentInstructorIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 425px)").matches
+      : false
+  );
+
   // --- Carousel state ---
   const [page, setPage] = useState(0);
   const [cols, setCols] = useState(1); // will be 2/3/4 per breakpoint
@@ -118,16 +126,15 @@ export default function CoursesPanelPage() {
 
   const confirmDeleteCourse = async () => {
     try {
-      await axios.delete(
-        `${API_BASE}/courses/${courseToDelete.id}`,
-        { headers: getAuthHeaders() },
-      );
+      await axios.delete(`${API_BASE}/courses/${courseToDelete.id}`, {
+        headers: getAuthHeaders(),
+      });
       setShowDeleteConfirm(false);
       setCourseToDelete(null);
       loadCourses();
       setPage((p) => 0);
     } catch {
-      alert('Failed to delete course.');
+      alert("Failed to delete course.");
     }
   };
 
@@ -171,6 +178,27 @@ export default function CoursesPanelPage() {
     }
   }, [activeSection, loadCourses]);
 
+  // Update mobile flag on viewport changes
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 425px)");
+    const handler = (e) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    if (mq.addEventListener) mq.addEventListener("change", handler);
+    else mq.addListener(handler);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", handler);
+      else mq.removeListener(handler);
+    };
+  }, []);
+
+  // Ensure current instructor index stays in range
+  useEffect(() => {
+    if (currentInstructorIndex >= instructors.length) {
+      setCurrentInstructorIndex(0);
+    }
+  }, [instructors, currentInstructorIndex]);
+
   // responsive columns logic for carousel
   useEffect(() => {
     const computeCols = () => {
@@ -190,14 +218,15 @@ export default function CoursesPanelPage() {
       });
     };
     apply();
-    window.addEventListener('resize', apply);
-    return () => window.removeEventListener('resize', apply);
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
   }, []);
 
   const pageSize = useMemo(() => cols * rows, [cols]);
 
   const totalPages = useMemo(() => {
-    const total = Math.ceil((courses?.length || 0) / Math.max(1, pageSize)) || 1;
+    const total =
+      Math.ceil((courses?.length || 0) / Math.max(1, pageSize)) || 1;
     return total;
   }, [courses, pageSize]);
 
@@ -207,7 +236,7 @@ export default function CoursesPanelPage() {
   }, [courses, page, pageSize]);
 
   const goHome = () => {
-    window.location.href = '/';
+    navigate("/");
   };
 
   const handleLogout = () => {
@@ -220,9 +249,37 @@ export default function CoursesPanelPage() {
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  const handleMaxStudentsChange = (e) => {
+    let { value } = e.target;
+    if (value === "") {
+      setForm((f) => ({ ...f, max_students: "" }));
+      return;
+    }
+    value = value.replace(/[^0-9]/g, "");
+    if (value === "") {
+      setForm((f) => ({ ...f, max_students: "" }));
+      return;
+    }
+    const clamped = Math.max(0, Math.min(1000, parseInt(value, 10)));
+    setForm((f) => ({ ...f, max_students: clamped }));
+  };
+
   const handleInstructorChange = (e) => {
     const { name, value } = e.target;
     setInstructorForm((f) => ({ ...f, [name]: value }));
+  };
+
+  const showPrevInstructor = () => {
+    setCurrentInstructorIndex((idx) =>
+      instructors.length
+        ? (idx - 1 + instructors.length) % instructors.length
+        : 0
+    );
+  };
+  const showNextInstructor = () => {
+    setCurrentInstructorIndex((idx) =>
+      instructors.length ? (idx + 1) % instructors.length : 0
+    );
   };
 
   const openAddModal = () => {
@@ -297,17 +354,22 @@ export default function CoursesPanelPage() {
 
       if (isEditing && selectedFile) {
         const data = new FormData();
-        data.append('image', selectedFile);
+        data.append("image", selectedFile);
         await axios.post(
           `${API_BASE}/courses/${editingId}/upload_image`,
           data,
-          { headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() } },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              ...getAuthHeaders(),
+            },
+          }
         );
       }
 
       setShowModal(false);
       setSelectedFile(null);
-      setPreviewUrl('');
+      setPreviewUrl("");
       loadCourses();
       setPage(0);
     } catch (err) {
@@ -609,23 +671,27 @@ export default function CoursesPanelPage() {
                   </div>
                 ))}
                 {/* Carousel navigation buttons */}
-<button
-  type="button"
-  className="cpbp-carousel-btn cpbp-carousel-prev"
-  onClick={() => setPage((p) => (p > 0 ? p - 1 : totalPages - 1))}
-  aria-label="Previous"
->
-  &#10094;
-</button>
+                <button
+                  type="button"
+                  className="cpbp-carousel-btn cpbp-carousel-prev"
+                  onClick={() =>
+                    setPage((p) => (p > 0 ? p - 1 : totalPages - 1))
+                  }
+                  aria-label="Previous"
+                >
+                  &#10094;
+                </button>
 
-<button
-  type="button"
-  className="cpbp-carousel-btn cpbp-carousel-next"
-  onClick={() => setPage((p) => (p < totalPages - 1 ? p + 1 : 0))}
-  aria-label="Next"
->
-  &#10095;
-</button>
+                <button
+                  type="button"
+                  className="cpbp-carousel-btn cpbp-carousel-next"
+                  onClick={() =>
+                    setPage((p) => (p < totalPages - 1 ? p + 1 : 0))
+                  }
+                  aria-label="Next"
+                >
+                  &#10095;
+                </button>
 
                 {/* Carousel pagination for courses section */}
                 {courses.length > pageSize && (
@@ -638,7 +704,7 @@ export default function CoursesPanelPage() {
                         <button
                           key={`dot-${idx}`}
                           type="button"
-                          className={`cpbp-dot${idx === page ? ' active' : ''}`}
+                          className={`cpbp-dot${idx === page ? " active" : ""}`}
                           onClick={() => jumpTo(idx)}
                           aria-label={`Go to page ${idx + 1}`}
                         />
@@ -650,40 +716,120 @@ export default function CoursesPanelPage() {
             ) : activeSection === "Users" ? (
               <UsersTable users={users} onUserUpdate={setUsers} />
             ) : activeSection === "Instructors" ? (
-              <div className="cpbp-cards-container">
-                {instructors.map((instructor) => (
-                  <div
-                    key={instructor.id}
-                    className="cpbp-card instructor-card"
+              isMobile ? (
+                <div className="instructors-slider">
+                  <button
+                    type="button"
+                    className="slider-arrow slider-arrow-left"
+                    onClick={showPrevInstructor}
+                    aria-label="Previous instructor"
                   >
-                    <img
-                      src={instructor.profile_pic_url || "/default-avatar.jpg"}
-                      alt={`${instructor.first_name} ${instructor.last_name}`}
-                      className="cpbp-card-image"
-                    />
-                    <h3 className="cpbp-card-title">{`${instructor.first_name} ${instructor.last_name}`}</h3>
-                    <p className="cpbp-card-description">
-                      {instructor.course_name || "No course assigned"}
-                    </p>
-                    <div className="cpbp-card-actions">
-                      <button
-                        type="button"
-                        className="cpbp-btn-edit"
-                        onClick={() => openInstructorEditModal(instructor)}
-                      >
-                        Details
-                      </button>
-                      <button
-                        type="button"
-                        className="cpbp-btn-delete"
-                        onClick={() => handleInstructorDelete(instructor)}
-                      >
-                        Delete
-                      </button>
-                    </div>
+                    ◀
+                  </button>
+                  <div className="slider-viewport">
+                    {instructors.length > 0 && (
+                      <div className="cpbp-card instructor-card">
+                        <div className="cpbp-card-image-wrap">
+                          <img
+                            src={
+                              instructors[currentInstructorIndex]
+                                ?.profile_pic_url || "/default-avatar.jpg"
+                            }
+                            alt={`${
+                              instructors[currentInstructorIndex]?.first_name ||
+                              ""
+                            } ${
+                              instructors[currentInstructorIndex]?.last_name ||
+                              ""
+                            }`}
+                            className="cpbp-card-image"
+                          />
+                        </div>
+                        <h3 className="cpbp-card-title">{`${
+                          instructors[currentInstructorIndex]?.first_name || ""
+                        } ${
+                          instructors[currentInstructorIndex]?.last_name || ""
+                        }`}</h3>
+                        <p className="cpbp-card-description">
+                          {instructors[currentInstructorIndex]?.course_name ||
+                            "No course assigned"}
+                        </p>
+                        <div className="cpbp-card-actions">
+                          <button
+                            type="button"
+                            className="cpbp-btn-edit"
+                            onClick={() =>
+                              openInstructorEditModal(
+                                instructors[currentInstructorIndex]
+                              )
+                            }
+                          >
+                            Details
+                          </button>
+                          <button
+                            type="button"
+                            className="cpbp-btn-delete"
+                            onClick={() =>
+                              handleInstructorDelete(
+                                instructors[currentInstructorIndex]
+                              )
+                            }
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <button
+                    type="button"
+                    className="slider-arrow slider-arrow-right"
+                    onClick={showNextInstructor}
+                    aria-label="Next instructor"
+                  >
+                    ▶
+                  </button>
+                </div>
+              ) : (
+                <div className="cpbp-cards-container instructors-3col-desktop">
+                  {instructors.map((instructor) => (
+                    <div
+                      key={instructor.id}
+                      className="cpbp-card instructor-card"
+                    >
+                      <div className="cpbp-card-image-wrap">
+                        <img
+                          src={
+                            instructor.profile_pic_url || "/default-avatar.jpg"
+                          }
+                          alt={`${instructor.first_name} ${instructor.last_name}`}
+                          className="cpbp-card-image"
+                        />
+                      </div>
+                      <h3 className="cpbp-card-title">{`${instructor.first_name} ${instructor.last_name}`}</h3>
+                      <p className="cpbp-card-description">
+                        {instructor.course_name || "No course assigned"}
+                      </p>
+                      <div className="cpbp-card-actions">
+                        <button
+                          type="button"
+                          className="cpbp-btn-edit"
+                          onClick={() => openInstructorEditModal(instructor)}
+                        >
+                          Details
+                        </button>
+                        <button
+                          type="button"
+                          className="cpbp-btn-delete"
+                          onClick={() => handleInstructorDelete(instructor)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
             ) : (
               <p className="cpbp-placeholder">
                 {activeSection} view not implemented yet.
@@ -803,7 +949,12 @@ export default function CoursesPanelPage() {
                   type="number"
                   name="max_students"
                   value={form.max_students}
-                  onChange={handleChange}
+                  onChange={handleMaxStudentsChange}
+                  inputMode="numeric"
+                  min="0"
+                  max="1000"
+                  step="1"
+                  placeholder="e.g., 20"
                   disabled={isEditing && readOnly}
                 />
               </div>
@@ -997,8 +1148,13 @@ export default function CoursesPanelPage() {
         <div className="cpbp-modal-overlay">
           <div className="cpbp-modal-content">
             <h2>Are you sure you want to delete this course?</h2>
-            <p><strong>{courseToDelete?.course_name}</strong></p>
-            <div className="cpbp-form-buttons" style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <p>
+              <strong>{courseToDelete?.course_name}</strong>
+            </p>
+            <div
+              className="cpbp-form-buttons"
+              style={{ display: "flex", justifyContent: "space-between" }}
+            >
               <button
                 type="button"
                 className="cpbp-btn-cancel"

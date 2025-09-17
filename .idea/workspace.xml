@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="" />
+    <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/CourseDetails.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/CourseDetails.jsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/modals/InstructorModal.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/CourseService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CoursesPanelPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesPanelPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modals/modals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/modals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/Instructor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/Instructor.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

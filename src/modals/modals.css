@@ -51,7 +51,16 @@
   transform: scale(1.1);
 }
 
-.cpbp-form-group {
+..cpbp-form-group select {
+  background-color: #161a22 !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color-scheme: dark;
+}
+cpbp-form-group {
   margin-bottom: 1.25rem;
 }
 
@@ -380,12 +389,11 @@ body.light-theme .cpbp-delete-modal-container {
 }
 
 body.light-theme .cpbp-delete-icon-container {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(231, 76, 60, 0.3),
-      rgba(231, 76, 60, 0.2)
-    );
+  background: linear-gradient(
+    135deg,
+    rgba(231, 76, 60, 0.3),
+    rgba(231, 76, 60, 0.2)
+  );
   border: 2px solid rgba(231, 76, 60, 0.6);
   animation: pulse 2s infinite;
   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
@@ -402,12 +410,11 @@ body.light-theme .cpbp-delete-message {
 }
 
 body.light-theme .cpbp-delete-modal-actions {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(104, 94, 216, 0.1),
-      rgba(182, 152, 170, 0.1)
-    );
+  background: linear-gradient(
+    135deg,
+    rgba(104, 94, 216, 0.1),
+    rgba(182, 152, 170, 0.1)
+  );
   border-top: 2px solid rgba(104, 94, 216, 0.3);
 }
 

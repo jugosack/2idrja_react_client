@@ -1,22 +1,25 @@
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Navbar.css';
-import logo from '../icons/2drijaLogo.png';
-import userLogo from '../icons/userLogo.svg';
+/* eslint-disable */
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./Navbar.css";
+import logo from "../icons/2drijaLogo.png";
+import userLogo from "../icons/userLogo.svg";
+import { getCourses } from "../../services/CourseService";
 
-const Navbar = ({ className = '' }) => {
+const Navbar = ({ className = "" }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = sessionStorage.getItem('auth_token');
+    const token = sessionStorage.getItem("auth_token");
     setIsAuthenticated(!!token);
 
     if (token) {
-      fetch('http://localhost:3000/current_user', {
+      fetch("http://localhost:3000/current_user", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -24,51 +27,62 @@ const Navbar = ({ className = '' }) => {
         .then((res) => res.json())
         .then((data) => {
           setUser(data);
-          setIsAdmin(data.role === 'admin');
+          setIsAdmin(data.role === "admin");
         })
         .catch((err) => {
-          console.error('Failed to fetch user:', err);
+          console.error("Failed to fetch user:", err);
         });
     }
+    // fetch courses for dropdown
+    getCourses()
+      .then((list) => setCourses(Array.isArray(list) ? list : []))
+      .catch(() => setCourses([]));
   }, []);
 
   const handleLogout = async () => {
     try {
-      const token = sessionStorage.getItem('auth_token');
+      const token = sessionStorage.getItem("auth_token");
       if (!token) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
-      const response = await fetch('http://localhost:3000/logout', {
-        method: 'DELETE',
+      const response = await fetch("http://localhost:3000/logout", {
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Logout failed:', errorText);
-        throw new Error('Logout failed');
+        console.error("Logout failed:", errorText);
+        throw new Error("Logout failed");
       }
 
-      sessionStorage.removeItem('auth_token');
+      sessionStorage.removeItem("auth_token");
       setIsAuthenticated(false);
       setUser(null);
       setIsAdmin(false);
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error("Error logging out:", error);
     }
   };
 
   return (
-    <nav className={`navbar navbar-expand-lg${className ? ` ${className}` : ''}`}>
+    <nav
+      className={`navbar navbar-expand-lg${className ? ` ${className}` : ""}`}
+    >
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">
-          <img className="logo" src={logo} alt="2DRIJA Logo" style={{ width: '80px' }} />
+          <img
+            className="logo"
+            src={logo}
+            alt="2DRIJA Logo"
+            style={{ width: "80px" }}
+          />
         </Link>
 
         <button
@@ -84,10 +98,15 @@ const Navbar = ({ className = '' }) => {
         </button>
 
         <div className="absoluteBox">
-          <div className="collapse navbar-collapse justify-content-end align-items-center" id="navbarSupportedContent">
+          <div
+            className="collapse navbar-collapse justify-content-end align-items-center"
+            id="navbarSupportedContent"
+          >
             <ul className="navbar-nav me-auto mb-lg-0 text-center">
               <li className="nav-item">
-                <Link className="nav-link text-white" to="/">Home</Link>
+                <Link className="nav-link text-white" to="/">
+                  Home
+                </Link>
               </li>
               <li className="dropdownAlignmentFixing nav-item dropdown">
                 <button
@@ -100,10 +119,14 @@ const Navbar = ({ className = '' }) => {
                 </button>
                 <ul className="dropdown-menu colorisation">
                   <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/projectscoding">Coding projects</Link>
+                    <Link className="dropdown-item" to="/projectscoding">
+                      Coding projects
+                    </Link>
                   </li>
                   <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/projectsresearch">Research projects</Link>
+                    <Link className="dropdown-item" to="/projectsresearch">
+                      Research projects
+                    </Link>
                   </li>
                 </ul>
               </li>
@@ -116,20 +139,28 @@ const Navbar = ({ className = '' }) => {
                 >
                   Courses
                 </button>
-                <ul className="dropdown-menu colorisation">
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/coursesfrontend">Front-end</Link>
-                  </li>
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/coursesreact">React</Link>
-                  </li>
-                  <li className="listDropdown text-center">
-                    <Link className="dropdown-item" to="/coursesuiux">UI/UX</Link>
-                  </li>
+                <ul className="dropdown-menu colorisation mega-dropdown-list">
+                  {courses.length === 0 && (
+                    <li className="listDropdown text-center">
+                      <span className="dropdown-item">No courses</span>
+                    </li>
+                  )}
+                  {courses.map((course) => (
+                    <li key={course.id} className="listDropdown text-center">
+                      <Link
+                        className="dropdown-item"
+                        to={`/courses/${course.id}`}
+                      >
+                        {course.course_name}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </li>
               <li className="nav-item">
-                <Link className="nav-link text-white" to="/about">About</Link>
+                <Link className="nav-link text-white" to="/about">
+                  About
+                </Link>
               </li>
             </ul>
 
@@ -150,7 +181,11 @@ const Navbar = ({ className = '' }) => {
                         <>
                           <li className="dropdown-item d-flex align-items-center gap-2">
                             {user.avatar_url ? (
-                              <img src={user.avatar_url} alt="User" className="navbar-user-avatar" />
+                              <img
+                                src={user.avatar_url}
+                                alt="User"
+                                className="navbar-user-avatar"
+                              />
                             ) : (
                               <div className="navbar-user-initials">
                                 {user.first_name?.[0]}
@@ -159,9 +194,7 @@ const Navbar = ({ className = '' }) => {
                             )}
                             <div className="d-flex flex-column">
                               <span>
-                                {user.first_name}
-                                {' '}
-                                {user.last_name}
+                                {user.first_name} {user.last_name}
                               </span>
                               <span>{user.email}</span>
                             </div>
@@ -170,15 +203,21 @@ const Navbar = ({ className = '' }) => {
                         </>
                       )}
                       <li>
-                        <Link className="dropdown-item" to="/dashboard">Dashboard</Link>
+                        <Link className="dropdown-item" to="/dashboard">
+                          Dashboard
+                        </Link>
                       </li>
                       {isAdmin && (
                         <li>
-                          <Link className="dropdown-item" to="/courses-panel">Admin Dashboard</Link>
+                          <Link className="dropdown-item" to="/courses-panel">
+                            Admin Dashboard
+                          </Link>
                         </li>
                       )}
                       <li>
-                        <Link className="dropdown-item" to="/account-settings">Settings</Link>
+                        <Link className="dropdown-item" to="/account-settings">
+                          Settings
+                        </Link>
                       </li>
                       <li>
                         <hr className="dropdown-separator" />
@@ -196,10 +235,14 @@ const Navbar = ({ className = '' }) => {
                   ) : (
                     <>
                       <li className="listDropdown">
-                        <Link className="dropdown-item" to="/register">Register</Link>
+                        <Link className="dropdown-item" to="/register">
+                          Register
+                        </Link>
                       </li>
                       <li className="listDropdown">
-                        <Link className="dropdown-item" to="/login">Login</Link>
+                        <Link className="dropdown-item" to="/login">
+                          Login
+                        </Link>
                       </li>
                     </>
                   )}
