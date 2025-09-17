@@ -7,7 +7,6 @@ import Navbar from "./ui/Navbar";
 import Footer from "./ui/Footer";
 import coursesReact from "./images/Courses_React.png";
 import "./Courses.css";
-import "./CoursesReact.css";
 import "./CourseDetails.css";
 
 export default function CourseDetails() {
