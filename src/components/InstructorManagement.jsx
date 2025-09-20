@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import InstructorsSection from './InstructorsSection';
 import InstructorAddEditModal from '../modals/InstructorAddEditModal';
@@ -22,18 +22,35 @@ const InstructorManagement = ({
     previewUrl,
     errorMessage,
     setShowInstructorModal,
+    setEditingInstructorId,
+    setIsInstructorReadOnly,
     setShowDeleteInstructorModal,
     setInstructorToDelete,
     handleInstructorChange,
     showPrevInstructor,
     showNextInstructor,
     handleInstructorSubmit,
+    openInstructorAddModal,
     openInstructorEditModal,
     handleInstructorEdit,
     handleInstructorDelete,
     confirmDeleteInstructor,
     handleFileChange,
   } = useInstructorOperations(courses, loadCourses);
+
+  // Listen for custom events to open modals
+  useEffect(() => {
+    const handleOpenAddInstructorModal = () => {
+      console.log('Opening add instructor modal, editingInstructorId:', editingInstructorId);
+      // Ensure we're in "add" mode, not "edit" mode
+      setEditingInstructorId(null);
+      setIsInstructorReadOnly(false);
+      openInstructorAddModal();
+    };
+
+    window.addEventListener('openAddInstructorModal', handleOpenAddInstructorModal);
+    return () => window.removeEventListener('openAddInstructorModal', handleOpenAddInstructorModal);
+  }, [openInstructorAddModal, editingInstructorId]);
 
   return (
     <>
@@ -62,6 +79,13 @@ const InstructorManagement = ({
           handleEdit={handleInstructorEdit}
           courses={courses}
         />
+      )}
+      {/* Debug info */}
+      {console.log(
+        'InstructorManagement render - editingInstructorId:',
+        editingInstructorId,
+        'isEditing:',
+        !!editingInstructorId,
       )}
 
       <DeleteConfirmationModal

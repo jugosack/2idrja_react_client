@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import CoursesGrid from './CoursesGrid';
 import CourseModal from './CourseModal';
@@ -28,6 +28,7 @@ const CourseManagement = ({
     confirmDeleteCourse,
     handleChange,
     handleMaxStudentsChange,
+    openAddModal,
     openEditModal,
     handleSubmit,
     handleFileChange,
@@ -50,6 +51,16 @@ const CourseManagement = ({
     }
     return 'Add Course';
   })();
+
+  // Listen for custom events to open modals
+  useEffect(() => {
+    const handleOpenAddCourseModal = () => {
+      openAddModal();
+    };
+
+    window.addEventListener('openAddCourseModal', handleOpenAddCourseModal);
+    return () => window.removeEventListener('openAddCourseModal', handleOpenAddCourseModal);
+  }, [openAddModal]);
 
   return (
     <>

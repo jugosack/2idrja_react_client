@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
 const API_BASE = 'http://localhost:3000';
@@ -38,6 +38,11 @@ const useCourseOperations = (getAuthHeaders, loadCourses, setPage) => {
       .then((res) => setCourses(res.data))
       .catch(() => {});
   }, [getAuthHeaders]);
+
+  // Load courses when component mounts
+  useEffect(() => {
+    loadCoursesData();
+  }, [loadCoursesData]);
 
   const handleDeleteClick = (course) => {
     setCourseToDelete(course);

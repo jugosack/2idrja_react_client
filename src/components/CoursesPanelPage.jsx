@@ -1,12 +1,12 @@
 /* eslint-disable */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "./DashboardHeader";
 import DashboardNavigation from "./DashboardNavigation";
 import CourseManagement from "./CourseManagement";
 import InstructorManagement from "./InstructorManagement";
 import UserManagement from "./UserManagement";
-import { useAuth, useResponsive, useCarousel } from "../hooks";
+import { useAuth, useResponsive } from "../hooks";
 import "./CoursesPanelPage.css";
 import "../modals/modals.css";
 
@@ -20,6 +20,11 @@ export default function CoursesPanelPage() {
   const [courses, setCourses] = useState([]);
 
   const sections = ["Courses", "Users", "Instructors"];
+
+  // Refs to access management component functions
+  const courseManagementRef = useRef(null);
+  const instructorManagementRef = useRef(null);
+  const userManagementRef = useRef(null);
 
   // Simple course loading function
   const loadCourses = () => {
@@ -48,7 +53,19 @@ export default function CoursesPanelPage() {
   };
 
   const openAddModal = () => {
-    // This will be handled by the respective management components
+    if (activeSection === "Courses") {
+      // Trigger course modal opening
+      const event = new CustomEvent('openAddCourseModal');
+      window.dispatchEvent(event);
+    } else if (activeSection === "Users") {
+      // Trigger user modal opening
+      const event = new CustomEvent('openAddUserModal');
+      window.dispatchEvent(event);
+    } else if (activeSection === "Instructors") {
+      // Trigger instructor modal opening
+      const event = new CustomEvent('openAddInstructorModal');
+      window.dispatchEvent(event);
+    }
   };
 
   return (

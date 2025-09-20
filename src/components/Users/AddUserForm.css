@@ -83,23 +83,69 @@
 
 .add-user-form-group input.error,
 .add-user-form-group select.error {
-  border-color: #dc3545;
+  border-color: #dc3545 !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+  background-color: #fff5f5;
+}
+
+.add-user-form-group input.error:focus,
+.add-user-form-group select.error:focus {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25) !important;
 }
 
 .error-message {
   color: #dc3545;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  animation: slideInError 0.3s ease-out;
+}
+
+.error-message::before {
+  content: "⚠️";
+  font-size: 0.9rem;
+}
+
+@keyframes slideInError {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .add-user-form-error {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
+  background-color: #fff5f5;
+  color: #dc3545;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #fed7d7;
   font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
+  animation: slideInError 0.3s ease-out;
+}
+
+.add-user-form-error::before {
+  content: "⚠️";
+  font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .add-user-form-buttons {

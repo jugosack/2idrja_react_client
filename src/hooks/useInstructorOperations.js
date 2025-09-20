@@ -79,7 +79,28 @@ const useInstructorOperations = (courses, loadCourses) => {
 
   const openInstructorAddModal = () => {
     if (courses.length === 0) {
-      loadCourses().then(() => {
+      // Handle both Promise and non-Promise loadCourses
+      const loadCoursesPromise = loadCourses();
+      if (loadCoursesPromise && typeof loadCoursesPromise.then === 'function') {
+        loadCoursesPromise.then(() => {
+          setIsInstructorReadOnly(false);
+          setEditingInstructorId(null);
+          setInstructorForm({
+            first_name: '',
+            last_name: '',
+            email: '',
+            course_ids: [],
+            course_name: '',
+            expertise: '',
+            description: '',
+          });
+          setSelectedFile(null);
+          setPreviewUrl('');
+          setErrorMessage('');
+          setShowInstructorModal(true);
+        });
+      } else {
+        // If loadCourses doesn't return a Promise, just proceed
         setIsInstructorReadOnly(false);
         setEditingInstructorId(null);
         setInstructorForm({
@@ -95,7 +116,7 @@ const useInstructorOperations = (courses, loadCourses) => {
         setPreviewUrl('');
         setErrorMessage('');
         setShowInstructorModal(true);
-      });
+      }
     } else {
       setIsInstructorReadOnly(false);
       setEditingInstructorId(null);

@@ -129,11 +129,11 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
   };
 
   return (
-    <div className="add-user-form-overlay">
-      <div className="add-user-form-content">
+    <div className="cpbp-modal-overlay">
+      <div className="cpbp-modal-content">
         <button
           type="button"
-          className="add-user-form-close"
+          className="cpbp-modal-close"
           onClick={onClose}
         >
           ×
@@ -141,11 +141,11 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
         <h2>Add New User</h2>
         
         {errors.general && (
-          <div className="add-user-form-error">{errors.general}</div>
+          <div className="cpbp-error-message">{errors.general}</div>
         )}
         
-        <form className="add-user-form" onSubmit={handleSubmit}>
-          <div className="add-user-form-group">
+        <form className="cpbp-form" onSubmit={handleSubmit}>
+          <div className="cpbp-form-group">
             <label htmlFor="email">Email *</label>
             <input
               id="email"
@@ -158,7 +158,7 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
             {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
 
-          <div className="add-user-form-group">
+          <div className="cpbp-form-group">
             <label htmlFor="password">Password *</label>
             <input
               id="password"
@@ -171,7 +171,7 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          <div className="add-user-form-group">
+          <div className="cpbp-form-group">
             <label htmlFor="password_confirmation">Confirm Password *</label>
             <input
               id="password_confirmation"
@@ -184,7 +184,7 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
             {errors.password_confirmation && <span className="error-message">{errors.password_confirmation}</span>}
           </div>
 
-          <div className="add-user-form-group">
+          <div className="cpbp-form-group">
             <label htmlFor="first_name">First Name *</label>
             <input
               id="first_name"
@@ -197,7 +197,7 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
             {errors.first_name && <span className="error-message">{errors.first_name}</span>}
           </div>
 
-          <div className="add-user-form-group">
+          <div className="cpbp-form-group">
             <label htmlFor="last_name">Last Name *</label>
             <input
               id="last_name"
@@ -210,7 +210,7 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
             {errors.last_name && <span className="error-message">{errors.last_name}</span>}
           </div>
 
-          <div className="add-user-form-group">
+          <div className="cpbp-form-group">
             <label htmlFor="country">Country *</label>
             <input
               id="country"
@@ -223,7 +223,7 @@ const AddUserForm = ({ onClose, onUserAdded }) => {
             {errors.country && <span className="error-message">{errors.country}</span>}
           </div>
 
-          <div className="add-user-form-group">
+          <div className="cpbp-form-group">
             <label htmlFor="mobile_number">Mobile Number *</label>
             <input
               id="mobile_number"

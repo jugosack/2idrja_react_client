@@ -131,27 +131,30 @@ body.admin-dashboard-bg .cpbp-panel.content-panel {
   color: inherit;
 }
 
-.cpbp-add-button {
-  border: none;
+.cpbp-add-button,
+.cpbp-add-button:active,
+.cpbp-add-button:focus {
+  border: none !important;
   border-radius: var(--cpbp-radius-sm);
   padding: 0.5rem 1rem;
-  background: var(--cpbp-success);
-  color: #fff;
+  background: var(--cpbp-success) !important;
+  color: #fff !important;
   cursor: pointer;
   transition: background 0.2s;
+  font-weight: 500;
 }
 
 .cpbp-add-button:hover {
-  background: var(--cpbp-success-dark);
+  background: var(--cpbp-success-dark) !important;
 }
 
 body.light-theme .cpbp-add-button {
-  background: #ffeaa7;
-  color: #2d3436;
+  background: #ffeaa7 !important;
+  color: #2d3436 !important;
 }
 
 body.light-theme .cpbp-add-button:hover {
-  background: #fdcb6e;
+  background: #fdcb6e !important;
 }
 
 .cpbp-theme-button {
