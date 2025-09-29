@@ -22,7 +22,7 @@ const CourseModal = ({
   if (!showModal) return null;
 
   return (
-    <div className="cpbp-modal-overlay">
+    <div className="cpbp-modal-overlay instructor-modal">
       <div className="cpbp-modal-content">
         <button
           type="button"
@@ -202,41 +202,58 @@ const CourseModal = ({
                 className="cpbp-btn-submit"
                 onClick={handleImageUpload}
                 disabled={!selectedFile || readOnly}
-                style={{ marginTop: '0.5rem' }}
+                style={{ marginTop: '0.5rem', color: '#fff' }}
               >
                 Upload Image
               </button>
             </div>
           )}
-          <div
-            className="cpbp-form-buttons"
-            style={{ display: 'flex', justifyContent: 'space-between' }}
-          >
-            {isEditing && readOnly && (
-              <button
-                type="button"
-                className="cpbp-btn-edit"
-                onClick={() => setReadOnly(false)}
-              >
-                Edit
-              </button>
-            )}
-            <button
-              type="button"
-              className="cpbp-btn-cancel"
-              onClick={() => setShowModal(false)}
-            >
-              Cancel
-            </button>
+          <div className="cpbp-form-buttons">
             {!isEditing && (
-              <button type="submit" className="cpbp-btn-submit">
-                Create
-              </button>
+              <>
+                <button type="submit" className="cpbp-btn-submit">
+                  Add Course
+                </button>
+                <button
+                  type="button"
+                  className="cpbp-btn-cancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+              </>
             )}
             {isEditing && !readOnly && (
-              <button type="submit" className="cpbp-btn-submit">
-                Save Changes
-              </button>
+              <>
+                <button type="submit" className="cpbp-btn-submit">
+                  Update Course
+                </button>
+                <button
+                  type="button"
+                  className="cpbp-btn-cancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+            {isEditing && readOnly && (
+              <>
+                <button
+                  type="button"
+                  className="cpbp-btn-submit"
+                  onClick={() => setReadOnly(false)}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="cpbp-btn-cancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Close
+                </button>
+              </>
             )}
           </div>
         </form>

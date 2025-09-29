@@ -37,11 +37,6 @@ export default function DeleteModal({
               <div className="cpbp-delete-message-container">
                 <p className="cpbp-delete-message">
                   Are you sure you want to delete this {itemType.toLowerCase()}?
-                  {itemName && (
-                    <span className="cpbp-delete-item-name"> "{itemName}"</span>
-                  )}{" "}
-                  All of your data will be permanently removed. This action
-                  cannot be undone.
                 </p>
               </div>
             </div>

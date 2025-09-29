@@ -6,10 +6,50 @@
   <component name="ChangeListManager">
     <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CourseDetails.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseDetails.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CourseManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseManagement.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CourseModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Courses/AddCourseForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/AddCourseForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Courses/CourseCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/CourseCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Courses/CoursesServices.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/CoursesServices.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Courses/CoursesTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/CoursesTable.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Courses/DeleteCourseModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/DeleteCourseModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CoursesGrid.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesGrid.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CoursesPanelPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesPanelPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DashboardHeader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DashboardHeader.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DashboardLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DashboardLayout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DashboardNavigation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DashboardNavigation.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DeleteConfirmationModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DeleteConfirmationModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Home.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Home.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/InstructorManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/InstructorManagement.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Instructors/DeleteInstructorModal.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Instructors/DeleteInstructorModal.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Instructors/InstructorCard.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Instructors/InstructorCard.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Instructors/InstructorsServices.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Instructors/InstructorsTable.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Instructors/InstructorsTable.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/InstructorsSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/InstructorsSection.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/UserManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/UserManagement.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Users/AddUserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Users/AddUserForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Users/DeleteUserModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Users/DeleteUserModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Users/EditUserForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Users/EditUserForm.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Users/UserDetailsModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Users/UserDetailsModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/CourseCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/CourseCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/EnrollNow.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/EnrollNow.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/HTMLdetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/HTMLdetails.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useAuth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useCarousel.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useCarousel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useCourseOperations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useCourseOperations.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useInstructorOperations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useInstructorOperations.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useResponsive.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useResponsive.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useUserOperations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useUserOperations.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modals/DeleteModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/DeleteModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modals/InstructorAddEditModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/InstructorAddEditModal.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/modals/InstructorModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/InstructorModal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modals/modals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/modals.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,8 +103,9 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-courses-homepage&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/lazar/OneDrive/Desktop/Proekt_Za_Fakultet/2idrja_react_client&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;newStructure&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/lazar/stuff/Proekt_Za_Fakultet/2idrja_react_client&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
@@ -157,6 +198,12 @@
       <workItem from="1757939696662" duration="1691000" />
       <workItem from="1758128849775" duration="1322000" />
       <workItem from="1758133954396" duration="138000" />
+      <workItem from="1758553648765" duration="171000" />
+      <workItem from="1758554790161" duration="174000" />
+      <workItem from="1758560435393" duration="779000" />
+      <workItem from="1758725566053" duration="868000" />
+      <workItem from="1758905858603" duration="884000" />
+      <workItem from="1759172676789" duration="4074000" />
     </task>
     <task id="LOCAL-00001" summary="Added Delete Modal in main component">
       <option name="closed" value="true" />

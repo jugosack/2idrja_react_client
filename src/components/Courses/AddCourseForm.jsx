@@ -2,9 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  createCourse, updateCourse, uploadCourseImage, updateCourseImage, emptyCourseForm,
+  createCourse,
+  updateCourse,
+  uploadCourseImage,
+  updateCourseImage,
+  emptyCourseForm,
 } from './CoursesServices';
-import './AddCourseForm.css';
 
 const AddCourseForm = ({
   isOpen,
@@ -61,7 +64,9 @@ const AddCourseForm = ({
     }
 
     if (!editingId) {
-      setErrorMessage('Please save the course first before uploading an image.');
+      setErrorMessage(
+        'Please save the course first before uploading an image.',
+      );
       return;
     }
 
@@ -84,7 +89,9 @@ const AddCourseForm = ({
       }
     } catch (err) {
       console.error('Image upload error:', err);
-      setErrorMessage('Image upload failed. Please check the console for details.');
+      setErrorMessage(
+        'Image upload failed. Please check the console for details.',
+      );
     }
   };
 
@@ -108,7 +115,11 @@ const AddCourseForm = ({
         await uploadCourseImage(courseId, selectedFile);
       }
 
-      setSuccessMessage(isEditing ? 'Course updated successfully!' : 'Course created successfully!');
+      setSuccessMessage(
+        isEditing
+          ? 'Course updated successfully!'
+          : 'Course created successfully!',
+      );
       setSelectedFile(null);
       setPreviewUrl('');
 
@@ -120,7 +131,9 @@ const AddCourseForm = ({
       }, 2000);
     } catch (err) {
       console.error('Course save error:', err);
-      setErrorMessage('Failed to save course. Please check the console for details.');
+      setErrorMessage(
+        'Failed to save course. Please check the console for details.',
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -137,7 +150,7 @@ const AddCourseForm = ({
   if (!isOpen) return null;
 
   return (
-    <div className="cpbp-modal-overlay">
+    <div className="cpbp-modal-overlay instructor-modal">
       <div className="cpbp-modal-content">
         <button
           type="button"
@@ -324,41 +337,50 @@ const AddCourseForm = ({
                 className="cpbp-btn-submit"
                 onClick={handleImageUpload}
                 disabled={!selectedFile || readOnly || !isEditing}
-                style={{ marginTop: '0.5rem' }}
+                style={{ marginTop: '0.5rem', color: '#fff' }}
               >
                 Upload Image
               </button>
             </div>
           )}
-          <div
-            className="cpbp-form-buttons"
-            style={{ display: 'flex', justifyContent: 'space-between' }}
-          >
-            <button
-              type="button"
-              className="cpbp-btn-cancel"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
+          <div className="cpbp-form-buttons">
             {!isEditing && (
-              <button
-                type="submit"
-                className="cpbp-btn-submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Creating...' : 'Create'}
-              </button>
+              <>
+                <button
+                  type="submit"
+                  className="cpbp-btn-submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Creating...' : 'Add Course'}
+                </button>
+                <button
+                  type="button"
+                  className="cpbp-btn-cancel"
+                  onClick={onClose}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+              </>
             )}
             {isEditing && !readOnly && (
-              <button
-                type="submit"
-                className="cpbp-btn-submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Saving...' : 'Save Changes'}
-              </button>
+              <>
+                <button
+                  type="submit"
+                  className="cpbp-btn-submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Saving...' : 'Update Course'}
+                </button>
+                <button
+                  type="button"
+                  className="cpbp-btn-cancel"
+                  onClick={onClose}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+              </>
             )}
           </div>
         </form>

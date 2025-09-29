@@ -14,6 +14,7 @@ import TestimoniesCarousel from "./ui/TestimoniesCarousel";
 import WhatWeDo from "./ui/WhatWeDo";
 import OurCoreBeliefs from "./ui/OurCoreBeliefs";
 import WebsiteCarousel from "./ui/WebsitesCarousel";
+import Details from "./ui/HTMLdetails";
 import { ReactComponent as ArrowSVGL } from "./icons/small-arrow-prev-small-svgrepo-com.svg";
 
 function Home() {
@@ -21,6 +22,7 @@ function Home() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
 
   const scrollNext = () => {
     carouselRef.current?.scrollBy({ left: 280, behavior: "smooth" });
@@ -31,7 +33,11 @@ function Home() {
   };
 
   const openDetails = (course) => {
-    navigate(`/courses/${course.id}`);
+    setSelectedCourse(course);
+  };
+
+  const closeDetails = () => {
+    setSelectedCourse(null);
   };
 
   useEffect(() => {
@@ -119,6 +125,11 @@ function Home() {
       <WhatWeDo />
       <TestimoniesCarousel />
       <Footer />
+
+      {/* Course Details Modal */}
+      {selectedCourse && (
+        <Details course={selectedCourse} onClose={closeDetails} />
+      )}
     </>
   );
 }
