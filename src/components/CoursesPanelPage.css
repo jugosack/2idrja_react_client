@@ -875,6 +875,8 @@ PAGINATION / DOTS
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding: 1rem 0;
+  /* Ensure pagination spans full width beneath the cards grid */
+  grid-column: 1 / -1;
 }
 
 .cpbp-page-label {
