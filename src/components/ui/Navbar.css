@@ -418,6 +418,36 @@
   }
 }
 
+/* Courses Matrix Dropdown - Matrix Layout */
+.courses-columns-dropdown {
+  min-width: 200px !important;
+  max-width: 600px !important;
+  width: auto !important;
+  padding: 1rem !important;
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.courses-matrix-container {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.courses-column {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.courses-column .listDropdown {
+  margin-bottom: 0.3rem;
+}
+
+.courses-column .listDropdown:last-child {
+  margin-bottom: 0;
+}
+
 /* .user-icon {
   padding-right: 5rem !important;
 } */

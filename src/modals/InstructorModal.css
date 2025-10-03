@@ -116,9 +116,9 @@
 }
 
 .instructor-modal .cpbp-btn-submit {
-  background: #28a745;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  background: #28a745 !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
 }
 
 .instructor-modal .cpbp-btn-submit:hover {

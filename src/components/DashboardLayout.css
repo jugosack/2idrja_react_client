@@ -1,0 +1,219 @@
+/* DashboardLayout styles - inherits from main CoursesPanelPage.css */
+.cpbp-dashboard-container {
+  min-height: 100vh;
+  background: var(--dashboard-bg, #f5f5f5);
+  display: flex;
+  flex-direction: column;
+}
+
+.cpbp-dashboard-header {
+  background: var(--header-bg, #fff);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.cpbp-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cpbp-header-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.cpbp-add-button,
+.cpbp-theme-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cpbp-add-button {
+  background-color: var(--primary-color, #007bff);
+  color: white;
+}
+
+.cpbp-add-button:hover {
+  background-color: var(--primary-hover, #0056b3);
+}
+
+.cpbp-theme-button {
+  background-color: var(--secondary-color, #6c757d);
+  color: white;
+}
+
+.cpbp-theme-button:hover {
+  background-color: var(--secondary-hover, #5a6268);
+}
+
+.cpbp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cpbp-user-name {
+  font-weight: 500;
+  color: var(--text-primary, #333);
+}
+
+.cpbp-profile-pic-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--profile-bg, #e9ecef);
+}
+
+.cpbp-profile-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cpbp-user-icon {
+  font-size: 1.2rem;
+  color: var(--text-secondary, #666);
+}
+
+.cpbp-dashboard-body {
+  flex: 1;
+  display: flex;
+}
+
+.cpbp-panel {
+  flex: 1;
+}
+
+.nav-panel {
+  max-width: 250px;
+  background: var(--nav-bg, #fff);
+  border-right: 1px solid var(--border-color, #e0e0e0);
+}
+
+.content-panel {
+  background: var(--content-bg, #f8f9fa);
+}
+
+.cpbp-dashboard-nav {
+  padding: 1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cpbp-nav-top,
+.cpbp-nav-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cpbp-nav-button {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary, #666);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.cpbp-nav-button:hover {
+  background: var(--hover-bg, #f8f9fa);
+  color: var(--text-primary, #333);
+}
+
+.cpbp-nav-button.active {
+  background: var(--primary-color, #007bff);
+  color: white;
+}
+
+.cpbp-dashboard-content {
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cpbp-dashboard-header {
+    padding: 1rem;
+  }
+
+  .cpbp-header-left {
+    gap: 0.5rem;
+  }
+
+  .cpbp-add-button,
+  .cpbp-theme-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .cpbp-dashboard-body {
+    flex-direction: column;
+  }
+
+  .nav-panel {
+    max-width: none;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+  }
+
+  .cpbp-dashboard-nav {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0.5rem;
+  }
+
+  .cpbp-nav-top,
+  .cpbp-nav-bottom {
+    flex-direction: row;
+    gap: 0.25rem;
+  }
+
+  .cpbp-nav-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .cpbp-dashboard-content {
+    padding: 1rem;
+  }
+}
+
+/* Dark theme support */
+.light-theme .cpbp-dashboard-container {
+  --dashboard-bg: #f5f5f5;
+  --header-bg: #fff;
+  --border-color: #e0e0e0;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --secondary-color: #6c757d;
+  --secondary-hover: #5a6268;
+  --profile-bg: #e9ecef;
+  --nav-bg: #fff;
+  --content-bg: #f8f9fa;
+  --hover-bg: #f8f9fa;
+}

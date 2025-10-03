@@ -131,27 +131,30 @@ body.admin-dashboard-bg .cpbp-panel.content-panel {
   color: inherit;
 }
 
-.cpbp-add-button {
-  border: none;
+.cpbp-add-button,
+.cpbp-add-button:active,
+.cpbp-add-button:focus {
+  border: none !important;
   border-radius: var(--cpbp-radius-sm);
   padding: 0.5rem 1rem;
-  background: var(--cpbp-success);
-  color: #fff;
+  background: var(--cpbp-success) !important;
+  color: #fff !important;
   cursor: pointer;
   transition: background 0.2s;
+  font-weight: 500;
 }
 
 .cpbp-add-button:hover {
-  background: var(--cpbp-success-dark);
+  background: var(--cpbp-success-dark) !important;
 }
 
 body.light-theme .cpbp-add-button {
-  background: #ffeaa7;
-  color: #2d3436;
+  background: #ffeaa7 !important;
+  color: #2d3436 !important;
 }
 
 body.light-theme .cpbp-add-button:hover {
-  background: #fdcb6e;
+  background: #fdcb6e !important;
 }
 
 .cpbp-theme-button {
@@ -529,6 +532,12 @@ body.admin-dashboard-bg .cpbp-form-group select {
   color: #000 !important;
 }
 
+/* Fix instructor modal dropdown options specifically */
+.instructor-modal .cpbp-form-group select option {
+  background: rgba(0, 0, 0, 0.8) !important;
+  color: #fff !important;
+}
+
 body.light-theme .cpbp-form-group select {
   background: rgba(255, 255, 255, 0.8) !important;
   color: #666 !important;
@@ -543,6 +552,12 @@ body.light-theme .cpbp-form-group select {
 body.light-theme .cpbp-modal-content .cpbp-form-group select option {
   background: rgba(255, 255, 255, 0.8) !important;
   color: #000 !important;
+}
+
+/* Light theme instructor modal dropdown options */
+body.light-theme .instructor-modal .cpbp-form-group select option {
+  background: #f8f9fa !important;
+  color: #333 !important;
 }
 
 .cpbp-form-buttons {
@@ -589,14 +604,6 @@ body.light-theme .cpbp-modal-content .cpbp-form-group select option {
   margin-top: 0.5rem;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.cpbp-modal-content .cpbp-btn-submit {
-  background-color: var(--cpbp-blue);
-}
-
-.cpbp-modal-content .cpbp-btn-submit:hover {
-  background-color: var(--cpbp-blue-dark);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -872,6 +879,9 @@ PAGINATION / DOTS
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding: 1rem 0;
+
+  /* Ensure pagination spans full width beneath the cards grid */
+  grid-column: 1 / -1;
 }
 
 .cpbp-page-label {
@@ -1510,4 +1520,49 @@ body.light-theme .instructors-slider .slider-arrow:hover {
     overflow-x: hidden !important;
     margin: 0 !important;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   INSTRUCTOR CARD STYLES
+   ───────────────────────────────────────────────────────────── */
+.cpbp-instructor-placeholder {
+  width: 100%;
+  height: 200px;
+  background: var(--cpbp-brand-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: 600;
+  color: #fff;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.cpbp-instructor-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.cpbp-instructor-course {
+  color: white;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.cpbp-no-instructors {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: var(--cpbp-white-60);
+}
+
+.cpbp-no-instructors p {
+  font-size: 1.1rem;
+  margin: 0;
 }

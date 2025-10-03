@@ -4,12 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="">
+    <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="&quot;Fixed the design modal for Course/User/Instructor and the details bug&quot;">
+      <change afterPath="$PROJECT_DIR$/src/handlers/courseHandlers.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/handlers/instructorHandlers.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/handlers/navigationHandlers.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/handlers/userHandlers.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/CourseDetails.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseDetails.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CourseDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseDetails.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Courses.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Courses/CoursesServices.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/CoursesServices.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesPanelPage.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modals/InstructorModal.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/InstructorModal.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/modals/modals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/modals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CoursesPanelPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesPanelPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/Navbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Navbar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useInstructorOperations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useInstructorOperations.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modals/InstructorAddEditModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/modals/InstructorAddEditModal.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/CourseService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/CourseService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,8 +76,9 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-courses-homepage&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/lazar/OneDrive/Desktop/Proekt_Za_Fakultet/2idrja_react_client&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;newStructure&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/lazar/stuff/Proekt_Za_Fakultet/2idrja_react_client&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
@@ -157,6 +171,14 @@
       <workItem from="1757939696662" duration="1691000" />
       <workItem from="1758128849775" duration="1322000" />
       <workItem from="1758133954396" duration="138000" />
+      <workItem from="1758553648765" duration="171000" />
+      <workItem from="1758554790161" duration="174000" />
+      <workItem from="1758560435393" duration="779000" />
+      <workItem from="1758725566053" duration="868000" />
+      <workItem from="1758905858603" duration="884000" />
+      <workItem from="1759172676789" duration="4389000" />
+      <workItem from="1759258697123" duration="1823000" />
+      <workItem from="1759505111117" duration="2749000" />
     </task>
     <task id="LOCAL-00001" summary="Added Delete Modal in main component">
       <option name="closed" value="true" />
@@ -166,7 +188,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754334653520</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="&quot;Fixed the design modal for Course/User/Instructor and the details bug&quot;">
+      <option name="closed" value="true" />
+      <created>1759177131123</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1759177131123</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -185,6 +215,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added Delete Modal in main component" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Delete Modal in main component" />
+    <MESSAGE value="&quot;Fixed the design modal for Course/User/Instructor and the details bug&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;Fixed the design modal for Course/User/Instructor and the details bug&quot;" />
   </component>
 </project>

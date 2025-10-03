@@ -1,0 +1,112 @@
+/* CoursesTable styles - inherits from main CoursesPanelPage.css */
+.cpbp-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+  position: relative;
+}
+
+/* Carousel navigation buttons */
+.cpbp-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cpbp-carousel-btn:hover {
+  background: var(--primary-hover, #0056b3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.cpbp-carousel-prev {
+  left: 10px;
+}
+
+.cpbp-carousel-next {
+  right: 10px;
+}
+
+/* Page indicator */
+.cpbp-page-indicator {
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cpbp-page-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary, #666);
+  font-weight: 500;
+}
+
+.cpbp-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cpbp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: var(--dot-inactive, #ccc);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cpbp-dot.active {
+  background: var(--primary-color, #007bff);
+}
+
+.cpbp-dot:hover {
+  background: var(--primary-hover, #0056b3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cpbp-cards-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .cpbp-carousel-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .cpbp-carousel-prev {
+    left: 5px;
+  }
+
+  .cpbp-carousel-next {
+    right: 5px;
+  }
+}
+
+/* Dark theme support */
+.light-theme .cpbp-cards-container {
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --text-secondary: #666;
+  --dot-inactive: #ccc;
+}
