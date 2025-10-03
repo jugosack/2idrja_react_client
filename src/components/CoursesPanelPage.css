@@ -1519,20 +1519,6 @@ body.light-theme .instructors-slider .slider-arrow:hover {
   margin-bottom: 0.75rem;
 }
 
-.cpbp-instructor-placeholder {
-  width: 100%;
-  height: 200px;
-  background: var(--cpbp-brand-1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-  font-weight: 600;
-  color: #fff;
-  border-radius: 4px;
-  margin-bottom: 0.75rem;
-}
-
 .cpbp-instructor-course {
   color: white;
   font-weight: 500;

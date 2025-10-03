@@ -27,6 +27,16 @@ const useInstructorOperations = (courses, loadCourses) => {
   const [previewUrl, setPreviewUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const loadInstructors = async () => {
+    try {
+      const instructorsData = await getInstructors();
+      setInstructors(instructorsData);
+    } catch (error) {
+      console.error('Failed to load instructors:', error);
+      setErrorMessage('Failed to load instructors');
+    }
+  };
+
   const handleInstructorChange = (e) => {
     const { name, value } = e.target;
     setInstructorForm((f) => ({ ...f, [name]: value }));
@@ -207,6 +217,11 @@ const useInstructorOperations = (courses, loadCourses) => {
   };
 
   // Ensure current instructor index stays in range
+  // Load instructors on mount
+  useEffect(() => {
+    loadInstructors();
+  }, []);
+
   useEffect(() => {
     if (currentInstructorIndex >= instructors.length) {
       setCurrentInstructorIndex(0);
@@ -244,6 +259,7 @@ const useInstructorOperations = (courses, loadCourses) => {
     handleInstructorDelete,
     confirmDeleteInstructor,
     handleFileChange,
+    loadInstructors,
   };
 };
 

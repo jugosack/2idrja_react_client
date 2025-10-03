@@ -6,7 +6,6 @@ import { getInstructors } from "../services/InstructorService";
 import Navbar from "./ui/Navbar";
 import Footer from "./ui/Footer";
 import coursesReact from "./images/Courses_React.png";
-import "./Courses.css";
 import "./CourseDetails.css";
 
 export default function CourseDetails() {
