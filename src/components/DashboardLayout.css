@@ -7,7 +7,7 @@
 }
 
 .cpbp-dashboard-header {
-  background: var(--header-bg, #ffffff);
+  background: var(--header-bg, #fff);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -101,7 +101,7 @@
 
 .nav-panel {
   max-width: 250px;
-  background: var(--nav-bg, #ffffff);
+  background: var(--nav-bg, #fff);
   border-right: 1px solid var(--border-color, #e0e0e0);
 }
 
@@ -157,45 +157,45 @@
   .cpbp-dashboard-header {
     padding: 1rem;
   }
-  
+
   .cpbp-header-left {
     gap: 0.5rem;
   }
-  
+
   .cpbp-add-button,
   .cpbp-theme-button {
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;
   }
-  
+
   .cpbp-dashboard-body {
     flex-direction: column;
   }
-  
+
   .nav-panel {
     max-width: none;
     border-right: none;
     border-bottom: 1px solid var(--border-color, #e0e0e0);
   }
-  
+
   .cpbp-dashboard-nav {
     flex-direction: row;
     justify-content: space-around;
     padding: 0.5rem;
   }
-  
+
   .cpbp-nav-top,
   .cpbp-nav-bottom {
     flex-direction: row;
     gap: 0.25rem;
   }
-  
+
   .cpbp-nav-button {
     padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
     text-align: center;
   }
-  
+
   .cpbp-dashboard-content {
     padding: 1rem;
   }
@@ -204,7 +204,7 @@
 /* Dark theme support */
 .light-theme .cpbp-dashboard-container {
   --dashboard-bg: #f5f5f5;
-  --header-bg: #ffffff;
+  --header-bg: #fff;
   --border-color: #e0e0e0;
   --text-primary: #333;
   --text-secondary: #666;
@@ -213,7 +213,7 @@
   --secondary-color: #6c757d;
   --secondary-hover: #5a6268;
   --profile-bg: #e9ecef;
-  --nav-bg: #ffffff;
+  --nav-bg: #fff;
   --content-bg: #f8f9fa;
   --hover-bg: #f8f9fa;
 }

@@ -87,17 +87,17 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .cpbp-carousel-btn {
     width: 35px;
     height: 35px;
     font-size: 1rem;
   }
-  
+
   .cpbp-carousel-prev {
     left: 5px;
   }
-  
+
   .cpbp-carousel-next {
     right: 5px;
   }

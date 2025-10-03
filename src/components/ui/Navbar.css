@@ -260,11 +260,12 @@
 
   .navigation-menu li:hover {
     background: rgb(63, 94, 251);
-    background: linear-gradient(
-      90deg,
-      rgba(63, 94, 251, 0.5) 0%,
-      rgba(252, 70, 107, 0.5) 100%
-    );
+    background:
+      linear-gradient(
+        90deg,
+        rgba(63, 94, 251, 0.5) 0%,
+        rgba(252, 70, 107, 0.5) 100%
+      );
   }
 
   .navigation-menu.expanded ul {

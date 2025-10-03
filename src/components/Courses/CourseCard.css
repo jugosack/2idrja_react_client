@@ -1,6 +1,6 @@
 /* CourseCard styles - inherits from main CoursesPanelPage.css */
 .cpbp-card {
-  background: var(--card-bg, #ffffff);
+  background: var(--card-bg, #fff);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 1rem;
@@ -67,7 +67,7 @@
 
 /* Dark theme support */
 .light-theme .cpbp-card {
-  --card-bg: #ffffff;
+  --card-bg: #fff;
   --border-color: #e0e0e0;
   --text-primary: #333;
 }
