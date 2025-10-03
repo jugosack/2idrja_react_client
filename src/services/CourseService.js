@@ -4,12 +4,11 @@ import axios from "axios";
 const API_BASE = "http://localhost:3000";
 
 export function getAuthHeaders() {
-  // Support both legacy "token" and current "auth_token" keys
   const token =
-      sessionStorage.getItem("auth_token") ||
-      localStorage.getItem("auth_token") ||
-      sessionStorage.getItem("token") ||
-      localStorage.getItem("token");
+    sessionStorage.getItem("auth_token") ||
+    localStorage.getItem("auth_token") ||
+    sessionStorage.getItem("token") ||
+    localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -29,7 +28,6 @@ export async function getCourses() {
       window.location.href = "/login";
       return [];
     }
-    console.error("Failed to fetch courses:", error);
     throw error;
   }
 }
@@ -50,7 +48,6 @@ export async function getCourseById(id) {
       window.location.href = "/login";
       return null;
     }
-    console.error(`Failed to fetch course with id ${id}:`, error);
     throw error;
   }
 }
@@ -119,11 +116,11 @@ export async function uploadCourseImage(id, file) {
   data.append("image", file);
   try {
     const res = await axios.post(
-        `${API_BASE}/courses/${id}/upload_image`,
-        data,
-        {
-          headers: { "Content-Type": "multipart/form-data", ...getAuthHeaders() },
-        }
+      `${API_BASE}/courses/${id}/upload_image`,
+      data,
+      {
+        headers: { "Content-Type": "multipart/form-data", ...getAuthHeaders() },
+      }
     );
     return res.data;
   } catch (error) {
@@ -143,10 +140,9 @@ export async function getCourseByName(courseName) {
   try {
     const courses = await getCourses();
     return courses.find((course) =>
-        course.course_name.toLowerCase().includes(courseName.toLowerCase())
+      course.course_name.toLowerCase().includes(courseName.toLowerCase())
     );
   } catch (error) {
-    console.error(`Failed to find course with name ${courseName}:`, error);
     return null;
   }
 }
@@ -167,7 +163,6 @@ export async function getInstructorsForCourse(courseId) {
       return instructorCourse === targetName;
     });
   } catch (error) {
-    console.error(`Failed to fetch instructors for course ${courseId}:`, error);
     return [];
   }
 }

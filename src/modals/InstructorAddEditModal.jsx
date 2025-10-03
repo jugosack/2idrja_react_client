@@ -14,7 +14,7 @@ export default function InstructorAddEditModal({
   handlePhotoChange,
   handleSubmit,
   handleEdit,
-  courses = [], // Add courses prop
+  courses = [],
 }) {
   if (!open) return null;
 

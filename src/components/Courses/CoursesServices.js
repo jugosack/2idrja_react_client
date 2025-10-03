@@ -2,13 +2,10 @@ import axios from 'axios';
 
 const API_BASE = 'http://localhost:3000';
 
-// Helper function to get auth headers
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('auth_token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
-
-// Load all courses
 export const loadCourses = async () => {
   try {
     const response = await axios.get(`${API_BASE}/courses`, {
@@ -21,7 +18,6 @@ export const loadCourses = async () => {
   }
 };
 
-// Create a new course
 export const createCourse = async (courseData) => {
   try {
     const payloadForm = {
@@ -44,7 +40,6 @@ export const createCourse = async (courseData) => {
   }
 };
 
-// Update an existing course
 export const updateCourse = async (courseId, courseData) => {
   try {
     const payloadForm = {
@@ -67,13 +62,11 @@ export const updateCourse = async (courseId, courseData) => {
   }
 };
 
-// Delete a course
 export const deleteCourse = async (courseId) => {
   try {
-    const response = await axios.delete(
-      `${API_BASE}/courses/${courseId}`,
-      { headers: getAuthHeaders() },
-    );
+    const response = await axios.delete(`${API_BASE}/courses/${courseId}`, {
+      headers: getAuthHeaders(),
+    });
     return response.data;
   } catch (error) {
     console.error('Error deleting course:', error);
@@ -81,7 +74,6 @@ export const deleteCourse = async (courseId) => {
   }
 };
 
-// Upload course image
 export const uploadCourseImage = async (courseId, imageFile) => {
   try {
     const data = new FormData();
@@ -104,7 +96,6 @@ export const uploadCourseImage = async (courseId, imageFile) => {
   }
 };
 
-// Update course image
 export const updateCourseImage = async (courseId, imageFile) => {
   try {
     const data = new FormData();
@@ -127,7 +118,6 @@ export const updateCourseImage = async (courseId, imageFile) => {
   }
 };
 
-// Empty form template
 export const emptyCourseForm = {
   course_name: '',
   start_date: '',

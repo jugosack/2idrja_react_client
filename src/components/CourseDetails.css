@@ -185,6 +185,50 @@
   color: #1f2937;
 }
 
+/* Instructor spacing fix */
+.course-details-page .instructor-text-content {
+  padding-left: 1rem;
+  margin-left: 0.5rem;
+}
+
+/* Alternating alignment for instructors */
+/* Odd instructors (1st, 3rd, 5th...) - left aligned and closer to picture */
+.course-details-page
+  .instructor-section:nth-child(odd)
+  .instructor-text-content {
+  padding-left: 0.5rem;
+  margin-left: 0.25rem;
+}
+
+.course-details-page
+  .instructor-section:nth-child(odd)
+  .instructor-text-content
+  h3 {
+  text-align: left !important;
+}
+
+.course-details-page
+  .instructor-section:nth-child(odd)
+  .instructor-text-content
+  .instructor-meta {
+  text-align: left !important;
+}
+
+/* Even instructors (2nd, 4th, 6th...) - right aligned */
+.course-details-page
+  .instructor-section:nth-child(even)
+  .instructor-text-content
+  h3 {
+  text-align: right !important;
+}
+
+.course-details-page
+  .instructor-section:nth-child(even)
+  .instructor-text-content
+  .instructor-meta {
+  text-align: right !important;
+}
+
 /* Instructor tag/chip */
 .course-details-page .instructor-meta {
   margin-top: 6px;

@@ -139,22 +139,38 @@ const Navbar = ({ className = "" }) => {
                 >
                   Courses
                 </button>
-                <ul className="dropdown-menu colorisation mega-dropdown-list">
+                <ul className="dropdown-menu colorisation mega-dropdown-list courses-columns-dropdown">
                   {courses.length === 0 && (
                     <li className="listDropdown text-center">
                       <span className="dropdown-item">No courses</span>
                     </li>
                   )}
-                  {courses.map((course) => (
-                    <li key={course.id} className="listDropdown text-center">
-                      <Link
-                        className="dropdown-item"
-                        to={`/courses/${course.id}`}
-                      >
-                        {course.course_name}
-                      </Link>
-                    </li>
-                  ))}
+                  {courses.length > 0 && (
+                    <div className="courses-matrix-container">
+                      {Array.from(
+                        { length: Math.ceil(courses.length / 5) },
+                        (_, columnIndex) => (
+                          <div key={columnIndex} className="courses-column">
+                            {courses
+                              .slice(columnIndex * 5, (columnIndex + 1) * 5)
+                              .map((course) => (
+                                <li
+                                  key={course.id}
+                                  className="listDropdown text-center"
+                                >
+                                  <Link
+                                    className="dropdown-item"
+                                    to={`/courses/${course.id}`}
+                                  >
+                                    {course.course_name}
+                                  </Link>
+                                </li>
+                              ))}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  )}
                 </ul>
               </li>
               <li className="nav-item">
