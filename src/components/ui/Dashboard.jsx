@@ -232,7 +232,7 @@ const Dashboard = () => {
             {[...Array(30)].map((_, i) => {
               const today = new Date();
               const isToday = today.getDate() === i + 1
-                && today.getMonth() === 5 - 1 // May = 4, JavaScript month is zero-based
+                && today.getMonth() === 5 - 1
                 && today.getFullYear() === 2025;
               return (
                 <div

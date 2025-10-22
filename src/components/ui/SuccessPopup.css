@@ -1,0 +1,111 @@
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 15, 15, 0.55);
+  backdrop-filter: blur(10px);
+  z-index: 2000;
+  animation: fadeIn 0.35s ease-in-out;
+}
+
+.success-modal {
+  background: linear-gradient(160deg, #fff 0%, #f6faff 100%);
+  border-radius: 20px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  padding: 3rem 2.5rem;
+  width: 92%;
+  max-width: 440px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: slideUp 0.4s ease-out;
+}
+
+.success-icon {
+  font-size: 3.2rem;
+  color: #16a34a;
+  filter: drop-shadow(0 0 8px rgba(22, 163, 74, 0.4));
+  animation: pop 0.45s ease;
+  margin-bottom: 0.2rem;
+}
+
+.success-title {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.success-box {
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.success-message {
+  color: #065f46;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0;
+  word-break: keep-all;
+  white-space: normal;
+}
+
+.success-message strong {
+  color: #064e3b;
+  font-weight: 700;
+}
+
+.success-btn {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  color: #fff;
+  border: none;
+  font-size: 1.05rem;
+  font-weight: 600;
+  padding: 0.85rem 2.4rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+}
+
+.success-btn:hover {
+  background: linear-gradient(135deg, #15803d, #16a34a);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.35);
+}
+
+.success-btn:active {
+  transform: scale(0.97);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(25px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.success-overlay:focus-visible,
+.success-btn:focus-visible {
+  outline: 3px solid #16a34a;
+  outline-offset: 4px;
+}

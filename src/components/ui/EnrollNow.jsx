@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import EnrollmentPopup from './EnrollmentPopup'; // ✅ додадено
 import './EnrollNow.css';
 
 const EnrollNow = ({ course, onClose }) => {
@@ -11,79 +12,70 @@ const EnrollNow = ({ course, onClose }) => {
     phoneNumber: '',
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
+  const [success] = useState(false);
+  const [fetchingUser, setFetchingUser] = useState(true); // loading current_user
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
-  // Handle ESC key press to close modal
+  const [isPopupOpen, setPopupOpen] = useState(false); // ✅ додадено
+
+  // Close on ESC
   useEffect(() => {
     const handleEscKey = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
+      if (e.key === 'Escape') onClose();
     };
-
     document.addEventListener('keydown', handleEscKey);
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
+    return () => document.removeEventListener('keydown', handleEscKey);
   }, [onClose]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // Prefill from /current_user
+  useEffect(() => {
+    const run = async () => {
+      setError('');
+      setFetchingUser(true);
+      try {
+        // Prefer 'auth_token', fallback to 'token'
+        const token = sessionStorage.getItem('auth_token') || sessionStorage.getItem('token');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+        if (!token) {
+          setError('You must be logged in to enroll.');
+          return;
+        }
 
-    try {
-      const token = sessionStorage.getItem('token');
+        const res = await axios.get('http://localhost:3000/current_user', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-      const enrollmentData = {
-        course_id: course.id,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone_number: formData.phoneNumber,
-      };
-
-      const response = await axios.post(
-        'http://localhost:3000/enrollments',
-        enrollmentData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        setSuccess(true);
-        setTimeout(() => {
-          onClose();
-          window.location.reload();
-        }, 1500);
+        const u = res.data; // { id, email, first_name, last_name, mobile_number, ... }
+        setFormData({
+          firstName: u.first_name || '',
+          lastName: u.last_name || '',
+          email: u.email || '',
+          phoneNumber: u.mobile_number || '',
+        });
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Fetch current_user error:', err);
+        setError(
+          err.response?.data?.message
+            || 'Unable to load your profile. Please try again.',
+        );
+      } finally {
+        setFetchingUser(false);
       }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Enrollment error:', err);
-      setError(err.response?.data?.message || 'Failed to enroll. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    };
+    run();
+  }, []);
+
+  // ✅ само отвори попап (НЕ праќај enrollment уште)
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (course.places_left === 0) return;
+    setPopupOpen(true);
   };
 
   const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+    if (e.target === e.currentTarget) onClose();
   };
 
   const handleBackdropKeyDown = (e) => {
@@ -94,170 +86,206 @@ const EnrollNow = ({ course, onClose }) => {
   };
 
   return (
-    <div
-      className="enroll-modal-backdrop"
-      onClick={handleBackdropClick}
-      onKeyDown={handleBackdropKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label="Close modal"
-    >
+    <>
       <div
-        className="enroll-modal-content"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="enroll-modal-title"
+        className="enroll-modal-backdrop"
+        onClick={handleBackdropClick}
+        onKeyDown={handleBackdropKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-label="Close modal"
       >
-        <div className="enroll-modal-header">
-          <h3 id="enroll-modal-title">Enroll in Course</h3>
-          <button
-            type="button"
-            className="close-btn"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            &times;
-          </button>
-        </div>
+        <div
+          className="enroll-modal-content"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="enroll-modal-title"
+        >
+          <div className="enroll-modal-header">
+            <h3 id="enroll-modal-title">Enroll in Course</h3>
+            <button
+              type="button"
+              className="close-btn"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          </div>
 
-        <div className="course-info-section">
-          <h4>{course.course_name}</h4>
-          <div className="course-details">
-            <p>
-              <strong>Duration:</strong>
-              {' '}
-              {course.start_date}
-              {' '}
-              -
-              {' '}
-              {course.end_date}
-            </p>
-            <p>
-              <strong>Price:</strong>
-              {' '}
-              €
-              {course.fee}
-            </p>
-            <p className="places-available">
-              <strong>Available Places:</strong>
-              <span className={`places-count ${course.places_left <= 5 ? 'low' : ''}`}>
-                {course.places_left}
+          <div className="course-info-section">
+            <h4>{course.course_name}</h4>
+            <div className="course-details">
+              <p>
+                <strong>Duration:</strong>
                 {' '}
-                places left
-              </span>
-            </p>
-          </div>
-        </div>
-
-        {success && (
-          <div className="success-message" role="status">
-            ✓ Successfully enrolled in the course! Redirecting...
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="enroll-form">
-          <div className="form-row">
-            <div className="form-group">
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-              <label htmlFor="enroll-first-name">
-                First Name *
-              </label>
-              <input
-                type="text"
-                id="enroll-first-name"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                required
-                className="form-control"
-                placeholder="Enter your first name"
-              />
-            </div>
-
-            <div className="form-group">
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-              <label htmlFor="enroll-last-name">
-                Last Name *
-              </label>
-              <input
-                type="text"
-                id="enroll-last-name"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-                className="form-control"
-                placeholder="Enter your last name"
-              />
+                {course.start_date}
+                {' '}
+                -
+                {course.end_date}
+              </p>
+              <p>
+                <strong>Price:</strong>
+                {' '}
+                €
+                {course.fee}
+              </p>
+              <p className="places-available">
+                <strong>Available Places:</strong>
+                {' '}
+                <span
+                  className={`places-count ${
+                    course.places_left <= 5 ? 'low' : ''
+                  }`}
+                >
+                  {course.places_left}
+                  {' '}
+                  places left
+                </span>
+              </p>
             </div>
           </div>
 
-          <div className="form-group">
-            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-            <label htmlFor="enroll-email">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              id="enroll-email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-              className="form-control"
-              placeholder="your.email@example.com"
-            />
-          </div>
-
-          <div className="form-group">
-            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-            <label htmlFor="enroll-phone">
-              Phone Number *
-            </label>
-            <input
-              type="tel"
-              id="enroll-phone"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleInputChange}
-              required
-              className="form-control"
-              placeholder="+389 70 123 456"
-            />
-          </div>
-
-          {error && (
-            <div className="error-message" role="alert">
-              {error}
+          {success && (
+            <div className="success-message" role="status">
+              ✓ Successfully enrolled in the course! Redirecting...
             </div>
           )}
 
-          <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={loading}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary enroll-submit"
-              disabled={loading || course.places_left === 0}
-            >
-              {loading ? 'Processing...' : 'Confirm Enrollment'}
-            </button>
-          </div>
-        </form>
+          <form onSubmit={handleSubmit} className="enroll-form">
+            <fieldset className="form-fieldset" disabled={fetchingUser}>
+              <div className="form-row">
+                <div className="form-group">
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                  <label htmlFor="enroll-first-name">First Name *</label>
+                  <input
+                    type="text"
+                    id="enroll-first-name"
+                    name="firstName"
+                    value={formData.firstName}
+                    className="form-control read-only"
+                    placeholder="Enter your first name"
+                    disabled
+                    aria-readonly="true"
+                    title="Edit in your profile"
+                  />
+                </div>
 
-        {course.places_left === 0 && (
-          <div className="no-places-warning" role="alert">
-            Sorry, this course is fully booked!
-          </div>
-        )}
+                <div className="form-group">
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                  <label htmlFor="enroll-last-name">Last Name *</label>
+                  <input
+                    type="text"
+                    id="enroll-last-name"
+                    name="lastName"
+                    value={formData.lastName}
+                    className="form-control read-only"
+                    placeholder="Enter your last name"
+                    disabled
+                    aria-readonly="true"
+                    title="Edit in your profile"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label htmlFor="enroll-email">Email Address *</label>
+                <input
+                  type="email"
+                  id="enroll-email"
+                  name="email"
+                  value={formData.email}
+                  className="form-control read-only"
+                  placeholder="your.email@example.com"
+                  disabled
+                  aria-readonly="true"
+                  title="Edit in your profile"
+                />
+              </div>
+
+              <div className="form-group">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label htmlFor="enroll-phone">Phone Number *</label>
+                <input
+                  type="tel"
+                  id="enroll-phone"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  className="form-control read-only"
+                  placeholder="+389 70 123 456"
+                  disabled
+                  aria-readonly="true"
+                  title="Edit in your profile"
+                />
+              </div>
+            </fieldset>
+
+            {fetchingUser && (
+              <div className="info-message" role="status">
+                Loading your profile…
+              </div>
+            )}
+
+            {error && (
+              <div className="error-message" role="alert">
+                {error}
+              </div>
+            )}
+
+            <div className="form-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onClose}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary enroll-submit"
+                disabled={
+                  loading
+                  || fetchingUser
+                  || !formData.firstName
+                  || !formData.lastName
+                  || !formData.email
+                  || !formData.phoneNumber
+                  || course.places_left === 0
+                }
+              >
+                {loading ? 'Processing...' : 'Pay Now'}
+              </button>
+            </div>
+          </form>
+
+          {course.places_left === 0 && (
+            <div className="no-places-warning" role="alert">
+              Sorry, this course is fully booked!
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <EnrollmentPopup
+        isOpen={isPopupOpen}
+        onClose={() => setPopupOpen(false)}
+        course={{
+          id: course.id,
+          course_name: course.course_name,
+          price: Number(course.fee),
+        }}
+        defaultUser={{
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+        }}
+        onSubmit={() => {
+          // Овде можеш да повикаш API ако сакаш.
+          setPopupOpen(false);
+        }}
+      />
+    </>
   );
 };
 
