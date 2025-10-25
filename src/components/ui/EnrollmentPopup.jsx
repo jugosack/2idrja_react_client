@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from 'react';
 import PropTypes from 'prop-types';
 import './EnrollmentPopup.css';
 
@@ -36,18 +38,19 @@ function EnrollmentForm({
   const [zip, setZip] = useState('');
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState('');
+  const [currentUser, setCurrentUser] = useState(defaultUser);
 
   const price = typeof course?.price === 'number' && !Number.isNaN(course.price)
     ? course.price
     : 99;
 
-  const resolveToken = () => (
+  const resolveToken = useCallback(() => (
     sessionStorage.getItem('auth_token')
     || localStorage.getItem('auth_token')
     || localStorage.getItem('accessToken')
     || (userToken && String(userToken).trim())
     || ''
-  );
+  ), [userToken]);
 
   const canSubmitNow = !!(stripe && elements);
 
@@ -60,10 +63,7 @@ function EnrollmentForm({
       dialogRef.current?.querySelector('input, button, select')?.focus();
     }, 0);
 
-    const onEsc = (e) => {
-      if (e.key === 'Escape') onClose?.();
-    };
-
+    const onEsc = (e) => { if (e.key === 'Escape') onClose?.(); };
     window.addEventListener('keydown', onEsc);
 
     return () => {
@@ -72,56 +72,43 @@ function EnrollmentForm({
     };
   }, [defaultUser, onClose]);
 
-  // 🔎 Fetch current user to prefill form
+  // Fetch current user to prefill form
   useEffect(() => {
-    const needPrefill = !defaultUser?.email || !defaultUser?.name;
     const token = resolveToken();
-
-    // ✅ Explicit return for ESLint consistency
-    if (!needPrefill || (!useCookieSession && !token)) return undefined;
+    if (!token) {
+      // no token, do nothing
+      return undefined; // explicitly return undefined to satisfy ESLint
+    }
 
     const controller = new AbortController();
 
     const fetchCurrentUser = async () => {
       try {
-        const headers = {};
-        if (!useCookieSession && token) {
-          headers[authHeader] = authScheme ? `${authScheme} ${token}` : token;
-        }
-
+        const headers = { Authorization: `Bearer ${token}` };
         const res = await fetch(`${paymentsBaseUrl}${currentUserEndpoint}`, {
           method: 'GET',
           headers,
-          ...(useCookieSession ? { credentials: 'include' } : {}),
           signal: controller.signal,
         });
 
-        if (!res.ok) return undefined;
+        if (!res.ok) return;
 
         const u = await res.json();
-        if (u?.email && !email) setEmail(String(u.email));
-        const fullName = `${u?.first_name?.trim?.() || ''} ${u?.last_name?.trim?.() || ''}`.trim();
-        if (fullName && !nameOnCard) setNameOnCard(fullName);
-        return undefined;
+        if (u?.id) {
+          const fullName = `${u.first_name || ''} ${u.last_name || ''}`.trim();
+          setCurrentUser({ id: u.id, name: fullName, email: u.email });
+          setEmail(u.email || '');
+          setNameOnCard(fullName);
+        }
       } catch {
-        return undefined;
+        // ignore errors
       }
     };
 
     fetchCurrentUser();
 
     return () => controller.abort();
-  }, [
-    defaultUser,
-    paymentsBaseUrl,
-    currentUserEndpoint,
-    useCookieSession,
-    authHeader,
-    authScheme,
-    email,
-    nameOnCard,
-    resolveToken,
-  ]);
+  }, [paymentsBaseUrl, currentUserEndpoint, resolveToken]);
 
   const ids = {
     email: 'enroll-email',
@@ -146,29 +133,22 @@ function EnrollmentForm({
     e.preventDefault();
     setErrMsg('');
 
-    if (!canSubmitNow) {
-      setErrMsg('Payment not ready. Try again.');
-      return;
-    }
-    if (!email || !nameOnCard) {
-      setErrMsg('Please fill all required fields.');
-      return;
-    }
-    if (!(courseId ?? course?.id)) {
-      setErrMsg('Missing course_id.');
-      return;
-    }
+    if (!canSubmitNow) { setErrMsg('Payment not ready. Try again.'); return; }
+    if (!email || !nameOnCard) { setErrMsg('Please fill all required fields.'); return; }
+    if (!(courseId ?? course?.id)) { setErrMsg('Missing course_id.'); return; }
 
     try {
       setLoading(true);
       const amountCents = Math.round(Number(price) * 100);
-      const body = { course_id: courseId ?? course?.id, amount: amountCents };
+      const body = {
+        course_id: courseId ?? course?.id,
+        amount: amountCents,
+        student_id: currentUser?.id,
+      };
 
       const token = resolveToken();
       const headers = { 'Content-Type': 'application/json' };
-      if (!useCookieSession && token) {
-        headers[authHeader] = authScheme ? `${authScheme} ${token}` : token;
-      }
+      if (!useCookieSession && token) headers[authHeader] = authScheme ? `${authScheme} ${token}` : token;
 
       const response = await fetch(`${paymentsBaseUrl}/payments/create_payment_intent`, {
         method: 'POST',
@@ -178,6 +158,7 @@ function EnrollmentForm({
       });
 
       if (!response.ok) throw new Error(await response.text());
+
       const data = await response.json();
       const clientSecret = data?.client_secret;
       if (!clientSecret) throw new Error('Missing client_secret.');
@@ -186,20 +167,23 @@ function EnrollmentForm({
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card,
-          billing_details: {
-            name: nameOnCard,
-            email,
-            address: { country, postal_code: zip },
-          },
+          billing_details: { name: nameOnCard, email, address: { country, postal_code: zip } },
         },
       });
 
-      if (error) {
-        setErrMsg(error.message || 'Payment failed.');
-        return;
-      }
+      if (error) { setErrMsg(error.message || 'Payment failed.'); return; }
 
       if (paymentIntent?.status === 'succeeded') {
+        await fetch(`${paymentsBaseUrl}/payments/confirm`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ course_id: courseId ?? course?.id, student_id: currentUser.id }),
+        });
+
+        // Trigger onSubmit callback
         onSubmit?.({
           paymentIntentId: paymentIntent.id,
           status: paymentIntent.status,
@@ -209,15 +193,10 @@ function EnrollmentForm({
           courseName: course?.course_name,
           email,
         });
+
         onClose?.();
-      } else {
-        setErrMsg(`Payment status: ${paymentIntent?.status || 'unknown'}`);
-      }
-    } catch (err) {
-      setErrMsg(err?.message || 'Unexpected error.');
-    } finally {
-      setLoading(false);
-    }
+      } else { setErrMsg(`Payment status: ${paymentIntent?.status || 'unknown'}`); }
+    } catch (err) { setErrMsg(err?.message || 'Unexpected error.'); } finally { setLoading(false); }
   };
 
   return (
@@ -236,14 +215,7 @@ function EnrollmentForm({
         aria-modal="true"
         aria-labelledby="enroll-title"
       >
-        <button
-          className="enroll-close"
-          onClick={onClose}
-          aria-label="Close"
-          type="button"
-        >
-          ×
-        </button>
+        <button className="enroll-close" onClick={onClose} aria-label="Close" type="button">×</button>
 
         <div className="enroll-header">
           <h2 id="enroll-title">{course?.course_name || 'Online Course'}</h2>
@@ -271,10 +243,7 @@ function EnrollmentForm({
             <div className="enroll-cardbox" role="group" aria-labelledby={ids.cardLabel}>
               <CardElement
                 id="card-element"
-                options={{
-                  hidePostalCode: true,
-                  style: { base: { fontSize: '16px' }, invalid: { color: '#e5424d' } },
-                }}
+                options={{ hidePostalCode: true, style: { base: { fontSize: '16px' }, invalid: { color: '#e5424d' } } }}
               />
             </div>
           </div>
@@ -294,11 +263,7 @@ function EnrollmentForm({
           <div className="enroll-row">
             <label className="enroll-label" htmlFor={ids.country}>
               <span>Country or region</span>
-              <select
-                id={ids.country}
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-              >
+              <select id={ids.country} value={country} onChange={(e) => setCountry(e.target.value)}>
                 <option value="US">United States</option>
                 <option value="GB">United Kingdom</option>
                 <option value="DE">Germany</option>
@@ -312,23 +277,13 @@ function EnrollmentForm({
 
             <label className="enroll-label" htmlFor={ids.zip}>
               <span>ZIP</span>
-              <input
-                id={ids.zip}
-                type="text"
-                placeholder="ZIP"
-                value={zip}
-                onChange={(e) => setZip(e.target.value)}
-              />
+              <input id={ids.zip} type="text" placeholder="ZIP" value={zip} onChange={(e) => setZip(e.target.value)} />
             </label>
           </div>
 
           {errMsg && <div className="enroll-error" role="alert">{errMsg}</div>}
 
-          <button
-            type="submit"
-            className="enroll-submit"
-            disabled={loading || !canSubmitNow}
-          >
+          <button type="submit" className="enroll-submit" disabled={loading || !canSubmitNow}>
             {loading ? 'Processing…' : `Pay $${price.toFixed(2)}`}
           </button>
         </form>
@@ -345,6 +300,7 @@ EnrollmentForm.propTypes = {
     price: PropTypes.number,
   }),
   defaultUser: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     name: PropTypes.string,
     email: PropTypes.string,
   }),
@@ -368,7 +324,8 @@ EnrollmentForm.defaultProps = {
   authHeader: 'Authorization',
   authScheme: 'Bearer',
   useCookieSession: false,
-  currentUserEndpoint: '/users/current',
+  currentUserEndpoint: '/current_user',
+
 };
 
 export default function EnrollmentPopup({
@@ -440,6 +397,7 @@ EnrollmentPopup.propTypes = {
     price: PropTypes.number,
   }),
   defaultUser: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     name: PropTypes.string,
     email: PropTypes.string,
   }),
@@ -463,5 +421,5 @@ EnrollmentPopup.defaultProps = {
   authHeader: 'Authorization',
   authScheme: 'Bearer',
   useCookieSession: false,
-  currentUserEndpoint: '/users/current',
+  currentUserEndpoint: '/current_user',
 };
