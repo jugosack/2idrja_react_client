@@ -1,0 +1,190 @@
+/* EnrollmentPopup.css */
+:root {
+  --en-bg: #f6f7fb;
+  --en-card: #fff;
+  --en-text: #1a1b22;
+  --en-muted: #6b7280;
+  --en-primary: #3b82f6;
+  --en-primary-pressed: #2563eb;
+  --en-ring: rgba(59, 130, 246, 0.35);
+  --en-border: #e5e7eb;
+  --en-shadow: 0 20px 45px rgba(0, 0, 0, 0.12), 0 6px 18px rgba(0, 0, 0, 0.08);
+  --en-radius: 16px;
+}
+
+.enroll-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 20, 0.55);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  padding: 24px;
+  backdrop-filter: blur(4px);
+}
+
+.enroll-modal {
+  width: 100%;
+  max-width: 520px;
+  background: var(--en-card);
+  border-radius: var(--en-radius);
+  box-shadow: var(--en-shadow);
+  border: 1px solid var(--en-border);
+  position: relative;
+  overflow: hidden;
+  animation: en-pop 160ms ease-out;
+}
+
+@keyframes en-pop {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.enroll-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: #8b93a7;
+  cursor: pointer;
+}
+
+.enroll-close:hover {
+  background: #f1f5f9;
+  color: #111827;
+}
+
+.enroll-header {
+  padding: 24px 28px 10px 28px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--en-border);
+}
+
+.enroll-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--en-text);
+}
+
+.enroll-price {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--en-text);
+  opacity: 0.9;
+}
+
+.enroll-form {
+  padding: 18px 28px 26px 28px;
+}
+
+.enroll-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.enroll-label > span {
+  color: var(--en-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.enroll-form input,
+.enroll-form select {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--en-border);
+  outline: none;
+  font-size: 15px;
+  color: var(--en-text);
+  background: #fff;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.02s ease;
+}
+
+.enroll-cardbox input {
+  border: none;
+  border-bottom: 1px solid var(--en-border);
+  border-radius: 0;
+}
+
+.enroll-form input:focus,
+.enroll-form select:focus {
+  border-color: var(--en-primary);
+  box-shadow: 0 0 0 4px var(--en-ring);
+}
+
+.enroll-cardbox {
+  border: 1px solid var(--en-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.enroll-cardbox input:focus {
+  border-bottom-color: var(--en-primary);
+  box-shadow: none;
+}
+
+.enroll-cardrow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.enroll-cardrow input:first-child {
+  border-right: 1px solid var(--en-border);
+}
+
+.enroll-row {
+  display: grid;
+  grid-template-columns: 1fr 160px;
+  gap: 12px;
+}
+
+.enroll-submit {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--en-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.02s ease, background 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+}
+.enroll-submit:hover { background: var(--en-primary-pressed); }
+.enroll-submit:active { transform: translateY(1px); }
+
+.enroll-note {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--en-muted);
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+  .enroll-row { grid-template-columns: 1fr; }
+}
