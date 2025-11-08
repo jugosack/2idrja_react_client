@@ -1,12 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import './SuccessPopup.css';
 
-export default function SuccessPopup({ onClose }) {
+export default function SuccessPopup({ onClose, course }) {
+  const navigate = useNavigate();
+
+  const handleGoToDashboard = () => {
+    onClose();
+    navigate('/dashboard');
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onClose();
+      handleGoToDashboard();
     }
   };
 
@@ -41,10 +49,19 @@ export default function SuccessPopup({ onClose }) {
           </p>
         </div>
 
+        {course && (
+          <div className="enrolled-course-card">
+            <div className="course-card-header">
+              <h3 className="course-card-title">{course.courseName || course.course_name || 'Course'}</h3>
+              <span className="enrolled-badge">Enrolled</span>
+            </div>
+          </div>
+        )}
+
         <button
           type="button"
           className="success-btn"
-          onClick={onClose}
+          onClick={handleGoToDashboard}
           aria-label="Go to Dashboard"
         >
           Go to Dashboard
@@ -56,4 +73,13 @@ export default function SuccessPopup({ onClose }) {
 
 SuccessPopup.propTypes = {
   onClose: PropTypes.func.isRequired,
+  course: PropTypes.shape({
+    courseId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    courseName: PropTypes.string,
+    course_name: PropTypes.string,
+  }),
+};
+
+SuccessPopup.defaultProps = {
+  course: null,
 };

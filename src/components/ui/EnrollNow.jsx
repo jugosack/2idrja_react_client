@@ -270,7 +270,13 @@ const EnrollNow = ({ course, onClose, onEnrollSuccess }) => {
 
       <EnrollmentPopup
         isOpen={isPopupOpen}
-        onClose={() => setPopupOpen(false)}
+        onClose={() => {
+          setPopupOpen(false);
+          // Call the success callback if provided when closing
+          if (onEnrollSuccess) {
+            onEnrollSuccess();
+          }
+        }}
         course={{
           id: course.id,
           course_name: course.course_name,
@@ -280,12 +286,9 @@ const EnrollNow = ({ course, onClose, onEnrollSuccess }) => {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
         }}
-        onSubmit={(result) => {
-          // Call the success callback if provided
-          if (onEnrollSuccess && result?.courseId === course.id) {
-            onEnrollSuccess();
-          }
-          setPopupOpen(false);
+        onSubmit={() => {
+          // Don't close here - let EnrollmentPopup show success popup first
+          // The onClose callback will be called when user closes the success popup
         }}
       />
     </>

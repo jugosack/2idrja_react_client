@@ -203,7 +203,7 @@ function EnrollmentForm({
           },
         }));
 
-        // Trigger onSubmit callback
+        // Trigger onSubmit callback (this will dispatch payment-success in EnrollmentPopup)
         onSubmit?.({
           paymentIntentId: paymentIntent.id,
           status: paymentIntent.status,
@@ -214,7 +214,7 @@ function EnrollmentForm({
           email,
         });
 
-        onClose?.();
+        // Don't close here - let the success popup show first
       } else { setErrMsg(`Payment status: ${paymentIntent?.status || 'unknown'}`); }
     } catch (err) { setErrMsg(err?.message || 'Unexpected error.'); } finally { setLoading(false); }
   };
@@ -363,18 +363,37 @@ export default function EnrollmentPopup({
   currentUserEndpoint,
 }) {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showForm, setShowForm] = useState(true);
+  const [enrolledCourse, setEnrolledCourse] = useState(null);
 
   useEffect(() => {
-    const handleSuccess = () => setShowSuccess(true);
+    if (isOpen) {
+      setShowForm(true);
+      setShowSuccess(false);
+      setEnrolledCourse(null);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleSuccess = (event) => {
+      const courseData = event.detail || {};
+      setEnrolledCourse({
+        courseId: courseData?.courseId || courseId || course?.id,
+        courseName: courseData?.courseName || course?.course_name,
+        course_name: course?.course_name,
+      });
+      setShowForm(false);
+      setShowSuccess(true);
+    };
     window.addEventListener('payment-success', handleSuccess);
     return () => window.removeEventListener('payment-success', handleSuccess);
-  }, []);
+  }, [course, courseId]);
 
   if (!isOpen && !showSuccess) return null;
 
   return (
     <>
-      {isOpen && (
+      {isOpen && showForm && (
         <Elements stripe={stripePromise} options={{ appearance: { theme: 'stripe' } }}>
           <EnrollmentForm
             onClose={onClose}
@@ -398,6 +417,7 @@ export default function EnrollmentPopup({
 
       {showSuccess && (
         <SuccessPopup
+          course={enrolledCourse}
           onClose={() => {
             setShowSuccess(false);
             onClose?.();

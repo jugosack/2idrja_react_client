@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Dashboard.css';
 import Details from './HTMLdetails';
+import ReviewModal from '../ReviewModal';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -12,6 +13,8 @@ const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewCourse, setReviewCourse] = useState(null);
   const location = useLocation();
 
   const coursesPerPage = 3;
@@ -408,8 +411,8 @@ const Dashboard = () => {
                             type="button"
                             className="review-course-btn"
                             onClick={() => {
-                              // TODO: Connect to review component when ready
-                              console.log('Review button clicked for course:', course.name);
+                              setReviewCourse(courseData);
+                              setShowReviewModal(true);
                             }}
                           >
                             Review
@@ -535,6 +538,51 @@ const Dashboard = () => {
           isEnrolled
         />
       )}
+
+      {/* Review Modal */}
+      <ReviewModal
+        open={showReviewModal}
+        course={reviewCourse ? { name: reviewCourse.course_name || reviewCourse.name } : null}
+        onClose={() => {
+          setShowReviewModal(false);
+          setReviewCourse(null);
+        }}
+        onSubmit={async (reviewData) => {
+          try {
+            const token = sessionStorage.getItem('auth_token');
+            if (!token) {
+              throw new Error('You must be logged in to submit a review');
+            }
+
+            // Submit review to backend
+            const response = await axios.post(
+              `http://localhost:3000/courses/${reviewCourse.id}/reviews`,
+              {
+                rating: reviewData.rating,
+                body: reviewData.body,
+                title: reviewData.title || '',
+                structured: reviewData.flags.structured,
+                engaging: reviewData.flags.engaging,
+                knowledgeable: reviewData.flags.knowledgeable,
+              },
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            );
+
+            if (response.status === 201 || response.status === 200) {
+              // Review submitted successfully
+              setShowReviewModal(false);
+              setReviewCourse(null);
+              // Optionally refresh the page or show a success message
+              alert('Review submitted successfully!');
+            }
+          } catch (error) {
+            console.error('Error submitting review:', error);
+            throw error; // Let ReviewModal handle the error display
+          }
+        }}
+      />
     </div>
   );
 };
