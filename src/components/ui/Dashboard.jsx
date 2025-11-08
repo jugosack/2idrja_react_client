@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Dashboard.css';
 import Details from './HTMLdetails';
@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   const coursesPerPage = 3;
 
@@ -25,13 +26,15 @@ const Dashboard = () => {
     document.head.appendChild(link);
   }, []);
 
-  useEffect(() => {
+  // Function to fetch enrolled courses
+  const fetchEnrolledCourses = useCallback(() => {
     const token = sessionStorage.getItem('auth_token');
     if (!token) {
       setLoading(false);
       return;
     }
 
+    setLoading(true);
     // Fetch current user
     axios.get('http://localhost:3000/current_user', {
       headers: { Authorization: `Bearer ${token}` },
@@ -57,6 +60,26 @@ const Dashboard = () => {
         setLoading(false);
       });
   }, []);
+
+  // Fetch courses on mount and when location changes (user navigates to dashboard)
+  useEffect(() => {
+    fetchEnrolledCourses();
+  }, [fetchEnrolledCourses, location.pathname]);
+
+  // Listen for enrollment success events to refresh courses
+  useEffect(() => {
+    const handleEnrollmentSuccess = () => {
+      // Refresh enrolled courses when enrollment succeeds
+      fetchEnrolledCourses();
+    };
+
+    // Listen for custom event dispatched after successful enrollment
+    window.addEventListener('enrollment-success', handleEnrollmentSuccess);
+
+    return () => {
+      window.removeEventListener('enrollment-success', handleEnrollmentSuccess);
+    };
+  }, [fetchEnrolledCourses]);
 
   // Helper function to format date
   const formatDate = (dateString) => {

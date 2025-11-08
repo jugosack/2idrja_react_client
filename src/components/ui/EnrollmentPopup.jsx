@@ -183,6 +183,14 @@ function EnrollmentForm({
           body: JSON.stringify({ course_id: courseId ?? course?.id, student_id: currentUser.id }),
         });
 
+        // Dispatch custom event to notify dashboard and other components
+        window.dispatchEvent(new CustomEvent('enrollment-success', {
+          detail: {
+            courseId: courseId ?? course?.id,
+            courseName: course?.course_name,
+          },
+        }));
+
         // Trigger onSubmit callback
         onSubmit?.({
           paymentIntentId: paymentIntent.id,
