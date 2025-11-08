@@ -6,10 +6,12 @@ import Details from './HTMLdetails';
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [courseIndex, setCourseIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('ongoing');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const coursesPerPage = 3;
 
@@ -25,52 +27,182 @@ const Dashboard = () => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('auth_token');
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
+    // Fetch current user
     axios.get('http://localhost:3000/current_user', {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => setUserData(res.data))
-      .catch((err) => console.error('Error fetching user:', err));
+      .then((res) => {
+        setUserData(res.data);
+        // Fetch enrolled courses for this user
+        return axios.get(`http://localhost:3000/users/${res.data.id}/enrolled_courses`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      })
+      .then((res) => {
+        // Filter out any enrolled courses where the course data is missing (deleted courses)
+        const validEnrolledCourses = (res.data || []).filter(
+          // Check if course data exists (course might be null if deleted)
+          (enrollment) => enrollment && enrollment.id && enrollment.course_name,
+        );
+        setEnrolledCourses(validEnrolledCourses);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error fetching user or courses:', err);
+        setLoading(false);
+      });
   }, []);
 
-  const ongoingCourses = [
-    { month: 'March, 2025', name: 'HTML', daysLeft: '5 Days left' },
-    { month: 'April, 2025', name: 'CSS', daysLeft: '11 Days left' },
-    { month: 'August, 2025', name: 'Ruby', daysLeft: '5 Days left' },
-    { month: 'November, 2025', name: 'React & JS', daysLeft: '6 Days left' },
-    { month: 'December, 2025', name: 'Spring', daysLeft: '10 Days left' },
-    { month: 'January, 2026', name: 'Python', daysLeft: '21 Days left' },
-  ];
+  // Helper function to format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December',
+    ];
+    return `${months[date.getMonth()]}, ${date.getFullYear()}`;
+  };
 
-  const pastCourses = [
-    { month: 'January, 2025', name: 'Java', daysLeft: 'Completed' },
-    { month: 'February, 2025', name: 'C#', daysLeft: 'Completed' },
-  ];
+  // Helper function to calculate days left until end date
+  const calculateDaysLeft = (endDate) => {
+    if (!endDate) return '';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const end = new Date(endDate);
+    end.setHours(0, 0, 0, 0);
+    const diffTime = end - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  const upcomingCourses = [
-    { month: 'June, 2025', name: 'Node.js', daysLeft: '20 Days left' },
-    { month: 'July, 2025', name: 'Docker', daysLeft: '25 Days left' },
-    { month: 'September, 2025', name: 'Kubernetes', daysLeft: '30 Days left' },
-  ];
+    if (diffDays < 0) return 'Completed';
+    if (diffDays === 0) return 'Ends today';
+    if (diffDays === 1) return '1 Day left to finish';
+    return `${diffDays} Days left to finish`;
+  };
+
+  // Helper function to calculate days until course starts
+  const calculateDaysUntilStart = (startDate) => {
+    if (!startDate) return '';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const diffTime = start - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return ''; // Course already started
+    if (diffDays === 0) return 'Starts today';
+    if (diffDays === 1) return 'Starts tomorrow';
+    return `${diffDays} Days left to start`;
+  };
+
+  // Filter courses by date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const ongoingCourses = enrolledCourses.filter((course) => {
+    if (!course.start_date || !course.end_date) return false;
+    const startDate = new Date(course.start_date);
+    const endDate = new Date(course.end_date);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+    return today >= startDate && today <= endDate;
+  }).map((course) => ({
+    id: course.id,
+    month: formatDate(course.start_date),
+    name: course.course_name,
+    daysLeft: calculateDaysLeft(course.end_date),
+    course, // Store full course data for details
+  }));
+
+  const pastCourses = enrolledCourses.filter((course) => {
+    if (!course.end_date) return false;
+    const endDate = new Date(course.end_date);
+    endDate.setHours(0, 0, 0, 0);
+    return today > endDate;
+  }).map((course) => ({
+    id: course.id,
+    month: formatDate(course.start_date),
+    name: course.course_name,
+    daysLeft: '', // Empty for past courses to avoid duplicate "Completed"
+    course, // Store full course data for details
+  }));
+
+  // Upcoming courses - start_date is in the future
+  const upcomingCourses = enrolledCourses.filter((course) => {
+    if (!course.start_date) return false;
+    const startDate = new Date(course.start_date);
+    startDate.setHours(0, 0, 0, 0);
+    return today < startDate;
+  }).map((course) => ({
+    id: course.id,
+    month: formatDate(course.start_date),
+    name: course.course_name,
+    daysLeft: calculateDaysUntilStart(course.start_date),
+    course, // Store full course data for details
+  }));
+
+  // Courses without dates or that don't match any category - show in "All" or "Other"
+  const otherCourses = enrolledCourses.filter((course) => {
+    const isOngoing = ongoingCourses.some((oc) => oc.id === course.id);
+    const isPast = pastCourses.some((pc) => pc.id === course.id);
+    const isUpcoming = upcomingCourses.some((uc) => uc.id === course.id);
+    return !isOngoing && !isPast && !isUpcoming;
+  }).map((course) => {
+    // Check if course hasn't started yet and show days until start
+    let daysLeftText = 'Enrolled';
+    if (course.start_date) {
+      const startDate = new Date(course.start_date);
+      startDate.setHours(0, 0, 0, 0);
+      if (today < startDate) {
+        daysLeftText = calculateDaysUntilStart(course.start_date);
+      }
+    }
+    return {
+      id: course.id,
+      month: formatDate(course.start_date) || 'No date',
+      name: course.course_name,
+      daysLeft: daysLeftText,
+      course, // Store full course data for details
+    };
+  });
 
   let visibleCourses = [];
   if (selectedCategory === 'ongoing') {
     visibleCourses = ongoingCourses.slice(courseIndex, courseIndex + coursesPerPage);
   } else if (selectedCategory === 'past') {
-    visibleCourses = pastCourses.slice(0, 2);
+    visibleCourses = pastCourses.slice(courseIndex, courseIndex + coursesPerPage);
   } else if (selectedCategory === 'upcoming') {
-    visibleCourses = upcomingCourses.slice(0, 3);
+    visibleCourses = upcomingCourses.slice(courseIndex, courseIndex + coursesPerPage);
+  } else if (selectedCategory === 'all') {
+    // Show all enrolled courses
+    const allCourses = [...ongoingCourses, ...upcomingCourses, ...pastCourses, ...otherCourses];
+    visibleCourses = allCourses.slice(courseIndex, courseIndex + coursesPerPage);
   }
 
   const handleNextCourses = () => {
-    if (selectedCategory === 'ongoing' && courseIndex + coursesPerPage < ongoingCourses.length) {
+    let courses = [];
+    if (selectedCategory === 'ongoing') {
+      courses = ongoingCourses;
+    } else if (selectedCategory === 'past') {
+      courses = pastCourses;
+    } else if (selectedCategory === 'upcoming') {
+      courses = upcomingCourses;
+    } else if (selectedCategory === 'all') {
+      courses = [...ongoingCourses, ...upcomingCourses, ...pastCourses, ...otherCourses];
+    }
+    if (courseIndex + coursesPerPage < courses.length) {
       setCourseIndex(courseIndex + coursesPerPage);
     }
   };
 
   const handlePrevCourses = () => {
-    if (selectedCategory === 'ongoing' && courseIndex - coursesPerPage >= 0) {
+    if (courseIndex - coursesPerPage >= 0) {
       setCourseIndex(courseIndex - coursesPerPage);
     }
   };
@@ -95,6 +227,7 @@ const Dashboard = () => {
     ongoing: 'Ongoing Courses',
     past: 'Past Courses',
     upcoming: 'Upcoming Courses',
+    all: 'All Enrolled Courses',
   };
 
   return (
@@ -155,9 +288,10 @@ const Dashboard = () => {
                   setCourseIndex(0);
                 }}
               >
+                <option value="all">All Enrolled Courses</option>
                 <option value="ongoing">Ongoing Courses</option>
-                <option value="past">Past Courses</option>
                 <option value="upcoming">Upcoming Courses</option>
+                <option value="past">Past Courses</option>
               </select>
               <i className="fas fa-chevron-down custom-arrow-icon" />
             </div>
@@ -168,39 +302,144 @@ const Dashboard = () => {
               type="button"
               onClick={handlePrevCourses}
               className="nav-arrow"
-              disabled={courseIndex === 0 || selectedCategory !== 'ongoing'}
+              disabled={courseIndex === 0}
             >
               ◀
             </button>
 
             <div className="courses-container">
-              {visibleCourses.map((course) => (
-                <div className="course" key={`${course.name}-${course.month}`}>
-                  <div className="course-month">{course.month}</div>
-                  <div className="course-name">{course.name}</div>
-                  <div className="progress-text">
-                    {selectedCategory === 'past' ? 'Completed' : 'Progress 33%'}
-                  </div>
-                  <div className="days-left">{course.daysLeft}</div>
-                  <button
-                    type="button"
-                    className="course-info-btn"
-                    onClick={() => {
-                      setSelectedCourse(course);
-                      setShowPopup(true);
-                    }}
-                  >
-                    ⓘ
-                  </button>
-                </div>
-              ))}
+              {(() => {
+                if (loading) {
+                  return (
+                    <div style={{ padding: '20px', textAlign: 'center' }}>
+                      Loading courses...
+                    </div>
+                  );
+                }
+                if (visibleCourses.length === 0) {
+                  const categoryTextMap = {
+                    ongoing: 'ongoing',
+                    past: 'past',
+                    upcoming: 'upcoming',
+                    all: 'enrolled',
+                  };
+                  const categoryText = categoryTextMap[selectedCategory] || 'courses';
+                  return (
+                    <div style={{ padding: '20px', textAlign: 'center' }}>
+                      No
+                      {' '}
+                      {categoryText}
+                      {' '}
+                      courses found.
+                    </div>
+                  );
+                }
+                return visibleCourses.map((course) => {
+                  // Check if this course is past based on its end_date
+                  const courseData = course.course || course;
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+
+                  const isCoursePast = courseData.end_date ? (() => {
+                    const endDate = new Date(courseData.end_date);
+                    endDate.setHours(0, 0, 0, 0);
+                    return today > endDate;
+                  })() : false;
+
+                  // STEP 1: Check if course hasn't started yet - THIS IS THE KEY CHECK
+                  let hasNotStarted = false;
+                  const startDateStr = courseData.start_date;
+                  if (startDateStr) {
+                    try {
+                      const startDate = new Date(startDateStr);
+                      if (!Number.isNaN(startDate.getTime())) {
+                        startDate.setHours(0, 0, 0, 0);
+                        hasNotStarted = today < startDate;
+                      }
+                    } catch (e) {
+                      console.error('Error parsing start_date:', e);
+                    }
+                  }
+
+                  // STEP 2: Determine what to display for daysLeft
+                  let daysLeftDisplay = '';
+                  if (hasNotStarted && startDateStr) {
+                    // Course hasn't started - ALWAYS calculate and show "X Days left to start"
+                    daysLeftDisplay = calculateDaysUntilStart(startDateStr);
+                  } else if (!isCoursePast && course.daysLeft) {
+                    // Course has already started - show days until end
+                    daysLeftDisplay = course.daysLeft;
+                  }
+
+                  return (
+                    <div
+                      className="course course-hover-container"
+                      key={course.id || `${course.name}-${course.month}`}
+                    >
+                      <div className="course-month">{course.month}</div>
+                      <div className="course-name">{course.name}</div>
+                      {isCoursePast ? (
+                        <>
+                          <div className="completed-course-text">Completed course</div>
+                          <button
+                            type="button"
+                            className="review-course-btn"
+                            onClick={() => {
+                              // TODO: Connect to review component when ready
+                              console.log('Review button clicked for course:', course.name);
+                            }}
+                          >
+                            Review
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          {daysLeftDisplay && (
+                            <div className="days-left">{daysLeftDisplay}</div>
+                          )}
+                        </>
+                      )}
+                      <button
+                        type="button"
+                        className="course-info-btn"
+                        onClick={() => {
+                          setSelectedCourse(courseData);
+                          setShowPopup(true);
+                        }}
+                      >
+                        ⓘ
+                      </button>
+                    </div>
+                  );
+                });
+              })()}
             </div>
 
             <button
               type="button"
               onClick={handleNextCourses}
               className="nav-arrow"
-              disabled={courseIndex + coursesPerPage >= ongoingCourses.length || selectedCategory !== 'ongoing'}
+              disabled={(() => {
+                if (selectedCategory === 'ongoing') {
+                  return courseIndex + coursesPerPage >= ongoingCourses.length;
+                }
+                if (selectedCategory === 'past') {
+                  return courseIndex + coursesPerPage >= pastCourses.length;
+                }
+                if (selectedCategory === 'upcoming') {
+                  return courseIndex + coursesPerPage >= upcomingCourses.length;
+                }
+                if (selectedCategory === 'all') {
+                  const allCourses = [
+                    ...ongoingCourses,
+                    ...upcomingCourses,
+                    ...pastCourses,
+                    ...otherCourses,
+                  ];
+                  return courseIndex + coursesPerPage >= allCourses.length;
+                }
+                return true;
+              })()}
             >
               ▶
             </button>
@@ -270,6 +509,7 @@ const Dashboard = () => {
         <Details
           course={selectedCourse}
           onClose={() => setShowPopup(false)}
+          isEnrolled
         />
       )}
     </div>

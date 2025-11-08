@@ -123,13 +123,22 @@ const useCourseOperations = (getAuthHeaders, loadCourses, setPage) => {
     e.preventDefault();
     setErrorMessage('');
 
+    // Fix course_status: map 'active' to 'ongoing' to match backend enum
+    let courseStatus = form.course_status;
+    if (courseStatus === 'active') {
+      courseStatus = 'ongoing';
+    }
+
     const payloadForm = {
       ...form,
-      fee: parseFloat(form.fee) || 0,
-      max_students: parseInt(form.max_students, 10) || 0,
-      enrolled_students: form.enrolled_students,
-      rating: form.rating !== '' ? parseFloat(form.rating) : null,
+      course_status: courseStatus,
+      fee: form.fee !== '' ? parseFloat(form.fee) || 0 : 0,
+      max_students: form.max_students !== '' ? parseInt(form.max_students, 10) : null,
+      enrolled_students: form.enrolled_students !== undefined ? parseInt(form.enrolled_students, 10) || 0 : 0,
+      rating: form.rating !== '' && form.rating !== null ? parseFloat(form.rating) : null,
     };
+
+    console.log('useCourseOperations - Sending course data:', { course: payloadForm });
 
     try {
       if (isEditing) {
@@ -150,7 +159,7 @@ const useCourseOperations = (getAuthHeaders, loadCourses, setPage) => {
       if (isEditing && selectedFile) {
         const data = new FormData();
         data.append('image', selectedFile);
-        await axios.post(
+        await axios.patch(
           `${API_BASE}/courses/${editingId}/upload_image`,
           data,
           {
@@ -168,10 +177,19 @@ const useCourseOperations = (getAuthHeaders, loadCourses, setPage) => {
       loadCoursesData();
       setPage(0);
     } catch (err) {
-      console.error(err);
-      setErrorMessage(
-        'Failed to save course. Please check the console for details.',
-      );
+      console.error('useCourseOperations error:', err);
+      console.error('Error response:', err.response?.data);
+      let errorMsg = 'Failed to save course.';
+      if (err.response && err.response.data) {
+        if (err.response.data.errors) {
+          errorMsg = Array.isArray(err.response.data.errors)
+            ? err.response.data.errors.join(', ')
+            : err.response.data.errors;
+        } else if (err.response.data.error) {
+          errorMsg = err.response.data.error;
+        }
+      }
+      setErrorMessage(errorMsg);
     }
   };
 
@@ -188,14 +206,15 @@ const useCourseOperations = (getAuthHeaders, loadCourses, setPage) => {
     const data = new FormData();
     data.append('image', selectedFile);
     try {
-      await axios.post(`${API_BASE}/courses/${editingId}/upload_image`, data, {
+      await axios.patch(`${API_BASE}/courses/${editingId}/upload_image`, data, {
         headers: { 'Content-Type': 'multipart/form-data', ...getAuthHeaders() },
       });
       setSelectedFile(null);
       setPreviewUrl('');
       loadCoursesData();
     } catch (err) {
-      console.error(err);
+      console.error('Image upload error:', err);
+      console.error('Error response:', err.response?.data);
       setErrorMessage(
         'Image upload failed. Please check the console for details.',
       );

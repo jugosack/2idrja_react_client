@@ -20,14 +20,22 @@ export const loadCourses = async () => {
 
 export const createCourse = async (courseData) => {
   try {
+    // Fix course_status: map 'active' to 'ongoing' to match backend enum
+    let courseStatus = courseData.course_status;
+    if (courseStatus === 'active') {
+      courseStatus = 'ongoing';
+    }
+
     const payloadForm = {
       ...courseData,
-      fee: parseFloat(courseData.fee) || 0,
-      max_students: parseInt(courseData.max_students, 10) || 0,
-      enrolled_students: courseData.enrolled_students,
-      rating: courseData.rating !== '' ? parseFloat(courseData.rating) : null,
+      course_status: courseStatus,
+      fee: courseData.fee !== '' ? parseFloat(courseData.fee) || 0 : 0,
+      max_students: courseData.max_students !== '' ? parseInt(courseData.max_students, 10) : null,
+      enrolled_students: courseData.enrolled_students !== undefined ? parseInt(courseData.enrolled_students, 10) || 0 : 0,
+      rating: courseData.rating !== '' && courseData.rating !== null ? parseFloat(courseData.rating) : null,
     };
 
+    console.log('Sending course data:', { course: payloadForm });
     const response = await axios.post(
       `${API_BASE}/courses`,
       { course: payloadForm },
@@ -36,20 +44,29 @@ export const createCourse = async (courseData) => {
     return response.data;
   } catch (error) {
     console.error('Error creating course:', error);
+    console.error('Error response:', error.response?.data);
     throw error;
   }
 };
 
 export const updateCourse = async (courseId, courseData) => {
   try {
+    // Fix course_status: map 'active' to 'ongoing' to match backend enum
+    let courseStatus = courseData.course_status;
+    if (courseStatus === 'active') {
+      courseStatus = 'ongoing';
+    }
+
     const payloadForm = {
       ...courseData,
-      fee: parseFloat(courseData.fee) || 0,
-      max_students: parseInt(courseData.max_students, 10) || 0,
-      enrolled_students: courseData.enrolled_students,
-      rating: courseData.rating !== '' ? parseFloat(courseData.rating) : null,
+      course_status: courseStatus,
+      fee: courseData.fee !== '' ? parseFloat(courseData.fee) || 0 : 0,
+      max_students: courseData.max_students !== '' ? parseInt(courseData.max_students, 10) : null,
+      enrolled_students: courseData.enrolled_students !== undefined ? parseInt(courseData.enrolled_students, 10) || 0 : 0,
+      rating: courseData.rating !== '' && courseData.rating !== null ? parseFloat(courseData.rating) : null,
     };
 
+    console.log('Sending course data:', { course: payloadForm });
     const response = await axios.patch(
       `${API_BASE}/courses/${courseId}`,
       { course: payloadForm },
@@ -58,6 +75,7 @@ export const updateCourse = async (courseId, courseData) => {
     return response.data;
   } catch (error) {
     console.error('Error updating course:', error);
+    console.error('Error response:', error.response?.data);
     throw error;
   }
 };

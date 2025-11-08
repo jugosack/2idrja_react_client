@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import EnrollNow from './EnrollNow';
 import './Details.css';
 
-function Details({ course, onClose }) {
+function Details({ course, onClose, isEnrolled = false }) {
   const [isDescriptionExpanded, setDescriptionExpanded] = useState(false);
   const [isBenefitsOpen, setBenefitsOpen] = useState(false);
   const [isTargetAudienceOpen, setTargetAudienceOpen] = useState(false);
@@ -36,7 +36,22 @@ function Details({ course, onClose }) {
     places_left: placesLeft,
   };
 
+  // Check if course is past (end_date has passed)
+  const isPastCourse = () => {
+    if (!endDate) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const courseEndDate = new Date(endDate);
+    courseEndDate.setHours(0, 0, 0, 0);
+    return today > courseEndDate;
+  };
+
   const handleEnrollClick = () => {
+    // Don't allow enrollment if course is past
+    if (isPastCourse()) {
+      return;
+    }
+
     const token = sessionStorage.getItem('auth_token');
 
     if (!token) {
@@ -49,6 +64,40 @@ function Details({ course, onClose }) {
 
   const handleCloseEnrollModal = () => {
     setShowEnrollModal(false);
+  };
+
+  // Render enrollment button or message based on course status
+  const renderEnrollmentSection = () => {
+    // If enrolled and course is past, don't show anything (Review button is on card)
+    if (isEnrolled && isPastCourse()) {
+      return null;
+    }
+    // If enrolled but not past, show enrolled message
+    if (isEnrolled) {
+      return (
+        <div className="enrolled-message">
+          <p>You are enrolled in this course.</p>
+        </div>
+      );
+    }
+    // If not enrolled but course is past
+    if (isPastCourse()) {
+      return (
+        <div className="course-ended-message">
+          <p>This course has ended. Enrollment is no longer available.</p>
+        </div>
+      );
+    }
+    // If not enrolled and course is available
+    return (
+      <button
+        type="button"
+        className="enroll-btn"
+        onClick={handleEnrollClick}
+      >
+        Enroll Now
+      </button>
+    );
   };
 
   return (
@@ -142,13 +191,7 @@ function Details({ course, onClose }) {
           </div>
 
           <div className="enroll-container">
-            <button
-              type="button"
-              className="enroll-btn"
-              onClick={handleEnrollClick}
-            >
-              Enroll Now
-            </button>
+            {renderEnrollmentSection()}
           </div>
         </div>
       </div>
@@ -183,6 +226,8 @@ Details.propTypes = {
     rating: PropTypes.number,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/require-default-props
+  isEnrolled: PropTypes.bool,
 };
 
 export default Details;

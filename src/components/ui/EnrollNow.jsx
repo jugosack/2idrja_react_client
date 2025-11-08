@@ -4,7 +4,7 @@ import axios from 'axios';
 import EnrollmentPopup from './EnrollmentPopup'; // ✅ додадено
 import './EnrollNow.css';
 
-const EnrollNow = ({ course, onClose }) => {
+const EnrollNow = ({ course, onClose, onEnrollSuccess }) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -280,8 +280,11 @@ const EnrollNow = ({ course, onClose }) => {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
         }}
-        onSubmit={() => {
-          // Овде можеш да повикаш API ако сакаш.
+        onSubmit={(result) => {
+          // Call the success callback if provided
+          if (onEnrollSuccess && result?.courseId === course.id) {
+            onEnrollSuccess();
+          }
           setPopupOpen(false);
         }}
       />
@@ -299,6 +302,8 @@ EnrollNow.propTypes = {
     places_left: PropTypes.number.isRequired,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/require-default-props
+  onEnrollSuccess: PropTypes.func,
 };
 
 export default EnrollNow;

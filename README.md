@@ -1,6 +1,57 @@
-# Getting Started with Create React App
+# 2IDRJA React Client
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Setup Instructions
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+- Rails backend server running (see `2idrja_rails_server` repository)
+
+### Installation Steps
+
+1. **Clone and install dependencies:**
+   ```bash
+   git clone <repository-url>
+   cd 2idrja_react_client
+   npm install
+   ```
+
+2. **Environment Configuration:**
+   - The `.env` file is included in the repository
+   - Verify it contains:
+     - `REACT_APP_STRIPE_PUBLISHABLE_KEY` (for payment processing)
+   - If your backend runs on a different URL/port, you'll need to update hardcoded `localhost:3000` URLs in the codebase
+
+3. **Start the Rails backend server:**
+   - Navigate to `2idrja_rails_server` directory
+   - Start the Rails server (default: `http://localhost:3000`)
+
+4. **Start the React development server:**
+   ```bash
+   npm start
+   ```
+   The app will open at [http://localhost:3001](http://localhost:3001) (or next available port)
+
+### Important Notes
+
+- **Backend Dependency:** This frontend requires the Rails backend to be running on `http://localhost:3000`
+- **Image Uploads:** Image upload functionality requires the backend API to be properly configured
+- **Stripe Payments:** Ensure `REACT_APP_STRIPE_PUBLISHABLE_KEY` is set in `.env` for payment processing
+- **Authentication:** Uses sessionStorage for auth tokens (`auth_token` or `token`)
+
+### Features Added in admindash01 Branch
+
+- Course enrollment status checking on home page
+- Glass/frosted effect for enrolled courses
+- "Completed course" indicator in dashboard
+- Real-time enrollment status updates
+- Disabled enroll button for already enrolled courses
+
+---
+
+# Getting Started with Create React App
 
 ## Available Scripts
 

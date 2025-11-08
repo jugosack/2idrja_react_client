@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import EnrollNow from './EnrollNow';
@@ -20,6 +20,7 @@ const CourseCard = ({
 
   // State to control the EnrollNow modal
   const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   // Create course object for EnrollNow modal
   const courseData = {
@@ -31,9 +32,72 @@ const CourseCard = ({
     places_left: parseInt(places.split(' ')[0], 10),
   };
 
+  // Helper function to calculate days until course starts
+  const calculateDaysUntilStart = (startDate) => {
+    if (!startDate) return '';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    const diffTime = start - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return ''; // Course already started
+    if (diffDays === 0) return 'Starts today';
+    if (diffDays === 1) return '1 Day left to start';
+    return `${diffDays} Days left to start`;
+  };
+
+  const daysUntilStart = calculateDaysUntilStart(courseData.start_date);
+
+  // Check if user is enrolled in this course (only if logged in and not admin)
+  useEffect(() => {
+    const checkEnrollment = async () => {
+      if (isAdmin) {
+        setIsEnrolled(false);
+        return;
+      }
+
+      const token = sessionStorage.getItem('auth_token') || sessionStorage.getItem('token');
+      if (!token) {
+        setIsEnrolled(false);
+        return;
+      }
+
+      try {
+        const userRes = await axios.get('http://localhost:3000/current_user', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const enrolledRes = await axios.get(
+          `http://localhost:3000/users/${userRes.data.id}/enrolled_courses`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+
+        const enrolledCourseIds = (enrolledRes.data || [])
+          .filter((enrollment) => enrollment && enrollment.id)
+          .map((enrollment) => enrollment.id);
+
+        setIsEnrolled(enrolledCourseIds.includes(courseId));
+      } catch (error) {
+        console.error('Error checking enrollment:', error);
+        setIsEnrolled(false);
+      }
+    };
+
+    checkEnrollment();
+  }, [courseId, isAdmin]);
+
   const handleEnrollClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Don't allow enrollment if already enrolled
+    if (isEnrolled) {
+      return;
+    }
 
     const token = sessionStorage.getItem('auth_token');
     console.log('Token exists:', !!token);
@@ -49,6 +113,12 @@ const CourseCard = ({
 
   const handleCloseEnrollModal = () => {
     console.log('Closing enrollment modal...');
+    setShowEnrollModal(false);
+  };
+
+  const handleEnrollSuccess = () => {
+    // Update enrollment status immediately when enrollment succeeds
+    setIsEnrolled(true);
     setShowEnrollModal(false);
   };
 
@@ -75,7 +145,9 @@ const CourseCard = ({
   return (
     <>
       <div
-        className="c-card d-flex flex-column justify-content-space-between align-items-center bg-silver"
+        className={`c-card d-flex flex-column justify-content-space-between align-items-center bg-silver ${
+          isEnrolled ? 'enrolled-glass' : ''
+        }`}
         style={{ minWidth: '250px' }}
       >
         <img
@@ -115,6 +187,12 @@ const CourseCard = ({
             <div className="d-flex flex-row justify-content-center align-items-center w-100">
               <p className="places-left fs-4 text-danger">{places}</p>
             </div>
+
+            {daysUntilStart && (
+              <div className="d-flex flex-row justify-content-center align-items-center w-100 mt-2">
+                <p className="fs-5 text-primary fw-semibold">{daysUntilStart}</p>
+              </div>
+            )}
           </>
         )}
 
@@ -145,13 +223,15 @@ const CourseCard = ({
               </button>
             </>
           ) : (
-            <button
-              type="button"
-              className="btn text-dark btn-custom w-100"
-              onClick={handleEnrollClick}
-            >
-              Enroll now
-            </button>
+            !isEnrolled && (
+              <button
+                type="button"
+                className="btn text-dark btn-custom w-100"
+                onClick={handleEnrollClick}
+              >
+                Enroll now
+              </button>
+            )
           )}
         </div>
       </div>
@@ -161,6 +241,7 @@ const CourseCard = ({
         <EnrollNow
           course={courseData}
           onClose={handleCloseEnrollModal}
+          onEnrollSuccess={handleEnrollSuccess}
         />
       )}
     </>
