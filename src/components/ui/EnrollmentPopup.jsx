@@ -174,7 +174,8 @@ function EnrollmentForm({
       if (error) { setErrMsg(error.message || 'Payment failed.'); return; }
 
       if (paymentIntent?.status === 'succeeded') {
-        await fetch(`${paymentsBaseUrl}/payments/confirm`, {
+        // Confirm enrollment with backend
+        const confirmResponse = await fetch(`${paymentsBaseUrl}/payments/confirm`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -183,7 +184,18 @@ function EnrollmentForm({
           body: JSON.stringify({ course_id: courseId ?? course?.id, student_id: currentUser.id }),
         });
 
-        // Dispatch custom event to notify dashboard and other components
+        const confirmData = await confirmResponse.json();
+
+        if (!confirmResponse.ok) {
+          // Enrollment failed - show error
+          const errorMessage = confirmData.error
+            || confirmData.errors?.join(', ')
+            || 'Failed to enroll in course. Please contact support.';
+          setErrMsg(errorMessage);
+          return;
+        }
+
+        // Enrollment successful - dispatch event and trigger callbacks
         window.dispatchEvent(new CustomEvent('enrollment-success', {
           detail: {
             courseId: courseId ?? course?.id,
