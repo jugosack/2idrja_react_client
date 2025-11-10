@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Home.css";
@@ -23,6 +23,7 @@ function Home() {
   const [courses, setCourses] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [enrolledCourseIds, setEnrolledCourseIds] = useState([]);
 
   const scrollNext = () => {
     carouselRef.current?.scrollBy({ left: 280, behavior: "smooth" });
@@ -39,6 +40,37 @@ function Home() {
   const closeDetails = () => {
     setSelectedCourse(null);
   };
+
+  // Fetch enrolled courses
+  const fetchEnrolledCourses = useCallback(async () => {
+    const token = sessionStorage.getItem("auth_token") || sessionStorage.getItem("token");
+    if (!token || isAdmin) {
+      setEnrolledCourseIds([]);
+      return;
+    }
+
+    try {
+      const userRes = await axios.get("http://localhost:3000/current_user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const enrolledRes = await axios.get(
+        `http://localhost:3000/users/${userRes.data.id}/enrolled_courses`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const enrolledIds = (enrolledRes.data || [])
+        .filter((enrollment) => enrollment && enrollment.id)
+        .map((enrollment) => enrollment.id);
+
+      setEnrolledCourseIds(enrolledIds);
+    } catch (error) {
+      console.error("Error fetching enrolled courses:", error);
+      setEnrolledCourseIds([]);
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +100,21 @@ function Home() {
     };
 
     fetchData();
-  }, []);
+    fetchEnrolledCourses();
+  }, [fetchEnrolledCourses]);
+
+  // Listen for enrollment success events to refresh enrollment status
+  useEffect(() => {
+    const handleEnrollmentSuccess = () => {
+      fetchEnrolledCourses();
+    };
+
+    window.addEventListener("enrollment-success", handleEnrollmentSuccess);
+
+    return () => {
+      window.removeEventListener("enrollment-success", handleEnrollmentSuccess);
+    };
+  }, [fetchEnrolledCourses]);
 
   console.log("Final isAdmin in Home:", isAdmin);
 
@@ -128,7 +174,11 @@ function Home() {
 
       {/* Course Details Modal */}
       {selectedCourse && (
-        <Details course={selectedCourse} onClose={closeDetails} />
+        <Details
+          course={selectedCourse}
+          onClose={closeDetails}
+          isEnrolled={enrolledCourseIds.includes(selectedCourse.id)}
+        />
       )}
     </>
   );

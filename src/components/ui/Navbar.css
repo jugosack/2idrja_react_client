@@ -8,6 +8,20 @@
   color: black;
 }
 
+/* Ensure navbar items stay on same line (desktop only) */
+@media (min-width: 769px) {
+  .navbar-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .navbar-nav .nav-item {
+    display: inline-block !important;
+    white-space: nowrap !important;
+  }
+}
+
 .brand-name {
   color: black;
   margin-left: 1rem;

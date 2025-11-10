@@ -174,7 +174,8 @@ function EnrollmentForm({
       if (error) { setErrMsg(error.message || 'Payment failed.'); return; }
 
       if (paymentIntent?.status === 'succeeded') {
-        await fetch(`${paymentsBaseUrl}/payments/confirm`, {
+        // Confirm enrollment with backend
+        const confirmResponse = await fetch(`${paymentsBaseUrl}/payments/confirm`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -183,7 +184,26 @@ function EnrollmentForm({
           body: JSON.stringify({ course_id: courseId ?? course?.id, student_id: currentUser.id }),
         });
 
-        // Trigger onSubmit callback
+        const confirmData = await confirmResponse.json();
+
+        if (!confirmResponse.ok) {
+          // Enrollment failed - show error
+          const errorMessage = confirmData.error
+            || confirmData.errors?.join(', ')
+            || 'Failed to enroll in course. Please contact support.';
+          setErrMsg(errorMessage);
+          return;
+        }
+
+        // Enrollment successful - dispatch event and trigger callbacks
+        window.dispatchEvent(new CustomEvent('enrollment-success', {
+          detail: {
+            courseId: courseId ?? course?.id,
+            courseName: course?.course_name,
+          },
+        }));
+
+        // Trigger onSubmit callback (this will dispatch payment-success in EnrollmentPopup)
         onSubmit?.({
           paymentIntentId: paymentIntent.id,
           status: paymentIntent.status,
@@ -194,7 +214,7 @@ function EnrollmentForm({
           email,
         });
 
-        onClose?.();
+        // Don't close here - let the success popup show first
       } else { setErrMsg(`Payment status: ${paymentIntent?.status || 'unknown'}`); }
     } catch (err) { setErrMsg(err?.message || 'Unexpected error.'); } finally { setLoading(false); }
   };
@@ -343,18 +363,37 @@ export default function EnrollmentPopup({
   currentUserEndpoint,
 }) {
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showForm, setShowForm] = useState(true);
+  const [enrolledCourse, setEnrolledCourse] = useState(null);
 
   useEffect(() => {
-    const handleSuccess = () => setShowSuccess(true);
+    if (isOpen) {
+      setShowForm(true);
+      setShowSuccess(false);
+      setEnrolledCourse(null);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleSuccess = (event) => {
+      const courseData = event.detail || {};
+      setEnrolledCourse({
+        courseId: courseData?.courseId || courseId || course?.id,
+        courseName: courseData?.courseName || course?.course_name,
+        course_name: course?.course_name,
+      });
+      setShowForm(false);
+      setShowSuccess(true);
+    };
     window.addEventListener('payment-success', handleSuccess);
     return () => window.removeEventListener('payment-success', handleSuccess);
-  }, []);
+  }, [course, courseId]);
 
   if (!isOpen && !showSuccess) return null;
 
   return (
     <>
-      {isOpen && (
+      {isOpen && showForm && (
         <Elements stripe={stripePromise} options={{ appearance: { theme: 'stripe' } }}>
           <EnrollmentForm
             onClose={onClose}
@@ -378,6 +417,7 @@ export default function EnrollmentPopup({
 
       {showSuccess && (
         <SuccessPopup
+          course={enrolledCourse}
           onClose={() => {
             setShowSuccess(false);
             onClose?.();

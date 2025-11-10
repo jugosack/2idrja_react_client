@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control, no-console */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   createCourse,
@@ -48,6 +48,41 @@ const AddCourseForm = ({
     }
     const clamped = Math.max(0, Math.min(1000, parseInt(value, 10)));
     setForm((f) => ({ ...f, max_students: clamped }));
+  };
+
+  const ratingInputRef = useRef(null);
+
+  const handleRatingChange = (e) => {
+    const { value } = e.target;
+
+    // Allow empty value
+    if (value === '') {
+      setForm((f) => ({ ...f, rating: '' }));
+      return;
+    }
+
+    // Parse the value
+    const numValue = parseFloat(value);
+
+    // If not a valid number, reset to previous value immediately
+    if (Number.isNaN(numValue)) {
+      if (ratingInputRef.current) {
+        ratingInputRef.current.value = form.rating || '';
+      }
+      setForm((f) => ({ ...f, rating: form.rating || '' }));
+      return;
+    }
+
+    // Only allow values between 0.1 and 5
+    if (numValue >= 0.1 && numValue <= 5) {
+      setForm((f) => ({ ...f, rating: numValue }));
+    } else {
+      // If outside range, reset to previous valid value immediately
+      if (ratingInputRef.current) {
+        ratingInputRef.current.value = form.rating || '';
+      }
+      setForm((f) => ({ ...f, rating: form.rating || '' }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -281,22 +316,32 @@ const AddCourseForm = ({
               name="course_status"
               value={form.course_status}
               onChange={handleChange}
+              required
               disabled={isEditing && readOnly}
             >
               <option value="planned">Planned</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
+              <option value="ongoing">Ongoing</option>
             </select>
           </div>
           <div className="cpbp-form-group">
-            <label htmlFor="rating">Rating</label>
+            <label htmlFor="rating">Rating (0.1 - 5)</label>
             <input
+              ref={ratingInputRef}
               id="rating"
               type="number"
               step="0.1"
+              min="0.1"
+              max="5"
               name="rating"
-              value={form.rating}
-              onChange={handleChange}
+              value={form.rating || ''}
+              onChange={handleRatingChange}
+              onBlur={(e) => {
+                // On blur, if invalid, clear it
+                const numValue = parseFloat(e.target.value);
+                if (e.target.value !== '' && (Number.isNaN(numValue) || numValue < 0.1 || numValue > 5)) {
+                  setForm((f) => ({ ...f, rating: '' }));
+                }
+              }}
               disabled={isEditing && readOnly}
             />
           </div>
