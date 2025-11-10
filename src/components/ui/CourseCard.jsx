@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import EnrollNow from './EnrollNow';
@@ -51,44 +51,59 @@ const CourseCard = ({
   const daysUntilStart = calculateDaysUntilStart(courseData.start_date);
 
   // Check if user is enrolled in this course (only if logged in and not admin)
-  useEffect(() => {
-    const checkEnrollment = async () => {
-      if (isAdmin) {
-        setIsEnrolled(false);
-        return;
-      }
+  const checkEnrollment = useCallback(async () => {
+    if (isAdmin) {
+      setIsEnrolled(false);
+      return;
+    }
 
-      const token = sessionStorage.getItem('auth_token') || sessionStorage.getItem('token');
-      if (!token) {
-        setIsEnrolled(false);
-        return;
-      }
+    const token = sessionStorage.getItem('auth_token') || sessionStorage.getItem('token');
+    if (!token) {
+      setIsEnrolled(false);
+      return;
+    }
 
-      try {
-        const userRes = await axios.get('http://localhost:3000/current_user', {
+    try {
+      const userRes = await axios.get('http://localhost:3000/current_user', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const enrolledRes = await axios.get(
+        `http://localhost:3000/users/${userRes.data.id}/enrolled_courses`,
+        {
           headers: { Authorization: `Bearer ${token}` },
-        });
+        },
+      );
 
-        const enrolledRes = await axios.get(
-          `http://localhost:3000/users/${userRes.data.id}/enrolled_courses`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+      const enrolledCourseIds = (enrolledRes.data || [])
+        .filter((enrollment) => enrollment && enrollment.id)
+        .map((enrollment) => enrollment.id);
 
-        const enrolledCourseIds = (enrolledRes.data || [])
-          .filter((enrollment) => enrollment && enrollment.id)
-          .map((enrollment) => enrollment.id);
+      setIsEnrolled(enrolledCourseIds.includes(courseId));
+    } catch (error) {
+      console.error('Error checking enrollment:', error);
+      setIsEnrolled(false);
+    }
+  }, [courseId, isAdmin]);
 
-        setIsEnrolled(enrolledCourseIds.includes(courseId));
-      } catch (error) {
-        console.error('Error checking enrollment:', error);
-        setIsEnrolled(false);
-      }
+  useEffect(() => {
+    checkEnrollment();
+  }, [checkEnrollment]);
+
+  // Listen for enrollment success events to refresh enrollment status
+  useEffect(() => {
+    const handleEnrollmentSuccess = () => {
+      // Refresh enrollment status when enrollment succeeds
+      checkEnrollment();
     };
 
-    checkEnrollment();
-  }, [courseId, isAdmin]);
+    // Listen for custom event dispatched after successful enrollment
+    window.addEventListener('enrollment-success', handleEnrollmentSuccess);
+
+    return () => {
+      window.removeEventListener('enrollment-success', handleEnrollmentSuccess);
+    };
+  }, [checkEnrollment]);
 
   const handleEnrollClick = (e) => {
     e.preventDefault();
