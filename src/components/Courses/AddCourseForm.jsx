@@ -65,7 +65,7 @@ const AddCourseForm = ({
     const numValue = parseFloat(value);
 
     // If not a valid number, reset to previous value immediately
-    if (isNaN(numValue)) {
+    if (Number.isNaN(numValue)) {
       if (ratingInputRef.current) {
         ratingInputRef.current.value = form.rating || '';
       }
@@ -338,7 +338,7 @@ const AddCourseForm = ({
               onBlur={(e) => {
                 // On blur, if invalid, clear it
                 const numValue = parseFloat(e.target.value);
-                if (e.target.value !== '' && (isNaN(numValue) || numValue < 0.1 || numValue > 5)) {
+                if (e.target.value !== '' && (Number.isNaN(numValue) || numValue < 0.1 || numValue > 5)) {
                   setForm((f) => ({ ...f, rating: '' }));
                 }
               }}

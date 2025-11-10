@@ -17,9 +17,9 @@
   position: relative;
   width: 100%;
   max-width: 560px;
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
   border-radius: 20px;
-  box-shadow: 
+  box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   padding: 32px;
@@ -29,8 +29,15 @@
 }
 
 @keyframes rm-pop {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .rm-header {
@@ -99,7 +106,8 @@
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
-.rm-close:hover { 
+
+.rm-close:hover {
   background: #e2e8f0;
   color: #1e293b;
   transform: scale(1.05);
@@ -159,10 +167,12 @@
   border-radius: 12px;
   padding: 14px 16px;
   font-size: 16px;
-  background: #ffffff;
+  background: #fff;
   transition: all 0.2s ease;
   font-family: inherit;
 }
+
+.review-textarea { resize: vertical; }
 
 .review-input:focus,
 .review-textarea:focus {
@@ -171,7 +181,7 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.review-textarea { resize: vertical; }
+
 
 /* ---------- Flags (vertical layout + checkmark) ---------- */
 .review-flags-section {
@@ -192,18 +202,18 @@
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   padding: 12px 16px;
-  background: #ffffff;
+  background: #fff;
   transition: all 0.2s ease;
   font-size: 15px;
   color: #475569;
 }
 
-.flag-item:hover { 
+.flag-item:hover {
   border-color: #cbd5e1;
 }
 
 .flag-item.active {
-  background: #ffffff !important;
+  background: #fff !important;
   border-color: #3b82f6;
   color: #1e40af;
   font-weight: 600;
@@ -217,10 +227,10 @@
   justify-content: center;
   border-radius: 6px;
   border: 2px solid #cbd5e1;
-  background: #ffffff;
+  background: #fff;
   font-size: 14px;
   line-height: 1;
-  color: #ffffff;
+  color: #fff;
   flex-shrink: 0;
   transition: all 0.2s ease;
 }
@@ -228,7 +238,7 @@
 .flag-item.active .flag-check {
   background: #3b82f6;
   border-color: #3b82f6;
-  color: #ffffff;
+  color: #fff;
 }
 
 .flag-item.active span:not(.flag-check) {
@@ -254,8 +264,15 @@
   transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.rm-btn-primary:hover { background: #1b3a5a; transform: translateY(-1px); }
-.rm-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.rm-btn-primary:hover {
+  background: #1b3a5a;
+  transform: translateY(-1px);
+}
+
+.rm-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .rm-btn-outlined {
   background: white;

@@ -31,7 +31,8 @@ export const createCourse = async (courseData) => {
       course_status: courseStatus,
       fee: courseData.fee !== '' ? parseFloat(courseData.fee) || 0 : 0,
       max_students: courseData.max_students !== '' ? parseInt(courseData.max_students, 10) : null,
-      enrolled_students: courseData.enrolled_students !== undefined ? parseInt(courseData.enrolled_students, 10) || 0 : 0,
+      enrolled_students: courseData.enrolled_students !== undefined
+        ? parseInt(courseData.enrolled_students, 10) || 0 : 0,
       rating: courseData.rating !== '' && courseData.rating !== null ? parseFloat(courseData.rating) : null,
     };
 
@@ -62,7 +63,8 @@ export const updateCourse = async (courseId, courseData) => {
       course_status: courseStatus,
       fee: courseData.fee !== '' ? parseFloat(courseData.fee) || 0 : 0,
       max_students: courseData.max_students !== '' ? parseInt(courseData.max_students, 10) : null,
-      enrolled_students: courseData.enrolled_students !== undefined ? parseInt(courseData.enrolled_students, 10) || 0 : 0,
+      enrolled_students: courseData.enrolled_students !== undefined
+        ? parseInt(courseData.enrolled_students, 10) || 0 : 0,
       rating: courseData.rating !== '' && courseData.rating !== null ? parseFloat(courseData.rating) : null,
     };
 
