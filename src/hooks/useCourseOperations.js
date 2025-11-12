@@ -58,8 +58,12 @@ const useCourseOperations = (getAuthHeaders, loadCourses, setPage) => {
       setCourseToDelete(null);
       loadCoursesData();
       setPage(0);
-    } catch {
-      alert('Failed to delete course.');
+    } catch (error) {
+      const errorMessage = error.response?.data?.error
+                          || error.response?.data?.errors?.join(', ')
+                          || error.message
+                          || 'Failed to delete course.';
+      alert(`Failed to delete course: ${errorMessage}`);
     }
   };
 
