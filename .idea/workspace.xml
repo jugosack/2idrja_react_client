@@ -5,13 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="&quot;Fixed the design modal for Course/User/Instructor and the details bug&quot;">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CourseDetails.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseDetails.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/Calendar.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Calendar.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/CourseCard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/CourseCard.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/Dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Dashboard.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ui/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Dashboard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/Navbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Navbar.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,7 +165,7 @@
       <workItem from="1762971306078" duration="1471000" />
       <workItem from="1762976962763" duration="650000" />
       <workItem from="1763062812062" duration="4148000" />
-      <workItem from="1763399387462" duration="4893000" />
+      <workItem from="1763399387462" duration="5243000" />
     </task>
     <task id="LOCAL-00001" summary="Added Delete Modal in main component">
       <option name="closed" value="true" />
