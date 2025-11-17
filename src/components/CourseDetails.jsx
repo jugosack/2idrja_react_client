@@ -95,7 +95,7 @@ export default function CourseDetails() {
               <div className="course-price-below-image">
                 <div className="price-badge">
                   <span className="price-icon">💰</span>
-                  <span className="price-text">Course Fee: {price}</span>
+                  <span className="price-text">Course Fee: €{price}</span>
                 </div>
               </div>
             )}

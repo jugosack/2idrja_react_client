@@ -163,16 +163,18 @@ const CourseCard = ({
         className={`c-card d-flex flex-column justify-content-space-between align-items-center bg-silver ${
           isEnrolled ? 'enrolled-glass' : ''
         }`}
-        style={{ minWidth: '250px' }}
+        style={{ minWidth: '260px', maxWidth: '320px' }}
       >
-        <img
-          className="d-flex image-fluid rounded-top course-image"
-          src={image}
-          alt="course"
-          style={{ width: '100%', height: '150px', objectFit: 'cover' }}
-        />
+        <div className="course-image-wrapper">
+          <img
+            className="d-flex image-fluid rounded-top course-image"
+            src={image}
+            alt="course"
+          />
+        </div>
 
-        <div className="d-flex flex-column p-3 mt-3 rounded
+        <div
+          className="d-flex flex-column p-3 mt-3 rounded
         justify-content-center align-items-center w-100 text-center"
         >
           <p className="cource-paragraph fs-3 fw-semibold">{title}</p>
@@ -205,7 +207,9 @@ const CourseCard = ({
 
             {daysUntilStart && (
               <div className="d-flex flex-row justify-content-center align-items-center w-100 mt-2">
-                <p className="fs-5 text-primary fw-semibold">{daysUntilStart}</p>
+                <p className="fs-5 text-primary fw-semibold">
+                  {daysUntilStart}
+                </p>
               </div>
             )}
           </>

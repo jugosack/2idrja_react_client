@@ -274,12 +274,11 @@
 
   .navigation-menu li:hover {
     background: rgb(63, 94, 251);
-    background:
-      linear-gradient(
-        90deg,
-        rgba(63, 94, 251, 0.5) 0%,
-        rgba(252, 70, 107, 0.5) 100%
-      );
+    background: linear-gradient(
+      90deg,
+      rgba(63, 94, 251, 0.5) 0%,
+      rgba(252, 70, 107, 0.5) 100%
+    );
   }
 
   .navigation-menu.expanded ul {
@@ -434,10 +433,10 @@
 
 /* Courses Matrix Dropdown - Matrix Layout */
 .courses-columns-dropdown {
-  min-width: 200px !important;
+  min-width: fit-content !important;
   max-width: 600px !important;
-  width: auto !important;
-  padding: 1rem !important;
+  width: fit-content !important;
+  padding: 0.75rem 1rem !important;
   right: 0 !important;
   left: auto !important;
   transform: none !important;

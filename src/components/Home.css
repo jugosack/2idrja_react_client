@@ -80,7 +80,7 @@
 /* Wrapper for visible cards */
 .carousel-wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   overflow: hidden;
   width: 90%;
   position: relative;
