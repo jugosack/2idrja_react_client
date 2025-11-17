@@ -7,44 +7,11 @@
     <list default="true" id="757adf49-cb45-4589-bb31-cf545b64de44" name="Changes" comment="&quot;Fixed the design modal for Course/User/Instructor and the details bug&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/CourseDetails.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseDetails.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CourseDetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseDetails.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CourseManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseManagement.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CourseModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CourseModal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Courses/AddCourseForm.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/AddCourseForm.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Courses/CourseCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/CourseCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Courses/CoursesServices.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/CoursesServices.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Courses/CoursesTable.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Courses/CoursesTable.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/CoursesGrid.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CoursesGrid.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DashboardHeader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DashboardHeader.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DashboardLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DashboardLayout.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DashboardNavigation.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DashboardNavigation.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/DeleteConfirmationModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DeleteConfirmationModal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/Home.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Home.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/InstructorManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/InstructorManagement.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/InstructorsSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/InstructorsSection.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ReviewModal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ReviewModal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/UserManagement.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/UserManagement.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/Calendar.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Calendar.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ui/CourseCard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/CourseCard.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/CourseCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/CourseCard.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ui/Dashboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Dashboard.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ui/Dashboard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Dashboard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/EnrollNow.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/EnrollNow.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/EnrollmentPopup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/EnrollmentPopup.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/HTMLdetails.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/HTMLdetails.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ui/Navbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Navbar.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/Navbar.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/SuccessPopup.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/SuccessPopup.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/handlers/courseHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/handlers/courseHandlers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/handlers/instructorHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/handlers/instructorHandlers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/handlers/navigationHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/handlers/navigationHandlers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/handlers/userHandlers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/handlers/userHandlers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useAuth.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useAuth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useCarousel.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useCarousel.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useCourseOperations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useCourseOperations.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useInstructorOperations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useInstructorOperations.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useResponsive.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useResponsive.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useUserOperations.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useUserOperations.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -204,7 +171,7 @@
       <workItem from="1762971306078" duration="1471000" />
       <workItem from="1762976962763" duration="650000" />
       <workItem from="1763062812062" duration="4148000" />
-      <workItem from="1763399387462" duration="4081000" />
+      <workItem from="1763399387462" duration="4893000" />
     </task>
     <task id="LOCAL-00001" summary="Added Delete Modal in main component">
       <option name="closed" value="true" />

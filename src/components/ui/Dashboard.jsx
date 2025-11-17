@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import './Dashboard.css';
-import Details from './HTMLdetails';
-import ReviewModal from '../ReviewModal';
+import React, { useEffect, useState, useCallback } from "react";
+import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
+import "./Dashboard.css";
+import Details from "./HTMLdetails";
+import ReviewModal from "../ReviewModal";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [courseIndex, setCourseIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [showPopup, setShowPopup] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,17 +24,19 @@ const Dashboard = () => {
   const coursesPerPage = 3;
 
   useEffect(() => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css';
-    link.integrity = 'sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==';
-    link.crossOrigin = 'anonymous';
-    link.referrerPolicy = 'no-referrer';
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href =
+      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css";
+    link.integrity =
+      "sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==";
+    link.crossOrigin = "anonymous";
+    link.referrerPolicy = "no-referrer";
     document.head.appendChild(link);
   }, []);
 
   const fetchEnrolledCourses = useCallback(() => {
-    const token = sessionStorage.getItem('auth_token');
+    const token = sessionStorage.getItem("auth_token");
     if (!token) {
       setLoading(false);
       return;
@@ -42,7 +44,7 @@ const Dashboard = () => {
 
     setLoading(true);
     axios
-      .get('http://localhost:3000/current_user', {
+      .get("http://localhost:3000/current_user", {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -51,18 +53,18 @@ const Dashboard = () => {
           `http://localhost:3000/users/${res.data.id}/enrolled_courses`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          },
+          }
         );
       })
       .then((res) => {
         const validEnrolledCourses = (res.data || []).filter(
-          (enrollment) => enrollment && enrollment.id && enrollment.course_name,
+          (enrollment) => enrollment && enrollment.id && enrollment.course_name
         );
         setEnrolledCourses(validEnrolledCourses);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Error fetching user or courses:', err);
+        console.error("Error fetching user or courses:", err);
         setEnrolledCourses([]);
         setLoading(false);
       });
@@ -77,35 +79,35 @@ const Dashboard = () => {
       fetchEnrolledCourses();
     };
 
-    window.addEventListener('enrollment-success', handleEnrollmentSuccess);
+    window.addEventListener("enrollment-success", handleEnrollmentSuccess);
 
     return () => {
-      window.removeEventListener('enrollment-success', handleEnrollmentSuccess);
+      window.removeEventListener("enrollment-success", handleEnrollmentSuccess);
     };
   }, [fetchEnrolledCourses]);
 
   const formatDate = (dateString) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
     const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     return `${months[date.getMonth()]}, ${date.getFullYear()}`;
   };
 
   const calculateDaysLeft = (endDate) => {
-    if (!endDate) return '';
+    if (!endDate) return "";
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const end = new Date(endDate);
@@ -113,14 +115,14 @@ const Dashboard = () => {
     const diffTime = end - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) return 'Completed';
-    if (diffDays === 0) return 'Ends today';
-    if (diffDays === 1) return '1 Day left to finish';
+    if (diffDays < 0) return "Completed";
+    if (diffDays === 0) return "Ends today";
+    if (diffDays === 1) return "1 Day left to finish";
     return `${diffDays} Days left to finish`;
   };
 
   const calculateDaysUntilStart = (startDate) => {
-    if (!startDate) return '';
+    if (!startDate) return "";
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const start = new Date(startDate);
@@ -128,9 +130,9 @@ const Dashboard = () => {
     const diffTime = start - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) return ''; // Course already started
-    if (diffDays === 0) return 'Starts today';
-    if (diffDays === 1) return 'Starts tomorrow';
+    if (diffDays < 0) return ""; // Course already started
+    if (diffDays === 0) return "Starts today";
+    if (diffDays === 1) return "Starts tomorrow";
     return `${diffDays} Days left to start`;
   };
 
@@ -165,7 +167,7 @@ const Dashboard = () => {
       id: course.id,
       month: formatDate(course.start_date),
       name: course.course_name,
-      daysLeft: '', // Empty for past courses to avoid duplicate "Completed"
+      daysLeft: "", // Empty for past courses to avoid duplicate "Completed"
       course,
     }));
 
@@ -192,7 +194,7 @@ const Dashboard = () => {
       return !isOngoing && !isPast && !isUpcoming;
     })
     .map((course) => {
-      let daysLeftText = 'Enrolled';
+      let daysLeftText = "Enrolled";
       if (course.start_date) {
         const startDate = new Date(course.start_date);
         startDate.setHours(0, 0, 0, 0);
@@ -202,7 +204,7 @@ const Dashboard = () => {
       }
       return {
         id: course.id,
-        month: formatDate(course.start_date) || 'No date',
+        month: formatDate(course.start_date) || "No date",
         name: course.course_name,
         daysLeft: daysLeftText,
         course,
@@ -210,22 +212,22 @@ const Dashboard = () => {
     });
 
   let visibleCourses = [];
-  if (selectedCategory === 'ongoing') {
+  if (selectedCategory === "ongoing") {
     visibleCourses = ongoingCourses.slice(
       courseIndex,
-      courseIndex + coursesPerPage,
+      courseIndex + coursesPerPage
     );
-  } else if (selectedCategory === 'past') {
+  } else if (selectedCategory === "past") {
     visibleCourses = pastCourses.slice(
       courseIndex,
-      courseIndex + coursesPerPage,
+      courseIndex + coursesPerPage
     );
-  } else if (selectedCategory === 'upcoming') {
+  } else if (selectedCategory === "upcoming") {
     visibleCourses = upcomingCourses.slice(
       courseIndex,
-      courseIndex + coursesPerPage,
+      courseIndex + coursesPerPage
     );
-  } else if (selectedCategory === 'all') {
+  } else if (selectedCategory === "all") {
     const allCourses = [
       ...ongoingCourses,
       ...upcomingCourses,
@@ -234,19 +236,19 @@ const Dashboard = () => {
     ];
     visibleCourses = allCourses.slice(
       courseIndex,
-      courseIndex + coursesPerPage,
+      courseIndex + coursesPerPage
     );
   }
 
   const handleNextCourses = () => {
     let courses = [];
-    if (selectedCategory === 'ongoing') {
+    if (selectedCategory === "ongoing") {
       courses = ongoingCourses;
-    } else if (selectedCategory === 'past') {
+    } else if (selectedCategory === "past") {
       courses = pastCourses;
-    } else if (selectedCategory === 'upcoming') {
+    } else if (selectedCategory === "upcoming") {
       courses = upcomingCourses;
-    } else if (selectedCategory === 'all') {
+    } else if (selectedCategory === "all") {
       courses = [
         ...ongoingCourses,
         ...upcomingCourses,
@@ -267,31 +269,31 @@ const Dashboard = () => {
 
   const details = userData
     ? [
-      { label: 'Name :', value: userData.first_name || 'N/A' },
-      { label: 'Surname :', value: userData.last_name || 'N/A' },
-      { label: 'Email address :', value: userData.email || 'N/A' },
-      { label: 'Country :', value: userData.country || 'N/A' },
-      { label: 'Contact number :', value: userData.mobile_number || 'N/A' },
-      { label: 'Availability :', value: 'Schedule the time slot' },
-    ]
+        { label: "Name :", value: userData.first_name || "N/A" },
+        { label: "Surname :", value: userData.last_name || "N/A" },
+        { label: "Email address :", value: userData.email || "N/A" },
+        { label: "Country :", value: userData.country || "N/A" },
+        { label: "Contact number :", value: userData.mobile_number || "N/A" },
+        { label: "Availability :", value: "Schedule the time slot" },
+      ]
     : [];
 
   const inboxMessages = [
-    { sender: 'Stefan', message: 'Hey, tell me about this...' },
-    { sender: 'Marko', message: 'Hey, tell me about this...' },
-    { sender: 'Ivan', message: 'Hey, tell me about this...' },
-    { sender: 'Anastasija', message: 'Hey, tell me about this...' },
+    { sender: "Stefan", message: "Hey, tell me about this..." },
+    { sender: "Marko", message: "Hey, tell me about this..." },
+    { sender: "Ivan", message: "Hey, tell me about this..." },
+    { sender: "Anastasija", message: "Hey, tell me about this..." },
   ];
 
   const categoryLabels = {
-    ongoing: 'Ongoing Courses',
-    past: 'Past Courses',
-    upcoming: 'Upcoming Courses',
-    all: 'All Enrolled Courses',
+    ongoing: "Ongoing Courses",
+    past: "Past Courses",
+    upcoming: "Upcoming Courses",
+    all: "All Enrolled Courses",
   };
 
-  const calendarMonthName = calendarDate.toLocaleString('default', {
-    month: 'long',
+  const calendarMonthName = calendarDate.toLocaleString("default", {
+    month: "long",
   });
   const calendarYear = calendarDate.getFullYear();
   const calendarMonth = calendarDate.getMonth();
@@ -306,13 +308,13 @@ const Dashboard = () => {
 
   const handlePrevMonth = () => {
     setCalendarDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
     );
   };
 
   const handleNextMonth = () => {
     setCalendarDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
+      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
     );
   };
 
@@ -322,9 +324,7 @@ const Dashboard = () => {
         <h2 className="dashboard-title">Dashboard</h2>
         <div className="orange-navbar">
           <Link to="/">
-            Home
-            {' '}
-            <i className="fas fa-home" />
+            Home <i className="fas fa-home" />
           </Link>
           <a href="#courses">Courses</a>
           <a href="#settings">Settings</a>
@@ -343,7 +343,7 @@ const Dashboard = () => {
         <div className="profile-section">
           <div className="profile-left">
             <img
-              src={userData?.avatar_url || '/logo192.png'}
+              src={userData?.avatar_url || "/logo192.png"}
               alt="Profile"
               className="profile-pic"
             />
@@ -367,7 +367,7 @@ const Dashboard = () => {
               <h2>
                 {userData
                   ? `${userData.first_name} ${userData.last_name}`
-                  : 'Loading...'}
+                  : "Loading..."}
               </h2>
               <p className="job-title">Student </p>
             </div>
@@ -411,26 +411,23 @@ const Dashboard = () => {
               {(() => {
                 if (loading) {
                   return (
-                    <div style={{ padding: '20px', textAlign: 'center' }}>
+                    <div style={{ padding: "20px", textAlign: "center" }}>
                       Loading courses...
                     </div>
                   );
                 }
                 if (visibleCourses.length === 0) {
                   const categoryTextMap = {
-                    ongoing: 'ongoing',
-                    past: 'past',
-                    upcoming: 'upcoming',
-                    all: 'enrolled',
+                    ongoing: "ongoing",
+                    past: "past",
+                    upcoming: "upcoming",
+                    all: "enrolled",
                   };
-                  const categoryText = categoryTextMap[selectedCategory] || 'courses';
+                  const categoryText =
+                    categoryTextMap[selectedCategory] || "courses";
                   return (
-                    <div style={{ padding: '20px', textAlign: 'center' }}>
-                      No
-                      {' '}
-                      {categoryText}
-                      {' '}
-                      courses found.
+                    <div style={{ padding: "20px", textAlign: "center" }}>
+                      No {categoryText} courses found.
                     </div>
                   );
                 }
@@ -441,10 +438,10 @@ const Dashboard = () => {
 
                   const isCoursePast = courseData.end_date
                     ? (() => {
-                      const endDate = new Date(courseData.end_date);
-                      endDate.setHours(0, 0, 0, 0);
-                      return today > endDate;
-                    })()
+                        const endDate = new Date(courseData.end_date);
+                        endDate.setHours(0, 0, 0, 0);
+                        return today > endDate;
+                      })()
                     : false;
 
                   let hasNotStarted = false;
@@ -457,11 +454,11 @@ const Dashboard = () => {
                         hasNotStarted = today < startDate;
                       }
                     } catch (e) {
-                      console.error('Error parsing start_date:', e);
+                      console.error("Error parsing start_date:", e);
                     }
                   }
 
-                  let daysLeftDisplay = '';
+                  let daysLeftDisplay = "";
                   if (hasNotStarted && startDateStr) {
                     daysLeftDisplay = calculateDaysUntilStart(startDateStr);
                   } else if (!isCoursePast && course.daysLeft) {
@@ -519,16 +516,16 @@ const Dashboard = () => {
               onClick={handleNextCourses}
               className="nav-arrow"
               disabled={(() => {
-                if (selectedCategory === 'ongoing') {
+                if (selectedCategory === "ongoing") {
                   return courseIndex + coursesPerPage >= ongoingCourses.length;
                 }
-                if (selectedCategory === 'past') {
+                if (selectedCategory === "past") {
                   return courseIndex + coursesPerPage >= pastCourses.length;
                 }
-                if (selectedCategory === 'upcoming') {
+                if (selectedCategory === "upcoming") {
                   return courseIndex + coursesPerPage >= upcomingCourses.length;
                 }
-                if (selectedCategory === 'all') {
+                if (selectedCategory === "all") {
                   const allCourses = [
                     ...ongoingCourses,
                     ...upcomingCourses,
@@ -565,9 +562,7 @@ const Dashboard = () => {
               Prev
             </button>
             <h3>
-              {calendarMonthName}
-              {' '}
-              {calendarYear}
+              {calendarMonthName} {calendarYear}
             </h3>
             <button
               type="button"
@@ -578,25 +573,24 @@ const Dashboard = () => {
             </button>
           </div>
           <div className="calendar-grid">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
               <div key={day} className="calendar-day calendar-heading">
                 {day}
               </div>
             ))}
             {calendarCells.map((day, index) => {
-              const isToday = day !== null
-                && today.getDate() === day
-                && today.getMonth() === calendarMonth
-                && today.getFullYear() === calendarYear;
+              const isToday =
+                day !== null &&
+                today.getDate() === day &&
+                today.getMonth() === calendarMonth &&
+                today.getFullYear() === calendarYear;
 
               const dayEvents = [];
               if (day !== null) {
                 const cellDate = new Date(calendarYear, calendarMonth, day);
                 cellDate.setHours(0, 0, 0, 0);
 
-                const allCalendarCourses = [
-                  ...enrolledCourses,
-                ];
+                const allCalendarCourses = [...enrolledCourses];
 
                 allCalendarCourses.forEach((course) => {
                   if (!course.start_date) return;
@@ -608,28 +602,31 @@ const Dashboard = () => {
                   const endDateRaw = course.end_date
                     ? new Date(course.end_date)
                     : null;
-                  const endDate = endDateRaw && !Number.isNaN(endDateRaw.getTime())
-                    ? new Date(endDateRaw.setHours(0, 0, 0, 0))
-                    : null;
+                  const endDate =
+                    endDateRaw && !Number.isNaN(endDateRaw.getTime())
+                      ? new Date(endDateRaw.setHours(0, 0, 0, 0))
+                      : null;
 
                   if (endDate && endDate < today) return;
 
-                  const isDateWithinCourse = startDate <= cellDate && (!endDate || cellDate <= endDate);
+                  const isDateWithinCourse =
+                    startDate <= cellDate && (!endDate || cellDate <= endDate);
 
                   if (!isDateWithinCourse) return;
 
-                  const hasStarted = startDate <= today && (!endDate || endDate >= today);
+                  const hasStarted =
+                    startDate <= today && (!endDate || endDate >= today);
                   const isUpcomingCourse = startDate > today;
 
                   if (hasStarted) {
                     dayEvents.push({
-                      type: 'started',
+                      type: "started",
                       courseName: course.course_name,
                       courseId: course.id,
                     });
                   } else if (isUpcomingCourse) {
                     dayEvents.push({
-                      type: 'upcoming',
+                      type: "upcoming",
                       courseName: course.course_name,
                       courseId: course.id,
                     });
@@ -638,30 +635,31 @@ const Dashboard = () => {
               }
 
               const eventTypes = dayEvents.map((event) => event.type);
-              const hasStartedEvent = eventTypes.includes('started');
-              const hasUpcomingEvent = eventTypes.includes('upcoming');
+              const hasStartedEvent = eventTypes.includes("started");
+              const hasUpcomingEvent = eventTypes.includes("upcoming");
 
-              const cellKey = day === null
-                ? `empty-${calendarYear}-${calendarMonth}-${index}`
-                : `day-${calendarYear}-${calendarMonth}-${day}`;
+              const cellKey =
+                day === null
+                  ? `empty-${calendarYear}-${calendarMonth}-${index}`
+                  : `day-${calendarYear}-${calendarMonth}-${day}`;
 
-              let eventClass = '';
+              let eventClass = "";
               if (hasStartedEvent) {
-                eventClass = ' event-started';
+                eventClass = " event-started";
               } else if (hasUpcomingEvent) {
-                eventClass = ' event-upcoming';
+                eventClass = " event-upcoming";
               }
 
               return (
                 <div
                   key={cellKey}
                   className={`calendar-day${
-                    day === null ? ' empty' : ''
-                  }${eventClass}${isToday ? ' current-day' : ''}${
-                    dayEvents.length ? ' has-event' : ''
+                    day === null ? " empty" : ""
+                  }${eventClass}${isToday ? " current-day" : ""}${
+                    dayEvents.length ? " has-event" : ""
                   }`}
                 >
-                  <span className="calendar-day-number">{day ?? ''}</span>
+                  <span className="calendar-day-number">{day ?? ""}</span>
                   {dayEvents.length > 0 && (
                     <>
                       <div className="calendar-event-dots">
@@ -676,9 +674,7 @@ const Dashboard = () => {
                         <div className="calendar-card-header">
                           <h4>Courses</h4>
                           <span className="calendar-card-date">
-                            {calendarMonthName}
-                            {' '}
-                            {day}
+                            {calendarMonthName} {day}
                           </span>
                         </div>
                         {hasStartedEvent && (
@@ -689,7 +685,7 @@ const Dashboard = () => {
                             </div>
                             <ul className="course-list">
                               {dayEvents
-                                .filter((event) => event.type === 'started')
+                                .filter((event) => event.type === "started")
                                 .map((event) => (
                                   <li key={`${event.courseId}-started`}>
                                     {event.courseName}
@@ -706,7 +702,7 @@ const Dashboard = () => {
                             </div>
                             <ul className="course-list">
                               {dayEvents
-                                .filter((event) => event.type === 'upcoming')
+                                .filter((event) => event.type === "upcoming")
                                 .map((event) => (
                                   <li key={`${event.courseId}-upcoming`}>
                                     {event.courseName}
@@ -742,9 +738,7 @@ const Dashboard = () => {
               <div>
                 <div className="sender">{msg.sender}</div>
                 <div className="message-text">
-                  {msg.message}
-                  {' '}
-                  Waiting for response
+                  {msg.message} Waiting for response
                 </div>
               </div>
             </div>
@@ -773,9 +767,9 @@ const Dashboard = () => {
         }}
         onSubmit={async (reviewData) => {
           try {
-            const token = sessionStorage.getItem('auth_token');
+            const token = sessionStorage.getItem("auth_token");
             if (!token) {
-              throw new Error('You must be logged in to submit a review');
+              throw new Error("You must be logged in to submit a review");
             }
 
             const response = await axios.post(
@@ -783,23 +777,23 @@ const Dashboard = () => {
               {
                 rating: reviewData.rating,
                 body: reviewData.body,
-                title: reviewData.title || '',
+                title: reviewData.title || "",
                 structured: reviewData.flags.structured,
                 engaging: reviewData.flags.engaging,
                 knowledgeable: reviewData.flags.knowledgeable,
               },
               {
                 headers: { Authorization: `Bearer ${token}` },
-              },
+              }
             );
 
             if (response.status === 201 || response.status === 200) {
               setShowReviewModal(false);
               setReviewCourse(null);
-              alert('Review submitted successfully!');
+              alert("Review submitted successfully!");
             }
           } catch (error) {
-            console.error('Error submitting review:', error);
+            console.error("Error submitting review:", error);
             throw error;
           }
         }}

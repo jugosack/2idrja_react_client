@@ -204,16 +204,12 @@
   padding-bottom: 1rem;
 }
 
-.course-details-page
-  .instructor-section:nth-child(odd)
-  .instructor-text-content {
+.course-details-page .instructor-section:nth-child(odd) .instructor-text-content {
   padding-left: 1.5rem;
   margin-left: 0.75rem;
 }
 
-.course-details-page
-  .instructor-section:nth-child(even)
-  .instructor-text-content {
+.course-details-page .instructor-section:nth-child(even) .instructor-text-content {
   padding-right: 1.5rem;
   margin-right: 0.75rem;
 }
@@ -236,32 +232,20 @@
 }
 
 /* Odd instructors (1st, 3rd, 5th...) - left aligned and closer to picture */
-.course-details-page
-  .instructor-section:nth-child(odd)
-  .instructor-text-content
-  h3 {
+.course-details-page .instructor-section:nth-child(odd) .instructor-text-content h3 {
   text-align: left !important;
 }
 
-.course-details-page
-  .instructor-section:nth-child(odd)
-  .instructor-text-content
-  .instructor-meta {
+.course-details-page .instructor-section:nth-child(odd) .instructor-text-content .instructor-meta {
   text-align: left !important;
 }
 
 /* Even instructors (2nd, 4th, 6th...) - right aligned */
-.course-details-page
-  .instructor-section:nth-child(even)
-  .instructor-text-content
-  h3 {
+.course-details-page .instructor-section:nth-child(even) .instructor-text-content h3 {
   text-align: right !important;
 }
 
-.course-details-page
-  .instructor-section:nth-child(even)
-  .instructor-text-content
-  .instructor-meta {
+.course-details-page .instructor-section:nth-child(even) .instructor-text-content .instructor-meta {
   text-align: right !important;
 }
 

@@ -70,13 +70,13 @@
   cursor: pointer;
 }
 
+.today-btn {
+  margin-left: 10px;
+}
+
 .month-btn:hover,
 .today-btn:hover {
   background-color: #5a4fcf;
-}
-
-.today-btn {
-  margin-left: 10px;
 }
 
 /* Course Legend */
@@ -166,7 +166,7 @@
 }
 
 .tooltip-content {
-  background: #ffffff;
+  background: #fff;
   border: 1px solid rgba(104, 94, 216, 0.25);
   border-radius: 16px;
   padding: 18px 22px;
