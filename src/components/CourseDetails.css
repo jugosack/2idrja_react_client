@@ -81,6 +81,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  height: 100%;
+}
+
+.hero-card-content .course-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 }
 
 /* Make text column match image height */
@@ -189,6 +197,21 @@
 .course-details-page .instructor-text-content {
   padding-left: 1rem;
   margin-left: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.course-details-page .instructor-section:nth-child(odd) .instructor-text-content {
+  padding-left: 1.5rem;
+  margin-left: 0.75rem;
+}
+
+.course-details-page .instructor-section:nth-child(even) .instructor-text-content {
+  padding-right: 1.5rem;
+  margin-right: 0.75rem;
 }
 
 /* Alternating alignment for instructors */
@@ -209,11 +232,6 @@
 }
 
 /* Odd instructors (1st, 3rd, 5th...) - left aligned and closer to picture */
-.course-details-page .instructor-section:nth-child(odd) .instructor-text-content {
-  padding-left: 0.5rem;
-  margin-left: 0.25rem;
-}
-
 .course-details-page .instructor-section:nth-child(odd) .instructor-text-content h3 {
   text-align: left !important;
 }
@@ -234,11 +252,18 @@
 /* Instructor tag/chip */
 
 .course-details-page .text-truncated-mobile {
-  display: -webkit-box;
-  -webkit-line-clamp: 5;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-clamp: 5;
+  display: block;
+  overflow: visible;
+}
+
+@media (max-width: 768px) {
+  .course-details-page .text-truncated-mobile {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-clamp: 5;
+  }
 }
 
 .course-details-page .toggle-text-inline {

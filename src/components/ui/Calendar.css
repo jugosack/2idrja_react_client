@@ -1,0 +1,261 @@
+/* Calendar - Original Design */
+.calendar {
+  grid-column: 2 / 3;
+  grid-row: 2;
+  background-color: rgba(219, 208, 221, 0.5);
+  padding: 20px;
+  border-radius: 28px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.current-day {
+  background-color: #685ed8;
+  color: #333;
+  font-weight: bold;
+  border: 2px solid #5a4fcf;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-month {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.calendar-day {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 12px 10px 36px;
+  border-radius: 12px;
+  text-align: right;
+  border: 1px solid rgba(104, 94, 216, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.calendar-day:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(104, 94, 216, 0.15);
+  cursor: pointer;
+}
+
+.calendar-day-header {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.calendar-day.empty {
+  background-color: transparent;
+}
+
+.month-btn,
+.today-btn {
+  background-color: #685ed8;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.today-btn {
+  margin-left: 10px;
+}
+
+.month-btn:hover,
+.today-btn:hover {
+  background-color: #5a4fcf;
+}
+
+/* Course Legend */
+.course-legend {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.legend-items {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.legend-color.ongoing {
+  background-color: #28a745;
+}
+
+.legend-color.past {
+  background-color: #dc3545;
+}
+
+.legend-color.upcoming {
+  background-color: #ffc107;
+}
+
+/* Course Indicators */
+.course-indicators {
+  position: absolute;
+  inset: auto 8px 8px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.course-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.course-pill.ongoing {
+  background: linear-gradient(135deg, #2dca73, #1f9b57);
+}
+
+.course-pill.upcoming {
+  background: linear-gradient(135deg, #ffb347, #ff9068);
+}
+
+.course-pill.more {
+  background: rgba(51, 53, 63, 0.9);
+}
+
+/* Course Tooltip */
+.course-tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.tooltip-content {
+  background: #fff;
+  border: 1px solid rgba(104, 94, 216, 0.25);
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: 0 18px 40px rgba(36, 32, 98, 0.2);
+  min-width: 240px;
+}
+
+.tooltip-content h4 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #302b63;
+  font-weight: 700;
+  text-align: left;
+}
+
+.course-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.course-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.course-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.course-list-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e1c3a;
+}
+
+.course-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #fff;
+}
+
+.course-status-badge.ongoing {
+  background: linear-gradient(135deg, #34d399, #059669);
+}
+
+.course-status-badge.upcoming {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+}
+
+.course-date-range {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(30, 28, 58, 0.7);
+}
+
+.course-date {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(30, 28, 58, 0.6);
+}
+
+.legend-color.ongoing,
+.course-pill.ongoing,
+.course-status-badge.ongoing {
+  background: linear-gradient(135deg, #34d399, #059669);
+}
+
+.legend-color.upcoming,
+.course-pill.upcoming,
+.course-status-badge.upcoming {
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+}
+
+.legend-item span {
+  font-weight: 600;
+  color: #2d2a52;
+}
