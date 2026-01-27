@@ -1,3 +1,4 @@
+/* ==================== OVERLAY & BACKDROP ==================== */
 .rm-overlay {
   position: fixed;
   inset: 0;
@@ -33,7 +34,6 @@
     transform: scale(0.95);
     opacity: 0;
   }
-
   to {
     transform: scale(1);
     opacity: 1;
@@ -113,7 +113,7 @@
   transform: scale(1.05);
 }
 
-/* ---------- Rating section ---------- */
+/* ==================== RATING SECTION ==================== */
 .rm-rating {
   margin: 16px 0;
   display: flex;
@@ -141,8 +141,13 @@
   transition: transform 0.05s, color 0.15s;
 }
 
-.rm-star:hover { transform: translateY(-1px); }
-.rm-star.is-active { color: #f4c34f; }
+.rm-star:hover {
+  transform: translateY(-1px);
+}
+
+.rm-star.is-active {
+  color: #f4c34f;
+}
 
 .rm-rating-hints {
   display: flex;
@@ -152,12 +157,19 @@
   color: #555;
 }
 
-/* ---------- Inputs ---------- */
+/* ==================== FORM INPUTS ==================== */
 .form-field {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-top: 10px;
+}
+
+.rm-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 4px;
 }
 
 .review-input,
@@ -170,9 +182,13 @@
   background: #fff;
   transition: all 0.2s ease;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
-.review-textarea { resize: vertical; }
+.review-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
 
 .review-input:focus,
 .review-textarea:focus {
@@ -181,7 +197,7 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* ---------- Flags (vertical layout + checkmark) ---------- */
+/* ==================== FLAGS/HIGHLIGHTS ==================== */
 .review-flags-section {
   display: flex;
   flex-direction: column;
@@ -208,10 +224,11 @@
 
 .flag-item:hover {
   border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
 .flag-item.active {
-  background: #fff !important;
+  background: #eff6ff !important;
   border-color: #3b82f6;
   color: #1e40af;
   font-weight: 600;
@@ -239,11 +256,7 @@
   color: #fff;
 }
 
-.flag-item.active span:not(.flag-check) {
-  color: #1e40af;
-}
-
-/* ---------- Buttons ---------- */
+/* ==================== ACTION BUTTONS ==================== */
 .actions {
   display: flex;
   justify-content: flex-end;
@@ -256,39 +269,336 @@
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 10px 18px;
+  padding: 12px 24px;
   font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: all 0.2s ease;
 }
 
 .rm-btn-primary:hover {
   background: #1b3a5a;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 41, 64, 0.3);
 }
 
 .rm-btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 
 .rm-btn-outlined {
   background: white;
-  border: 1px solid #ccc;
+  border: 2px solid #e2e8f0;
   border-radius: 12px;
-  padding: 10px 18px;
+  padding: 12px 24px;
   font-weight: 600;
+  font-size: 15px;
+  color: #475569;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: all 0.2s ease;
 }
-.rm-btn-outlined:hover { background: #f4f4f4; }
+
+.rm-btn-outlined:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
 
 .review-error {
   margin-top: 10px;
-  padding: 10px;
-  background: #fde8e8;
-  border: 1px solid #f5b5b5;
-  color: #9b1c1c;
-  border-radius: 8px;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 12px;
   font-size: 14px;
+}
+
+/* ==================== SUCCESS POPUP ==================== */
+.rm-success {
+  padding: 48px 32px;
+  text-align: center;
+  animation: rmSuccessFadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes rmSuccessFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Success Icon Container */
+.rm-success-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 28px;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 
+    0 10px 40px rgba(34, 197, 94, 0.4),
+    0 0 0 8px rgba(34, 197, 94, 0.1);
+  animation: rmIconPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+
+@keyframes rmIconPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animated Checkmark SVG */
+.rm-success-checkmark {
+  width: 50px;
+  height: 50px;
+}
+
+.rm-checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: rmCircleDraw 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+}
+
+.rm-checkmark-check {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: rmCheckDraw 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+@keyframes rmCircleDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes rmCheckDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Success Text */
+.rm-success-title {
+  margin: 0 0 8px;
+  font-size: 32px;
+  font-weight: 800;
+  color: #1e293b;
+  animation: rmTextSlide 0.5s ease-out 0.3s both;
+}
+
+.rm-success-message {
+  margin: 0 0 24px;
+  font-size: 17px;
+  color: #64748b;
+  line-height: 1.5;
+  animation: rmTextSlide 0.5s ease-out 0.4s both;
+}
+
+@keyframes rmTextSlide {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success Stars Display */
+.rm-success-stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+  border-radius: 16px;
+  border: 1px solid #fde047;
+}
+
+.rm-success-star {
+  font-size: 32px;
+  color: #e5e7eb;
+  opacity: 0;
+  animation: rmStarPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.rm-success-star.filled {
+  color: #facc15;
+  filter: drop-shadow(0 2px 8px rgba(250, 204, 21, 0.5));
+}
+
+@keyframes rmStarPop {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-30deg);
+  }
+  60% {
+    transform: scale(1.3) rotate(10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Subtext */
+.rm-success-subtext {
+  margin: 0 0 32px;
+  font-size: 15px;
+  color: #94a3b8;
+  animation: rmTextSlide 0.5s ease-out 0.8s both;
+}
+
+/* Done Button */
+.rm-success-btn {
+  padding: 14px 48px;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+  animation: rmBtnSlide 0.5s ease-out 0.9s both;
+}
+
+@keyframes rmBtnSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rm-success-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.5);
+}
+
+.rm-success-btn:active {
+  transform: translateY(-1px);
+}
+
+/* ==================== CONFETTI PARTICLES (Optional) ==================== */
+.rm-success::before,
+.rm-success::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: rmConfetti 1s ease-out forwards;
+  opacity: 0;
+}
+
+.rm-success::before {
+  background: #fbbf24;
+  top: 20%;
+  left: 15%;
+  animation-delay: 0.2s;
+}
+
+.rm-success::after {
+  background: #3b82f6;
+  top: 25%;
+  right: 15%;
+  animation-delay: 0.4s;
+}
+
+@keyframes rmConfetti {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0);
+  }
+}
+
+/* ==================== MOBILE RESPONSIVE ==================== */
+@media (max-width: 480px) {
+  .rm-card {
+    padding: 24px 20px;
+    margin: 16px;
+    max-width: calc(100% - 32px);
+  }
+
+  .rm-title {
+    font-size: 24px;
+  }
+
+  .rm-star {
+    font-size: 30px;
+  }
+
+  .rm-success {
+    padding: 40px 20px;
+  }
+
+  .rm-success-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .rm-success-checkmark {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rm-success-title {
+    font-size: 26px;
+  }
+
+  .rm-success-message {
+    font-size: 15px;
+  }
+
+  .rm-success-star {
+    font-size: 26px;
+  }
+
+  .rm-success-stars {
+    padding: 12px 20px;
+    gap: 6px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .rm-btn-primary,
+  .rm-btn-outlined {
+    width: 100%;
+    justify-content: center;
+  }
 }

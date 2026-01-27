@@ -1,5 +1,5 @@
 import './TestimoniesCarousel.css';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -8,6 +8,142 @@ import { ReactComponent as ArrowSVGL } from '../icons/small-arrow-prev-small-svg
 import { ReactComponent as ArrowSVGR } from '../icons/small-arrow-next-small-svgrepo-com.svg';
 
 const TestimoniesCarousel = () => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [expandedReviews, setExpandedReviews] = useState({});
+
+  const MAX_CHARS = 100; // Character limit before showing "Read more"
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/reviews');
+        if (!response.ok) {
+          throw new Error('Failed to fetch reviews');
+        }
+        const data = await response.json();
+        setReviews(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const toggleExpand = (reviewId) => {
+    setExpandedReviews((prev) => ({
+      ...prev,
+      [reviewId]: !prev[reviewId],
+    }));
+  };
+
+  // Star Rating Component
+  const StarRating = ({ rating }) => (
+    <div className="testimonial-stars">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          className={`testimonial-star ${rating >= star ? 'is-filled' : ''}`}
+          aria-hidden="true"
+        >
+          ★
+        </span>
+      ))}
+      <span className="rating-text">
+        (
+        {rating}
+        /5)
+      </span>
+    </div>
+  );
+
+  StarRating.propTypes = {
+    rating: PropTypes.number.isRequired,
+  };
+
+  // Review Text Component with Read More/Less
+  const ReviewText = ({ text, reviewId }) => {
+    const isExpanded = expandedReviews[reviewId];
+    const isLongText = text && text.length > MAX_CHARS;
+
+    if (!text) return null;
+
+    const displayText = isLongText && !isExpanded
+      ? `${text.substring(0, MAX_CHARS)}...`
+      : text;
+
+    return (
+      <div className="testimonial-text-wrapper">
+        <p className="testimonial-text">
+          &ldquo;
+          {displayText}
+          &rdquo;
+        </p>
+        {isLongText && (
+          <button
+            type="button"
+            className="read-more-btn"
+            onClick={() => toggleExpand(reviewId)}
+          >
+            {isExpanded ? 'Read less' : 'Read more'}
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  ReviewText.propTypes = {
+    text: PropTypes.string,
+    reviewId: PropTypes.number.isRequired,
+  };
+
+  ReviewText.defaultProps = {
+    text: '',
+  };
+
+  // Flag Badges Component
+  const FlagBadges = ({ flags }) => {
+    if (!flags) return null;
+
+    const activeFlags = Object.entries(flags)
+      .filter(([, value]) => value)
+      .map(([key]) => key);
+
+    if (activeFlags.length === 0) return null;
+
+    const flagLabels = {
+      engaging: '🎯 Engaging',
+      structured: '📚 Well Structured',
+      knowledgeable: '🧠 Knowledgeable',
+    };
+
+    return (
+      <div className="testimonial-flags">
+        {activeFlags.map((flag) => (
+          <span key={flag} className="flag-badge">
+            {flagLabels[flag] || flag}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  FlagBadges.propTypes = {
+    flags: PropTypes.shape({
+      engaging: PropTypes.bool,
+      structured: PropTypes.bool,
+      knowledgeable: PropTypes.bool,
+    }),
+  };
+
+  FlagBadges.defaultProps = {
+    flags: null,
+  };
+
   // Custom Next Arrow
   const CustomNextArrow = ({ className, onClick }) => (
     <div
@@ -20,12 +156,6 @@ const TestimoniesCarousel = () => {
       }}
     >
       <ArrowSVGR className="svgCarouselArrow" />
-
-      {/* <img
-        className="svgCarouselArrow"
-        src="/images/BoldBg-arrow-circle-right-svgrepo-com.svg"
-        alt="Next"
-      /> */}
     </div>
   );
 
@@ -46,10 +176,8 @@ const TestimoniesCarousel = () => {
         borderRadius: '50%',
         width: '14px',
         height: '14px',
-        // display: 'block',
         alignItems: 'center',
         justifyContent: 'center',
-        // right: '-20px',
         zIndex: 1,
         border: 'none',
       }}
@@ -61,15 +189,9 @@ const TestimoniesCarousel = () => {
       }}
     >
       <ArrowSVGL className="svgCarouselArrow" />
-
-      {/* <img
-        src="/images/BoldBg-arrow-circle-left-svgrepo-com.svg"
-        alt="Previous"
-      /> */}
     </div>
   );
 
-  // PropTypes validation
   SamplePrevArrow.propTypes = {
     className: PropTypes.string,
     style: PropTypes.shape({}),
@@ -84,10 +206,10 @@ const TestimoniesCarousel = () => {
   const settings = {
     dots: true,
     className: 'center',
-    infinite: true,
+    infinite: reviews.length > 3,
     centerPadding: '60px',
     speed: 400,
-    slidesToShow: 3,
+    slidesToShow: Math.min(3, reviews.length),
     slidesToScroll: 1,
     swipeToSlide: true,
     autoplay: true,
@@ -99,14 +221,14 @@ const TestimoniesCarousel = () => {
       {
         breakpoint: 1395,
         settings: {
-          slidesToShow: 3,
+          slidesToShow: Math.min(3, reviews.length),
           slidesToScroll: 1,
         },
       },
       {
         breakpoint: 800,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.min(2, reviews.length),
           slidesToScroll: 1,
         },
       },
@@ -115,134 +237,87 @@ const TestimoniesCarousel = () => {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-          initialSlide: 2,
+          initialSlide: 0,
         },
       },
     ],
   };
 
+  if (loading) {
+    return (
+      <section className="SectionT p-3">
+        <div className="testimonial-loading">
+          <div className="loading-spinner" />
+          <p>Loading testimonials...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="SectionT p-3">
+        <div className="text-center text-danger">
+          Error:
+          {' '}
+          {error}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="SectionT p-3">
-      {/* bg-primary bg-opacity-10 */}
       <div className="row d-flex justify-content-center">
         <div className="col-md-10 col-xl-8 text-center">
-          <h3 className="d-flex justify-content-center mt-2 mb-4">Testimonials</h3>
-          <p className="mb-3 pb-2 mb-md-4 pb-md-0">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, error amet numquam
-            iure provident voluptate esse quasi, veritatis totam voluptas nostrum quisquam eum
-            porro a pariatur veniam.
+          <h3 className="testimonial-title">Testimonials</h3>
+          <p className="testimonial-subtitle">
+            Discover how our expertly designed courses support learners at every stage, helping them build
+            practical skills
+            and confidence through clear, engaging content. Our learning experiences empower students to grow
+            personally and
+            achieve their professional goals.
           </p>
         </div>
       </div>
       <div className="slider-container">
-        {/*eslint-disable*/}
-          <Slider {...settings}>
-            {/* eslint-enable */}
-            <div className="card shadow">
-              <div className="carouselKarticka">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(1).webp"
-                  alt=""
-                  className="profile-photo rounded-circle mt-3 "
-                />
-                <div className="card-body">
-                  <h5 className="mb-3">Maria Smantha</h5>
-                  <h6 className="text-primary mb-3">Web Developer</h6>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur
-                    adipisicing elit. Quod eos id officiis hic tenetur
-                    quae quaerat ad velit ab hic
-                    tenetur.
-                  </p>
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <Slider {...settings}>
+          {reviews.map((review) => (
+            <div key={review.id} className="testimonial-card-wrapper">
+              <div className="testimonial-card">
+                <div className="testimonial-quote-icon">&ldquo;</div>
+                <div className="testimonial-content">
+                  <div className="testimonial-avatar-wrapper">
+                    <img
+                      src={review.user?.avatar_url || 'https://via.placeholder.com/150'}
+                      alt={`${review.user?.first_name || 'User'}'s avatar`}
+                      className="testimonial-avatar"
+                    />
+                    <div className="avatar-ring" />
+                  </div>
+
+                  <div className="testimonial-info">
+                    <h5 className="testimonial-name">
+                      {review.user?.first_name}
+                      {' '}
+                      {review.user?.last_name}
+                    </h5>
+                    <span className="testimonial-course">
+                      {review.course?.course_name}
+                    </span>
+                  </div>
+
+                  <StarRating rating={review.rating || 0} />
+
+                  <ReviewText text={review.body} reviewId={review.id} />
+
+                  <FlagBadges flags={review.flags} />
                 </div>
               </div>
             </div>
-
-            <div className="card shadow">
-              <div className="carouselKarticka">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(2).webp"
-                  alt=""
-                  className="profile-photo rounded-circle mt-3"
-
-                />
-                <div className="card-body">
-                  <h5 className="mb-3">Lisa Cudrow</h5>
-                  <h6 className="text-primary mb-3">Graphic Designer</h6>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur
-                    adipisicing elit. Quod eos id officiis hic tenetur
-                    quae quaerat ad velit ab hic
-                    tenetur.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="card shadow">
-              <div className="carouselKarticka">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(9).webp"
-                  alt=""
-                  className="profile-photo rounded-circle mt-3"
-
-                />
-                <div className="card-body">
-                  <h5 className="mb-3">John Smith</h5>
-                  <h6 className="text-primary mb-3">Marketing Specialist</h6>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur
-                    adipisicing elit. Quod eos id officiis hic tenetur
-                    quae quaerat ad velit ab hic
-                    tenetur.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="card shadow">
-              <div className="carouselKarticka">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(10).webp"
-                  alt=""
-                  className="profile-photo rounded-circle mt-3"
-
-                />
-                <div className="card-body">
-                  <h5 className="mb-3">Jessica Storm</h5>
-                  <h6 className="text-primary mb-3">Web app enthusiast</h6>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur
-                    adipisicing elit. Quod eos id officiis hic tenetur
-                    quae quaerat ad velit ab hic
-                    tenetur.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="card shadow">
-              <div className="carouselKarticka">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(17).webp"
-                  alt=""
-                  className="profile-photo rounded-circle mt-3"
-
-                />
-                <div className="card-body">
-                  <h5 className="mb-3">Bonnie West</h5>
-                  <h6 className="text-primary mb-3">E-commerce Connoisseur</h6>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur
-                    adipisicing elit. Quod eos id officiis hic tenetur
-                    quae quaerat ad velit ab hic
-                    tenetur.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-          </Slider>
+          ))}
+        </Slider>
       </div>
     </section>
   );
