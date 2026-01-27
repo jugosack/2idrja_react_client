@@ -13,7 +13,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  background:
     radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
   pointer-events: none;
@@ -54,7 +54,6 @@
   background: linear-gradient(135deg, #1e293b, #475569);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-align: center;
   width: 100%;
 }
@@ -69,6 +68,7 @@
   text-align: center;
   padding: 0 15px;
 }
+
 /* ===== Equal Height Cards - Slick Slider Fix ===== */
 .slider-container .slick-track {
   display: flex !important;
@@ -93,7 +93,7 @@
   border-radius: 20px;
   padding: 30px 25px;
   position: relative;
-  box-shadow: 
+  box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
@@ -106,7 +106,7 @@
 
 .testimonial-card:hover {
   transform: translateY(-8px);
-  box-shadow: 
+  box-shadow:
     0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
@@ -120,7 +120,6 @@
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
   opacity: 0.3;
   line-height: 1;
   pointer-events: none;
@@ -168,6 +167,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -302,6 +302,7 @@
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
