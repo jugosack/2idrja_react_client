@@ -1,24 +1,333 @@
-
+/* ===== Section Background ===== */
 .SectionT {
-  background-color: rgb(235, 235, 240);
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  padding: 60px 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.Karousel {
-  max-width: 300px;
-
-  /* unknown what this is for */
+.SectionT::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-/* Center the carousel on the page */
+/* ===== Header Styles ===== */
+.SectionT .row {
+  width: 100%;
+  margin: 0;
+}
 
-/* .carousel-container {
+.SectionT .col-md-10.col-xl-8.text-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.testimonial-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.testimonial-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #1e293b, #475569);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  width: 100%;
+}
+
+.testimonial-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  max-width: 1400px;
+  width: 95%;
+  margin: 0 auto 30px;
+  line-height: 1.5;
+  text-align: center;
+  padding: 0 15px;
+}
+
+/* ===== Equal Height Cards - Slick Slider Fix ===== */
+.slider-container .slick-track {
+  display: flex !important;
+}
+
+.slider-container .slick-slide {
+  height: inherit !important;
+  padding: 0 10px;
+}
+
+.slider-container .slick-slide > div {
+  height: 100%;
+}
+
+.testimonial-card-wrapper {
+  padding: 15px;
+  height: 100%;
+}
+
+.testimonial-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px 25px;
+  position: relative;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  min-height: 420px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.testimonial-quote-icon {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  font-size: 4rem;
+  font-family: Georgia, serif;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.3;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.testimonial-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  height: 100%;
+}
+
+/* ===== Avatar Styles ===== */
+.testimonial-avatar-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.testimonial-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.avatar-ring {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  z-index: 0;
+  animation: rotate-ring 3s linear infinite;
+}
+
+@keyframes rotate-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== Info Styles ===== */
+.testimonial-info {
+  margin-bottom: 12px;
+}
+
+.testimonial-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.testimonial-course {
+  display: inline-block;
+  background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
+  color: #6366f1;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ===== Star Rating Styles ===== */
+.testimonial-stars {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  height: auto;
-  padding: 20px 0;
-} */
+  gap: 4px;
+  margin: 12px 0;
+}
+
+.testimonial-star {
+  font-size: 1.4rem;
+  color: #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.testimonial-star.is-filled {
+  color: #fbbf24;
+  text-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
+}
+
+.rating-text {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+/* ===== Testimonial Text ===== */
+.testimonial-text-wrapper {
+  width: 100%;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-text {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.7;
+  margin: 15px 0 5px 0;
+}
+
+.testimonial-text strong {
+  color: #475569;
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 10px;
+  transition: color 0.2s ease;
+}
+
+.read-more-btn:hover {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+/* ===== Flag Badges ===== */
+.testimonial-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: 15px;
+}
+
+.flag-badge {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  color: #16a34a;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid #bbf7d0;
+}
+
+/* ===== Loading State ===== */
+.testimonial-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== Arrow Styles ===== */
+.custom-prev-arrow svg,
+.custom-next-arrow svg {
+  width: 40px;
+  height: 40px;
+}
+
+.svgCarouselArrow {
+  fill: #6366f1;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.svgCarouselArrow:hover {
+  fill: #4f46e5;
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
 
 .custom-prev-arrow svg {
   position: relative;
@@ -26,28 +335,8 @@
 }
 
 .custom-next-arrow svg {
-  /* display: none; */
   position: relative;
   right: -5px;
-}
-
-.custom-prev-arrow svg,
-.custom-next-arrow svg {
-  width: 30px;
-  height: 30px;
-}
-
-.svgCarouselArrow {
-  fill: rgb(140, 140, 140);
-  background-color: white;
-  border-radius: 50%;
-}
-
-.svgCarouselArrow:hover {
-  /* fill: rgb(42, 42, 42);  */
-
-  /* Change color on hover */
-  fill: rgb(85, 85, 85);
 }
 
 .slick-next {
@@ -57,129 +346,69 @@
 .slick-prev::before,
 .slick-next::before {
   display: none;
-
-  /* left: 2px; */
-
-  /* color: rgb(8, 10, 52) !important; */
 }
 
+/* ===== Dots Styles - Show only 3 dots ===== */
 .slick-dots {
-  bottom: -24px !important;
+  bottom: -35px !important;
 }
 
-.slick-list {
-  margin-right: 20px !important;
-  margin-left: 20px !important;
+.slick-dots li {
+  display: none;
 }
 
-.card {
-  border: none; /* Removes the border from the card element inside the slick slide */
-  box-shadow: 5px 5px;
-  margin-bottom: 20px;
-  padding-left: 15px;
-  text-align: center; /* Centers text content inside the card */
-  display: flex; /* Optionally, align content vertically */
-  flex-direction: column; /* Keeps content stacked */
-  justify-content: center; /* Centers content vertically */
-  align-items: center; /* Centers content horizontally */
-  box-sizing: border-box; /* Prevents padding from increasing card width */
+.slick-dots li:nth-child(-n+3) {
+  display: inline-block;
 }
 
-@media (max-width: 769px) {
-  .slick-slide .card {
-    padding-left: 0;
-  }
+.slick-dots li button::before {
+  font-size: 12px;
+  color: #cbd5e1;
+  opacity: 1;
+  transition: all 0.3s ease;
 }
 
-.carouselKarticka .card-img {
-  flex-shrink: 0;
-  width: 150px;
-  height: 150px;
-  margin-top: 20px;
-  margin-bottom: 1rem; /* Add spacing below the image */
+.slick-dots li.slick-active button::before {
+  color: #6366f1;
+  transform: scale(1.2);
 }
 
-@media (max-width: 1941px) {
-  .carouselKarticka {
-    flex-direction: column;
-  }
-}
-
-.carouselKarticka {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  gap: 1rem;
-  border: none;
-  min-height: 100%;
-  justify-content: center;
-  flex: 1; /* Ensures the content inside the card grows to fit the height */
-  height: 100%; /* Ensures it stretches to take the same height as the parent card */
-  box-sizing: border-box; /* Prevents padding from increasing the card width */
-}
-
-.card-bo.slick-slide {
-  max-width: 400px;
-  min-height: 200px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Ensures vertical centering */
-  align-items: center; /* Ensures horizontal centering */
-  text-align: center; /* Centers the text */
-}
-
-@media (max-width: 374px) {
-  .card-body {
-    min-height: 320px; /* Display one card per row on even smaller screens */
-  }
-}
-
-@media (min-width: 767px) and (max-width: 1020px) {
-  .card-body {
-    min-height: 200px; /* Display one card per row on even smaller screens */
-  }
-}
-
-@media (max-width: 769px) {
-  .carouselKarticka .card-img {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-}
-
-.card-body h5,
-.card-body h6 {
-  margin: 0.5rem 0; /* Adjust spacing for text */
-}
-
+/* ===== Slider Container ===== */
 .slider-container {
   margin-left: 1.2rem;
   margin-right: 1.2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
-.slider-container .slick-slide {
-  padding: 0 15px; /* Adds more space between each slide */
+/* ===== Responsive Styles ===== */
+@media (max-width: 769px) {
+  .testimonial-title {
+    font-size: 1.8rem;
+  }
+
+  .testimonial-subtitle {
+    font-size: 0.95rem;
+    max-width: 95%;
+  }
+
+  .testimonial-card {
+    padding: 25px 20px;
+    min-height: 380px;
+  }
+
+  .testimonial-avatar {
+    width: 80px;
+    height: 80px;
+  }
 }
 
-.profile-photo {
-  width: 150px;
-  height: 150px;
-}
-
-/* adjustments for mobile S 320px screen testimonies carousel */
 @media (max-width: 321px) {
-  /* changes card width using margins */
   .slick-list {
     margin-right: -10px !important;
     margin-left: -10px !important;
   }
 
   .custom-next-arrow svg {
-    /* display: none; */
     position: relative;
     right: -10px;
   }
@@ -189,14 +418,21 @@
     right: 5px;
   }
 
-  .card-body {
-    min-height: 250px;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+  .testimonial-card {
+    padding: 20px 15px;
+    min-height: 350px;
+  }
+
+  .testimonial-name {
+    font-size: 1rem;
+  }
+
+  .flag-badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
   }
 }
 
-/* adjustments for mobile M 375px screen testimonies carousel */
 @media (min-width: 322px) and (max-width: 376px) {
   .slick-list {
     margin-right: 5px !important;
@@ -204,10 +440,8 @@
   }
 }
 
-/* adjustments for mobile L 425px screen testimonies carousel */
 @media (min-width: 420px) and (max-width: 428px) {
   .custom-next-arrow svg {
-    /* display: none; */
     position: relative;
     right: 5px;
   }
@@ -215,5 +449,11 @@
   .custom-prev-arrow svg {
     position: relative;
     right: -10px;
+  }
+}
+
+@media (min-width: 767px) and (max-width: 1020px) {
+  .testimonial-card {
+    min-height: 420px;
   }
 }

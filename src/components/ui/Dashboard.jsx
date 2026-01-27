@@ -23,6 +23,46 @@ const Dashboard = () => {
 
   const coursesPerPage = 3;
 
+  // Calendar derived values
+  const calendarYear = calendarDate.getFullYear();
+  const calendarMonth = calendarDate.getMonth();
+  const calendarMonthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  const calendarMonthName = calendarMonthNames[calendarMonth];
+
+  // Calculate calendar cells
+  const getCalendarCells = () => {
+    const firstDayOfMonth = new Date(calendarYear, calendarMonth, 1).getDay();
+    const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+
+    const cells = [];
+
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDayOfMonth; i += 1) {
+      cells.push(null);
+    }
+
+    // Add day numbers
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      cells.push(day);
+    }
+
+    return cells;
+  };
+
+  const calendarCells = getCalendarCells();
+
+  // Calendar navigation handlers
+  const handlePrevMonth = () => {
+    setCalendarDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCalendarDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
+
   useEffect(() => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -61,8 +101,7 @@ const Dashboard = () => {
         setEnrolledCourses(validEnrolledCourses);
         setLoading(false);
       })
-      .catch((err) => {
-        console.error('Error fetching user or courses:', err);
+      .catch(() => {
         setEnrolledCourses([]);
         setLoading(false);
       });
@@ -106,11 +145,11 @@ const Dashboard = () => {
 
   const calculateDaysLeft = (endDate) => {
     if (!endDate) return '';
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayCalc = new Date();
+    todayCalc.setHours(0, 0, 0, 0);
     const end = new Date(endDate);
     end.setHours(0, 0, 0, 0);
-    const diffTime = end - today;
+    const diffTime = end - todayCalc;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) return 'Completed';
@@ -121,14 +160,14 @@ const Dashboard = () => {
 
   const calculateDaysUntilStart = (startDate) => {
     if (!startDate) return '';
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayCalc = new Date();
+    todayCalc.setHours(0, 0, 0, 0);
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
-    const diffTime = start - today;
+    const diffTime = start - todayCalc;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) return ''; // Course already started
+    if (diffDays < 0) return '';
     if (diffDays === 0) return 'Starts today';
     if (diffDays === 1) return 'Starts tomorrow';
     return `${diffDays} Days left to start`;
@@ -165,7 +204,7 @@ const Dashboard = () => {
       id: course.id,
       month: formatDate(course.start_date),
       name: course.course_name,
-      daysLeft: '', // Empty for past courses to avoid duplicate "Completed"
+      daysLeft: '',
       course,
     }));
 
@@ -290,30 +329,42 @@ const Dashboard = () => {
     all: 'All Enrolled Courses',
   };
 
-  const calendarMonthName = calendarDate.toLocaleString('default', {
-    month: 'long',
-  });
-  const calendarYear = calendarDate.getFullYear();
-  const calendarMonth = calendarDate.getMonth();
-  const firstDayIndex = new Date(calendarYear, calendarMonth, 1).getDay();
-  const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-  const totalCells = Math.ceil((firstDayIndex + daysInMonth) / 7) * 7;
-  const calendarCells = [
-    ...Array(firstDayIndex).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, idx) => idx + 1),
-    ...Array(totalCells - (firstDayIndex + daysInMonth)).fill(null),
-  ];
+  // Handle review submission
+  const handleReviewSubmit = async (reviewData) => {
+    const token = sessionStorage.getItem('auth_token');
+    if (!token) {
+      throw new Error('You must be logged in to submit a review');
+    }
 
-  const handlePrevMonth = () => {
-    setCalendarDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
+    const response = await axios.post(
+      'http://localhost:3000/reviews',
+      {
+        review: {
+          course_id: reviewCourse.course_id || reviewCourse.id,
+          title: reviewCourse.course_name || reviewCourse.name,
+          body: reviewData.body,
+          rating: reviewData.rating,
+          flags: {
+            structured: reviewData.flags.structured,
+            engaging: reviewData.flags.engaging,
+            knowledgeable: reviewData.flags.knowledgeable,
+          },
+        },
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
     );
+
+    if (response.status !== 201 && response.status !== 200) {
+      throw new Error('Failed to submit review');
+    }
   };
 
-  const handleNextMonth = () => {
-    setCalendarDate(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
-    );
+  // Handle modal close
+  const handleReviewModalClose = () => {
+    setShowReviewModal(false);
+    setReviewCourse(null);
   };
 
   return (
@@ -436,8 +487,8 @@ const Dashboard = () => {
                 }
                 return visibleCourses.map((course) => {
                   const courseData = course.course || course;
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
+                  const todayDate = new Date();
+                  todayDate.setHours(0, 0, 0, 0);
 
                   const isCoursePast = courseData.end_date
                     ? (() => {
@@ -450,14 +501,10 @@ const Dashboard = () => {
                   let hasNotStarted = false;
                   const startDateStr = courseData.start_date;
                   if (startDateStr) {
-                    try {
-                      const startDate = new Date(startDateStr);
-                      if (!Number.isNaN(startDate.getTime())) {
-                        startDate.setHours(0, 0, 0, 0);
-                        hasNotStarted = today < startDate;
-                      }
-                    } catch (e) {
-                      console.error('Error parsing start_date:', e);
+                    const startDate = new Date(startDateStr);
+                    if (!Number.isNaN(startDate.getTime())) {
+                      startDate.setHours(0, 0, 0, 0);
+                      hasNotStarted = todayDate < startDate;
                     }
                   }
 
@@ -492,11 +539,9 @@ const Dashboard = () => {
                           </button>
                         </>
                       ) : (
-                        <>
-                          {daysLeftDisplay && (
-                            <div className="days-left">{daysLeftDisplay}</div>
-                          )}
-                        </>
+                        daysLeftDisplay && (
+                          <div className="days-left">{daysLeftDisplay}</div>
+                        )
                       )}
                       <button
                         type="button"
@@ -594,9 +639,7 @@ const Dashboard = () => {
                 const cellDate = new Date(calendarYear, calendarMonth, day);
                 cellDate.setHours(0, 0, 0, 0);
 
-                const allCalendarCourses = [...enrolledCourses];
-
-                allCalendarCourses.forEach((course) => {
+                enrolledCourses.forEach((course) => {
                   if (!course.start_date) return;
 
                   const startDate = new Date(course.start_date);
@@ -607,12 +650,17 @@ const Dashboard = () => {
                     ? new Date(course.end_date)
                     : null;
                   const endDate = endDateRaw && !Number.isNaN(endDateRaw.getTime())
-                    ? new Date(endDateRaw.setHours(0, 0, 0, 0))
+                    ? (() => {
+                      const d = new Date(endDateRaw);
+                      d.setHours(0, 0, 0, 0);
+                      return d;
+                    })()
                     : null;
 
                   if (endDate && endDate < today) return;
 
-                  const isDateWithinCourse = startDate <= cellDate && (!endDate || cellDate <= endDate);
+                  const isDateWithinCourse = startDate <= cellDate
+                    && (!endDate || cellDate <= endDate);
 
                   if (!isDateWithinCourse) return;
 
@@ -762,45 +810,14 @@ const Dashboard = () => {
         open={showReviewModal}
         course={
           reviewCourse
-            ? { name: reviewCourse.course_name || reviewCourse.name }
+            ? {
+              id: reviewCourse.course_id || reviewCourse.id,
+              name: reviewCourse.course_name || reviewCourse.name,
+            }
             : null
         }
-        onClose={() => {
-          setShowReviewModal(false);
-          setReviewCourse(null);
-        }}
-        onSubmit={async (reviewData) => {
-          try {
-            const token = sessionStorage.getItem('auth_token');
-            if (!token) {
-              throw new Error('You must be logged in to submit a review');
-            }
-
-            const response = await axios.post(
-              `http://localhost:3000/courses/${reviewCourse.id}/reviews`,
-              {
-                rating: reviewData.rating,
-                body: reviewData.body,
-                title: reviewData.title || '',
-                structured: reviewData.flags.structured,
-                engaging: reviewData.flags.engaging,
-                knowledgeable: reviewData.flags.knowledgeable,
-              },
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            );
-
-            if (response.status === 201 || response.status === 200) {
-              setShowReviewModal(false);
-              setReviewCourse(null);
-              alert('Review submitted successfully!');
-            }
-          } catch (error) {
-            console.error('Error submitting review:', error);
-            throw error;
-          }
-        }}
+        onClose={handleReviewModalClose}
+        onSubmit={handleReviewSubmit}
       />
     </div>
   );
